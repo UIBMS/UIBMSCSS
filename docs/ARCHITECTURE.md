@@ -530,6 +530,39 @@ Allow developers to retain, replace, extend, restore or disable optional default
 
 The illustrative individual attribute values default and none, and effect names such as glow, are not finalized public API identifiers. Exact syntax, handling of invalid or contradictory combinations, precedence and implementation remain open.
 
+### DAT-006 — Purpose-driven foundational public attribute catalog
+
+Status: approved — Option C, 2026-11-24.
+
+Approve the following 13 public HTML data attribute names and responsibilities as the initial UIBMS CSS API design. The catalog is foundational and extensible, not an obligation to implement all features immediately.
+
+| Contextual configuration attribute | Responsibility |
+| --- | --- |
+| `data-theme` | Color scheme |
+| `data-palette` | Color identity |
+| `data-effects` | Effects profile |
+| `data-density` | Interface density |
+| `data-shape` | Geometry profile |
+| `data-typography` | Typography profile |
+
+| Individual feature attribute | Responsibility |
+| --- | --- |
+| `data-effect` | General visual effects |
+| `data-hover` | Hover effects |
+| `data-active` | Activation effects |
+| `data-focus` | Focus effects |
+| `data-entrance` | Entrance animations |
+| `data-exit` | Exit animations |
+| `data-scroll` | Scroll-driven effects |
+
+- Preserve independent contextual configuration, selective inheritance and explicit restoration under DAT-001 and DAT-002.
+- Preserve individual feature composition, interaction-specific responsibilities and explicit control over default effects under DAT-003 through DAT-005.
+- Expand the catalog only where a meaningful implementation requirement justifies an additional public attribute.
+- Do not introduce attributes that merely reproduce native CSS declarations, such as arbitrary padding, margin, width or background assignments.
+- All attributes remain optional, with native HTML defaults, applicable AAA accessibility requirements and ordinary developer customization preserved.
+
+The 13 names and responsibilities are approved. Supported values, reserved keywords, validation and conflict handling, feature availability by distribution, implementation order and technical implementation remain open. Earlier illustrative attribute values and markup do not constitute additional approved API contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -537,7 +570,7 @@ The illustrative individual attribute values default and none, and effect names 
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) and DAT-005 (explicit control over default and individual effects).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) and DAT-006 (purpose-driven foundational public attribute catalog).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
