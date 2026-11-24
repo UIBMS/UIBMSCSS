@@ -220,10 +220,37 @@ Use a dedicated, unified features cascade layer with higher priority than the co
 
 The exact layer identifier, feature catalog, class and attribute names, selectors, declarations, composition rules and packaging remain open. This approval does not authorize a particular component library or utility catalog; illustrative code is not an approved implementation.
 
+### LYR-005 — Hybrid preferences layer
+
+Status: approved — Option C, 2026-11-24.
+
+Provide a dedicated preferences cascade layer for shared user and environmental adaptations requiring higher cascade priority, while keeping feature-specific adaptations with their respective implementations.
+
+- Give the preferences layer the highest normal cascade priority within the framework.
+- Respect reduced motion, contrast and forced-color preferences, input and hover capabilities, print conditions and automatic color scheme selection where applicable.
+- Use shared preference overrides where meaningful; do not centralize every media query or duplicate feature-specific adaptation rules unnecessarily.
+- Preserve essential interaction feedback, native accessibility behavior and ordinary developer customization.
+- Ensure locally configured or inherited tokens do not accidentally defeat framework accessibility adaptations in nested or scoped design environments.
+- Integrate accessibility across all layers, rather than delegating all accessibility responsibilities to preferences.
+
+The exact layer identifier, media queries, token contracts, scope boundaries and declarations remain open. Illustrative CSS is not an approved implementation.
+
+### Consolidated cascade architecture
+
+The approved responsibility-based layer order, from lowest to highest priority for normal framework declarations, is:
+
+1. Reset (LYR-001): minimal browser normalization.
+2. Defaults (LYR-002): default tokens, native HTML styling and original UIBMS visual experience.
+3. Configuration (LYR-003): contextual themes, palettes, effects profiles and design settings.
+4. Features (LYR-004): explicitly requested layout, styling and individual effects.
+5. Preferences (LYR-005): shared user and environmental adaptations requiring priority.
+
+Normal unlayered author CSS overrides normal layered framework declarations according to the native CSS cascade. Layer priorities do not supersede inheritance rules; important declarations have reversed layer precedence. Source organization and distribution packaging remain independent of cascade layers. Exact public layer identifiers, declaration order syntax and extension contracts are not yet approved.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) and LYR-004 (unified features layer; remaining layers open).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
