@@ -1,0 +1,12 @@
+@layer configuration {
+
+    :where([data-effects="dynamic"]) {
+        --signature-time: 220ms;
+        --explicit-time: 220ms;
+        --signature-lift: 0 -0.25rem;
+        --signature-press: 0 0.125rem;
+        --signature-scroll: smooth;
+        scroll-behavior: var(--signature-scroll);
+    }
+
+}
