@@ -1,0 +1,90 @@
+@layer features {
+
+    /* Layout alternatives do not compete. Keep hidden native surfaces hidden. */
+    :where(:not([hidden], dialog:not([open]))):where(:not([popover]), :popover-open) {
+
+        &:where(.grid:not(.flex, .stack, .cluster, .sidebar, .split)) {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+            gap: var(--space);
+        }
+
+        &:where(.flex:not(.grid, .stack, .cluster, .sidebar, .split)) {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space);
+
+            & > * {
+                flex: 1 1 auto;
+                max-inline-size: 100%;
+            }
+        }
+
+        &:where(.stack:not(.grid, .flex, .cluster, .sidebar, .split)) {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space);
+
+            & > * {
+                margin-block: 0;
+                max-inline-size: 100%;
+            }
+        }
+
+        &:where(.cluster:not(.grid, .flex, .stack, .sidebar, .split)) {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: calc(var(--space) * 0.5) var(--space);
+
+            & > * {
+                flex: 0 1 auto;
+                max-inline-size: 100%;
+            }
+        }
+
+        &:where(.sidebar:not(.grid, .flex, .stack, .cluster, .split)) {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space);
+
+            & > * {
+                flex: 999 1 50%;
+                max-inline-size: 100%;
+            }
+
+            & > :where(:first-child) {
+                flex: 1 1 14rem;
+            }
+        }
+
+        &:where(.split:not(.grid, .flex, .stack, .cluster, .sidebar)) {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space);
+
+            & > * {
+                flex: 1 1 18rem;
+                max-inline-size: 100%;
+            }
+        }
+
+        &:where(.center:not(.grid, .flex, .stack, .cluster, .sidebar, .split)) {
+            display: grid;
+        }
+
+        &:where(.center) {
+            place-content: center;
+            place-items: center;
+        }
+
+    }
+
+    :where(.container) {
+        inline-size: 100%;
+        max-inline-size: 72rem;
+        margin-inline: auto;
+        padding-inline: var(--space);
+    }
+
+}
