@@ -1,0 +1,68 @@
+@layer defaults {
+
+    :where(:root, [data-effects="default"], [data-effects="none"]) {
+        scroll-behavior: var(--signature-scroll, smooth);
+    }
+
+    :where(:root, [data-theme="light"], [data-theme="dark"], [data-theme="auto"], pre, dialog, [popover]) {
+        scrollbar-color: var(--color-border) transparent;
+    }
+
+}
+
+@layer features {
+
+    @supports (animation-timeline: view(block)) and (animation-timeline: scroll(root block)) and (animation-range: entry 0% cover 35%) {
+        :where(div, section, article, aside, header, footer, main, nav, figure):where(:not([data-scroll~="none"], [hidden], [popover], .visually-hidden)):where([data-scroll~="reveal"], [data-scroll~="parallax"], [data-scroll~="progress"]) {
+            --_scroll-motion: none;
+            --_scroll-progress: none;
+            --_scroll-range: entry 0% cover 35%;
+            animation-name: var(--_scroll-motion), var(--_scroll-progress);
+            animation-duration: 1ms;
+            animation-timing-function: linear;
+            animation-fill-mode: both;
+            animation-timeline: view(block), scroll(root block);
+            animation-range: var(--_scroll-range), normal;
+
+            &:where([data-scroll~="parallax"]) {
+                --_scroll-motion: uibms-scroll-parallax;
+                --_scroll-range: cover 0% cover 100%;
+            }
+
+            &:where([data-scroll~="reveal"]) {
+                --_scroll-motion: uibms-scroll-reveal;
+                --_scroll-range: entry 0% cover 35%;
+            }
+
+            &:where(:focus-within) {
+                --_scroll-motion: none;
+            }
+
+            &:where([data-scroll~="progress"]) {
+                --_scroll-progress: uibms-scroll-progress;
+                background-image: linear-gradient(var(--color-accent), var(--color-accent));
+                background-repeat: no-repeat;
+                background-position: left bottom;
+                background-size: 0% 2px;
+
+                &:where(:dir(rtl)) { background-position: right bottom; }
+            }
+        }
+
+        @keyframes uibms-scroll-reveal {
+            from { transform: translateY(var(--motion-distance)); }
+            to { transform: translateY(0); }
+        }
+
+        @keyframes uibms-scroll-parallax {
+            from { transform: translateY(var(--motion-distance)); }
+            to { transform: translateY(calc(-1 * var(--motion-distance))); }
+        }
+
+        @keyframes uibms-scroll-progress {
+            from { background-size: 0% 2px; }
+            to { background-size: 100% 2px; }
+        }
+    }
+
+}
