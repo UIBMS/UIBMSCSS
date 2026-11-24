@@ -439,12 +439,28 @@ Establish a coordinated surface and visual depth architecture using meaningful s
 
 Exact surface profiles, depth tokens, elevation calculations, configuration mechanisms, defaults and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
 
+### TOK-012 — Context-aware motion language
+
+Status: approved — Option C, 2026-11-24.
+
+Establish a coordinated, recognizable motion language combining meaningful computational relationships, interaction-specific behavior, contextual effects profiles and environmental awareness.
+
+- Use native CSS animations and transitions, with shared foundational values for duration, easing, distance, intensity, scale, delay and opacity where technically justified.
+- Distinguish the purposes of feedback, navigation, entrance, exit, transformation, attention, progress, elevation and optional decorative motion. Different purposes may require different timing and easing.
+- Reuse underlying motion implementations across effects profiles rather than duplicating styling for each profile.
+- Keep motion independent of palette and geometry selection unless an explicitly documented interaction requires coordination.
+- Prefer performant motion mechanisms, avoid unnecessary layout recalculation, continuous decorative animation and universal transition: all declarations, and preserve immediate interaction responsiveness.
+- Respect reduced-motion preferences automatically and preserve essential visual feedback when non-essential motion is disabled.
+- Maintain contextual token resolution, predictable composition, native developer customization and applicable AAA accessibility defaults.
+
+The exact motion token inventory, values, timing curves, effects profiles, behavior contracts and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) and TOK-011 (context-aware surface and depth system).
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
