@@ -103,10 +103,24 @@ Maintain strict separation of responsibilities with contextual configuration.
 
 The precise class and attribute names, accepted values, responsibility boundaries, inheritance rules, precedence and scoping implementation remain open. Illustrative markup is not a finalized API.
 
+### ARC-004 — CSS cascade, specificity and developer freedom
+
+Status: approved — Option C, 2026-11-24.
+
+Use native CSS cascade layers together with deliberately low-specificity framework defaults.
+
+- Organize framework styling using native cascade layers (`@layer`), with explicit and predictable styling priorities.
+- Prefer low-specificity selectors where appropriate, including `:where()`, to avoid specificity escalation.
+- Avoid unnecessary `!important` declarations and preserve native CSS cascade and inheritance.
+- Developers must be able to override framework visual decisions using ordinary CSS without requiring a special overriding mechanism. Normal unlayered author declarations take precedence over normal layered author declarations, subject to the native cascade.
+- Apply these principles consistently to global and scoped adoption and contextual configuration.
+
+The number, names, order, responsibilities and organization of layers, and exact selector conventions, remain open. This decision does not prescribe a particular layer structure or prohibit developers from using any valid CSS.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layering, delivery and extension mechanisms.
+2. CSS architecture, layer structure, delivery and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
