@@ -1,0 +1,12 @@
+@layer configuration {
+
+    :where([data-effects="fluid"]) {
+        --signature-time: 280ms;
+        --explicit-time: 280ms;
+        --signature-lift: 0 -0.125rem;
+        --signature-press: 0 0.09375rem;
+        --signature-scroll: smooth;
+        scroll-behavior: var(--signature-scroll);
+    }
+
+}
