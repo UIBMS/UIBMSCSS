@@ -455,6 +455,21 @@ Establish a coordinated, recognizable motion language combining meaningful compu
 
 The exact motion token inventory, values, timing curves, effects profiles, behavior contracts and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
 
+### DAT-001 — Independent contextual and individual feature attributes
+
+Status: approved — Option C, 2026-11-24.
+
+Organize meaningful HTML data attributes into independent contextual configuration dimensions and individual feature requests, rather than combining unrelated settings into a single attribute.
+
+- Contextual attributes establish design environments that apply to descendants through native CSS inheritance and contextual token resolution where appropriate.
+- Individual feature attributes request specific functionality on the selected element without automatically activating the same feature on descendants.
+- Keep configuration dimensions independent, composable, predictable and easy to discover for humans and coding agents.
+- Preserve the strict responsibility separation between classes and data attributes established in ARC-003.
+- All attributes are optional; native HTML receives the default UIBMS visual experience without additional configuration.
+- Candidate contextual responsibilities include color scheme, palette, effects profile, density, geometry and typography. Individual visual effects are a candidate feature responsibility.
+
+Exact attribute identifiers, supported values, inheritance and reset rules, feature composition, validation, extension contracts and implementation remain open. Illustrative attribute names and markup are not a finalized public API.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -462,7 +477,7 @@ The exact motion token inventory, values, timing curves, effects profiles, behav
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Data attribute responsibilities, configuration, inheritance and composition.
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
