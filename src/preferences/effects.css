@@ -1,0 +1,57 @@
+@layer preferences {
+
+    @media (prefers-reduced-motion: reduce) {
+        :where(:root, [data-effects="default"], [data-effects="none"], [data-effects="minimal"], [data-effects="fluid"], [data-effects="dynamic"]) {
+            scroll-behavior: auto;
+        }
+
+        :where(button, input:is([type="button"], [type="submit"], [type="reset"]),
+            [data-hover~="lift"]:not([data-hover~="none"]), [data-hover~="glow"]:not([data-hover~="none"]),
+            [data-active~="press"]:not([data-active~="none"]), [data-focus~="glow"]:not([data-focus~="none"])) {
+            transition: none;
+            translate: none;
+        }
+
+        :where(dialog, [popover]):where([data-entrance~="rise"]:not([data-entrance~="none"]),
+            [data-exit~="rise"]:not([data-exit~="none"]), [data-exit~="fade"]:not([data-exit~="none"])) {
+            transition: none;
+            transform: none;
+        }
+
+        :where(div, section, article, aside, header, footer, main, nav, figure):where(:not([data-scroll~="none"], [hidden], [popover], .visually-hidden)):where([data-scroll~="reveal"], [data-scroll~="parallax"], [data-scroll~="progress"]) {
+            animation: none;
+            transform: none;
+        }
+
+        :where(dialog, [popover]):where([data-entrance~="fade"], [data-exit~="fade"])::before {
+            transition: none;
+        }
+    }
+
+    @media (forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce) {
+        :where(div, section, article, aside, header, footer, main, nav, figure, dialog):where(:not([data-effect~="none"])) {
+            &:where([data-effect~="glass"]:not([data-effect~="frosted"], [data-effect~="metallic"], [data-effect~="matte"])),
+            &:where([data-effect~="frosted"]:not([data-effect~="glass"], [data-effect~="metallic"], [data-effect~="matte"])),
+            &:where([data-effect~="metallic"]:not([data-effect~="glass"], [data-effect~="frosted"], [data-effect~="matte"])) {
+                background-color: var(--color-surface);
+                backdrop-filter: none;
+                --_effect-depth: 0 0 0 transparent;
+            }
+        }
+
+        :where([data-hover~="glow"], [data-focus~="glow"]) {
+            --_effect-halo: 0 0 0 transparent;
+        }
+
+        :where(dialog, [popover]):where([data-entrance~="fade"], [data-exit~="fade"])::before {
+            box-shadow: none;
+        }
+    }
+
+    @media (forced-colors: active) {
+        :where(:root, [data-theme="light"], [data-theme="dark"], [data-theme="auto"], pre, dialog, [popover]) {
+            scrollbar-color: auto;
+        }
+    }
+
+}
