@@ -1,0 +1,115 @@
+@layer defaults {
+
+    :where(input:not([type="hidden"], [type="button"], [type="submit"], [type="reset"],
+        [type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="image"]),
+        select, textarea) {
+        color: var(--color-text);
+        background-color: var(--color-surface);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: var(--radius);
+        padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
+        min-block-size: var(--target-size);
+        max-inline-size: 100%;
+    }
+
+    :where(textarea) {
+        min-block-size: max(var(--target-size), 6em);
+        resize: vertical;
+    }
+
+    :where(input, textarea)::placeholder {
+        color: var(--color-text-muted);
+        opacity: 1;
+    }
+
+    :where(input[readonly], textarea[readonly]) {
+        background-color: var(--color-surface-subtle);
+    }
+
+    :where(input, select, textarea):where(:disabled, [aria-disabled="true"]) {
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+    }
+
+    :where(input:not([type="hidden"], [type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="image"],
+        [type="button"], [type="submit"], [type="reset"]), select, textarea):where(:disabled, [aria-disabled="true"]) {
+        background-color: var(--color-surface-subtle);
+        border-color: var(--color-border);
+    }
+
+    :where(input, select, textarea):where(:user-invalid) {
+        border-color: var(--color-danger);
+        border-style: dashed;
+    }
+
+    :where(input, select, textarea):where([aria-invalid="true"]) {
+        border-color: var(--color-danger);
+        border-style: dashed;
+    }
+
+    :where(input, select, textarea):where(:user-valid:not([aria-invalid="true"])) {
+        border-color: var(--color-success);
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"], [type="range"])) {
+        accent-color: var(--color-accent);
+        vertical-align: middle;
+        max-inline-size: 100%;
+    }
+
+    :where(input:is([type="checkbox"], [type="radio"], [type="color"])) {
+        inline-size: var(--target-size);
+        block-size: var(--target-size);
+        max-inline-size: 100%;
+    }
+
+    :where(label:has(> input:is([type="checkbox"], [type="radio"]))) {
+        display: inline-flex;
+        align-items: center;
+        gap: calc(var(--space) * 0.5);
+        min-block-size: var(--target-size);
+        min-inline-size: var(--target-size);
+        max-inline-size: 100%;
+    }
+
+    :where(label > input:is([type="checkbox"], [type="radio"])) {
+        inline-size: 1.25em;
+        block-size: 1.25em;
+        flex: none;
+        margin: 0;
+    }
+
+    :where(input[type="range"], input[type="file"], input[type="image"]) {
+        min-block-size: var(--target-size);
+        max-inline-size: 100%;
+    }
+
+    :where(input[type="file"])::file-selector-button {
+        margin-inline-end: calc(var(--space) * 0.5);
+    }
+
+    :where(input[type="image"]) {
+        block-size: auto;
+        min-inline-size: var(--target-size);
+    }
+
+    :where(fieldset) {
+        min-inline-size: 0;
+        margin-inline: 0;
+        margin-block: var(--space);
+        padding: var(--space);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: var(--radius);
+    }
+
+    :where(fieldset:focus-within) {
+        border-color: var(--color-focus);
+    }
+
+    :where(legend) {
+        padding-inline: calc(var(--space) * 0.25);
+        font-weight: 600;
+        max-inline-size: 100%;
+    }
+
+}
