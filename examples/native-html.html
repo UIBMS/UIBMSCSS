@@ -1,0 +1,179 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UIBMS CSS — Native HTML showcase</title>
+    <link rel="stylesheet" href="../src/uibms.css">
+    <style>
+        /* Showcase layout only. No framework classes or custom control styling. */
+        main { max-inline-size: 74rem; margin-inline: auto; padding: clamp(1rem, 3vw, 2.5rem); }
+        main > section { margin-block: 2.5rem; }
+        nav { display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem; }
+        #theme-samples { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 17rem), 1fr)); gap: 1rem; }
+        #theme-samples article { padding: 1rem; border: 1px solid var(--color-border); border-radius: calc(var(--radius) * 2); }
+        #theme-samples h3 { margin-block-start: 0; }
+        #theme-samples section { padding: 1rem; margin-block: 1rem; border: 1px solid var(--color-border); }
+        #account-form p > label:not(:has(input[type="checkbox"], input[type="radio"])) { display: block; margin-block-end: 0.25rem; }
+        #account-form :is(input:not([type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="submit"], [type="reset"]), select, textarea) { inline-size: min(100%, 32rem); }
+        #table-scroll { overflow-x: auto; }
+    </style>
+</head>
+<body>
+<main>
+    <header>
+        <p><small>UIBMS CSS · Development showcase · IMP-002</small></p>
+        <h1>Native by nature.</h1>
+        <p>A professional HTML-first experience using the approved natural palette, typography and geometry. No framework classes, JavaScript styling engine or external assets.</p>
+        <nav aria-label="Showcase sections">
+            <a href="#typography">Typography</a>
+            <a href="#forms">Forms</a>
+            <a href="#data">Data</a>
+            <a href="#interactive">Interactions</a>
+            <a href="#themes">Themes</a>
+            <a href="#media">Media</a>
+        </nav>
+        <p><label for="theme">Page appearance</label> <select id="theme"><option value="auto">Automatic</option><option value="light">Light</option><option value="dark">Dark</option></select></p>
+    </header>
+
+    <section id="typography">
+        <h2>01. Typography and content</h2>
+        <h3>Readable hierarchy</h3>
+        <h4>Heading level four</h4>
+        <h5>Heading level five</h5>
+        <h6>Heading level six</h6>
+        <p>Native paragraphs, <strong>strong emphasis</strong>, <em>emphasis</em>, <mark>highlighted text</mark>, <small>small print</small> and an <a href="#forms">internal link</a>.</p>
+        <blockquote><p>Good interfaces should be intuitive, expressive and accessible.</p></blockquote>
+        <ul><li>Native list markers</li><li>Nested lists<ul><li>Preserve semantic structure.</li></ul></li></ul>
+        <ol><li>Include the stylesheet.</li><li>Write semantic HTML.</li></ol>
+        <dl><dt>UIBMS</dt><dd>Universal Integrated Business Management System.</dd><dt>Native CSS</dt><dd>Browser-native styling without a runtime.</dd></dl>
+        <p>Press <kbd>Tab</kbd> to check keyboard focus. Inline code: <code>color: var(--color-text)</code>.</p>
+        <pre tabindex="0" aria-label="Example CSS code"><code>@layer defaults {
+    :where(button) {
+        border-radius: var(--radius);
+        color: var(--color-on-accent);
+    }
+}</code></pre>
+        <hr>
+    </section>
+
+    <section id="forms">
+        <h2>02. Forms and actions</h2>
+        <p>Native browser controls retain their own semantics and validation. Required fields are explicitly labeled.</p>
+        <form id="account-form">
+            <fieldset>
+                <legend>Account information</legend>
+                <p><label for="full-name">Full name (required)</label><input id="full-name" name="name" autocomplete="name" placeholder="Alex Morgan" required></p>
+                <p><label for="email">Email (required)</label><input id="email" type="email" name="email" autocomplete="email" placeholder="alex@example.com" required></p>
+                <p><label for="password">Password</label><input id="password" type="password" name="password" autocomplete="new-password"></p>
+                <p><label for="search">Search</label><input id="search" type="search" placeholder="Find a workspace"></p>
+                <p><label for="number">Team size</label><input id="number" type="number" min="1" max="100" value="4"></p>
+                <p><label for="language">Language</label><select id="language"><option>English</option><option>French</option><option>Greek</option></select></p>
+                <p><label for="notes">Notes</label><textarea id="notes" rows="3" placeholder="Your notes"></textarea></p>
+                <p><label for="date">Date</label><input id="date" type="date"></p>
+                <p><label for="time">Time</label><input id="time" type="time"></p>
+                <p><label for="local-time">Local date and time</label><input id="local-time" type="datetime-local"></p>
+                <p><label for="color">Color</label><input id="color" type="color" value="#343b35"></p>
+                <p><label for="file">Attachment</label><input id="file" type="file"></p>
+                <p><label for="range">Intensity</label><input id="range" type="range" min="0" max="100" value="60"></p>
+                <p><label><input type="checkbox" checked> Enable notifications</label></p>
+                <p><label><input type="checkbox"> Include weekly summary</label></p>
+                <fieldset>
+                    <legend>Account type</legend>
+                    <label><input type="radio" name="account-type" checked> Personal</label>
+                    <label><input type="radio" name="account-type"> Business</label>
+                </fieldset>
+                <p><label for="readonly">Read-only reference</label><input id="readonly" value="UIBMS-001" readonly></p>
+                <p><label for="disabled-field">Disabled input</label><input id="disabled-field" value="Unavailable" disabled></p>
+                <p><label for="invalid-email">Invalid email example</label><input id="invalid-email" type="email" value="invalid" aria-invalid="true" aria-describedby="email-error"><br><small id="email-error">Error: Enter a valid email address.</small></p>
+                <p><button type="submit">Save settings</button> <button type="reset">Reset</button> <button type="button" disabled>Disabled</button></p>
+                <p><output id="form-result" aria-live="polite"></output></p>
+            </fieldset>
+        </form>
+        <p><input type="button" value="Input button"> <input type="submit" value="Submit" disabled></p>
+    </section>
+
+    <section id="data">
+        <h2>03. Data and indicators</h2>
+        <div id="table-scroll" tabindex="0" role="region" aria-label="Project table, scroll if necessary">
+            <table>
+                <caption>Workspace projects</caption>
+                <thead><tr><th scope="col">Project</th><th scope="col">Status</th><th scope="col">Tasks</th></tr></thead>
+                <tbody>
+                    <tr><th scope="row">Foundation</th><td>Complete</td><td>12</td></tr>
+                    <tr><th scope="row">Native HTML</th><td>In review</td><td>24</td></tr>
+                    <tr><th scope="row">Effects</th><td>Planned</td><td>8</td></tr>
+                </tbody>
+                <tfoot><tr><th scope="row" colspan="2">Total</th><td>44</td></tr></tfoot>
+            </table>
+        </div>
+        <p><label for="progress">Setup progress: 65%</label><br><progress id="progress" value="65" max="100">65%</progress></p>
+        <p><label for="meter">Capacity: 60%</label><br><meter id="meter" value="60" min="0" max="100" low="25" high="80" optimum="65">60%</meter></p>
+    </section>
+
+    <section id="interactive">
+        <h2>04. Native interactions</h2>
+        <details><summary>Expandable information</summary><p>This disclosure uses the browser's native open state and keyboard behavior.</p></details>
+        <details open><summary>Initially expanded</summary><p>Open disclosures preserve their native functionality.</p></details>
+        <button type="button" id="open-dialog">Open dialog</button>
+        <button type="button" popovertarget="demo-popover">Open popover</button>
+        <dialog id="demo-dialog" aria-labelledby="dialog-title">
+            <h3 id="dialog-title">Native dialog</h3>
+            <p>Responsive geometry, a themed surface and a native modal backdrop.</p>
+            <form method="dialog"><button autofocus>Close dialog</button></form>
+        </dialog>
+        <div id="demo-popover" popover>
+            <h3>Native popover</h3>
+            <p>Dismiss this surface using the button or Escape.</p>
+            <button type="button" popovertarget="demo-popover" popovertargetaction="hide">Close</button>
+        </div>
+    </section>
+
+    <section id="themes">
+        <h2>05. Independent, nested themes</h2>
+        <p>Both explicit schemes remain independent of the page theme. Automatic follows the system preference.</p>
+        <div id="theme-samples">
+            <article data-theme="light">
+                <h3>Light</h3><p>Natural light surfaces.</p>
+                <button type="button">Continue</button>
+                <section data-theme="dark"><h4>Nested dark</h4><p>Inherited tokens resolve in this context.</p><button type="button">Continue</button></section>
+            </article>
+            <article data-theme="dark">
+                <h3>Dark</h3><p>Natural dark surfaces.</p>
+                <button type="button">Continue</button>
+                <section data-theme="light"><h4>Nested light</h4><p>Independent local appearance.</p><button type="button">Continue</button></section>
+            </article>
+            <article data-theme="auto"><h3>Automatic</h3><p>Follows system appearance.</p><button type="button">Continue</button><section data-theme="unknown"><h4>Unknown value</h4><p>Inherits the surrounding theme.</p></section></article>
+        </div>
+    </section>
+
+    <section id="media">
+        <h2>06. Responsive media</h2>
+        <figure>
+            <img width="640" height="240" alt="A simple landscape of overlapping green hills beneath a pale sky" src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 640 240'%3E%3Crect width='640' height='240' fill='%23efeeeb'/%3E%3Cpath d='M0 180 Q160 30 320 180 T640 160 V240 H0Z' fill='%23939a90'/%3E%3Cpath d='M0 210 Q220 75 430 200 T640 180 V240 H0Z' fill='%23343b35'/%3E%3C/svg%3E">
+            <figcaption>Intrinsic image sizing with a local, embedded demonstration asset.</figcaption>
+        </figure>
+        <p>Media controls below have no loaded media; they demonstrate native control layout only.</p>
+        <p><audio controls aria-label="Audio control example"></audio></p>
+        <video controls width="480" height="270" aria-label="Video control example"></video>
+    </section>
+    <footer><hr><p><small>Development source, not a production release. Classes, configuration profiles, signature effects and scoped distributions are forthcoming.</small></p></footer>
+</main>
+<script>
+    // Demonstration controls only; the framework stylesheet requires no JavaScript.
+    document.querySelector('#theme').addEventListener('change', event => {
+        document.documentElement.dataset.theme = event.target.value;
+    });
+    document.querySelector('#open-dialog').addEventListener('click', () => {
+        document.querySelector('#demo-dialog').showModal();
+    });
+    document.querySelector('#account-form').addEventListener('submit', event => {
+        event.preventDefault();
+        document.querySelector('#form-result').textContent = 'Demo validation passed. No data was sent.';
+    });
+    document.querySelector('#account-form').addEventListener('reset', () => {
+        document.querySelector('#form-result').textContent = '';
+    });
+</script>
+</body>
+</html>
