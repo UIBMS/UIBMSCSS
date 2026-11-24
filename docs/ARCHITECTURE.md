@@ -394,12 +394,27 @@ Establish an adaptive, accessible typography system using meaningful foundationa
 
 The exact font stacks, default sizes, scaling formulas, heading relationships, token identifiers, line heights, reading measures and optional profiles remain open. Illustrative code and previews are not approved implementation contracts.
 
+### TOK-009 — Intrinsic and context-aware spacing
+
+Status: approved — Option C, 2026-11-24.
+
+Establish consistent spatial relationships through meaningful foundational spacing values, native CSS calculations, contextual density and intrinsic adaptation.
+
+- Prefer meaningful configurable spacing tokens and derived relationships over an extensive predetermined numerical spacing scale.
+- Support contextual interface density, allowing different design environments to adjust spacing without changing unrelated settings.
+- Use relative units, native mathematical functions, intrinsic responsiveness and CSS logical properties where beneficial.
+- Preserve readable spacing, content reflow and applicable AAA interaction target sizes. Compact density must not compromise accessibility defaults.
+- Preserve context-aware token resolution, ordinary native CSS customization and developer freedom over dimensions.
+- Introduce spacing utilities only where a concrete reuse requirement justifies them.
+
+Exact spacing tokens, formulas, density values, attribute identifiers, interaction target implementations and default dimensions remain open. Illustrative CSS and previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) and TOK-008 (intrinsic and computational typography).
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) and TOK-009 (intrinsic and context-aware spacing).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
