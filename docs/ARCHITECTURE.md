@@ -117,10 +117,25 @@ Use native CSS cascade layers together with deliberately low-specificity framewo
 
 The number, names, order, responsibilities and organization of layers, and exact selector conventions, remain open. This decision does not prescribe a particular layer structure or prohibit developers from using any valid CSS.
 
+### ARC-005 — Modularity and CSS distribution
+
+Status: approved — Option C, 2026-11-24.
+
+Provide a ready-to-use, lightweight default distribution, independently available extensions, and an optional comprehensive distribution, all derived from the same source architecture.
+
+- The default distribution must deliver the original UIBMS experience, including native HTML styling, meaningful tokens, applicable AAA accessibility defaults and fundamental interaction effects.
+- Additional palettes, specialized effects and other optional capabilities may be distributed as independently loadable extensions.
+- A comprehensive distribution may combine the default distribution and all standard extensions for developers who prefer complete functionality.
+- Developers must not need build tools or mandatory configuration to consume the published CSS distributions.
+- Avoid maintaining duplicate implementations of shared functionality. Keep the default distribution free of unnecessary optional CSS while retaining a complete default experience.
+- Preserve the approved native cascade, contextual configuration and scoped adoption principles across distributions.
+
+Exact source structure, distribution names, extension boundaries, dependency contracts, layer ordering and build tooling are open. Examples of how distributions could be consumed are illustrative, not an approved public API.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, delivery and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) and ARC-005 (default distribution with modular extensions and a comprehensive distribution).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
