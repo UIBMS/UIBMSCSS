@@ -1,0 +1,19 @@
+@layer configuration {
+
+    :where([data-effects="default"]) {
+        --signature-time: initial;
+        --explicit-time: initial;
+        --signature-lift: initial;
+        --signature-press: initial;
+        --signature-scroll: initial;
+    }
+
+    :where([data-effects="none"]) {
+        --signature-time: 0ms;
+        --explicit-time: initial;
+        --signature-lift: none;
+        --signature-press: none;
+        --signature-scroll: auto;
+    }
+
+}
