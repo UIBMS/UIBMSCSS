@@ -500,6 +500,21 @@ Support multiple space-separated feature values in meaningful individual feature
 
 The attribute names, interaction contexts, supported effect values, composition and conflict-resolution rules, fallback behavior and implementation remain open. Illustrative CSS, markup and previews are not approved public API contracts.
 
+### DAT-004 — Composable effect channels and predictable conflict resolution
+
+Status: approved — Option C, 2026-11-24.
+
+Compose individual effects through independent responsibilities and native CSS mechanisms rather than relying on accidental cascade conflicts or enumerating every possible effect combination.
+
+- Allow compatible effects to contribute independently to shared visual results through native properties and meaningful custom properties where technically justified.
+- Use independent native properties, such as translate, rotate and scale, where suitable; otherwise combine contributions through a shared implementation with explicitly defined composition behavior.
+- Consider translation, rotation, scale, illumination, elevation, opacity, filters and surface appearance as potential effect channels, not a mandatory inventory.
+- Establish documented precedence for incompatible effects and effects that target the same channel. Do not depend on the order of space-separated values in HTML attributes.
+- Preserve the approved cascade architecture, contextual token resolution, scoped adoption, developer overrides, native interaction semantics and accessibility preferences.
+- Avoid unnecessary combination-specific selectors, redundant properties and implementation complexity.
+
+Exact effect channels, composition functions, precedence rules, supported combinations, internal and public identifiers, and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -507,7 +522,7 @@ The attribute names, interaction contexts, supported effect values, composition 
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) and DAT-003 (composable individual features and interaction contexts).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) and DAT-004 (composable effect channels and predictable conflict resolution).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
