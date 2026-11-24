@@ -712,9 +712,24 @@ Use CSS classes for meaningful reusable layout and styling intentions that compl
 
 Exact class names, supported variants, composition behavior, distribution and implementation remain open. Illustrative class names and markup are not approved public API contracts.
 
+### CLS-002 — Intrinsic layout patterns
+
+Status: approved — Option C, 2026-11-24.
+
+Provide meaningful reusable layout patterns that adapt intrinsically to available space and content rather than requiring a predetermined column grid or a large collection of individual layout utilities.
+
+- Use native CSS Grid and Flexbox, content-aware dimensions and logical properties wherever appropriate.
+- Favor intrinsic responsiveness; use container queries or other interoperable native CSS mechanisms where they provide a concrete benefit.
+- Support composition of adaptive grids, flexible arrangements, vertical flow, wrapping clusters, sidebar layouts, split content areas, centered content and content-width management.
+- Avoid mandatory twelve-column systems, unnecessary breakpoint-specific classes and imposed structural wrappers.
+- Preserve meaningful spacing relationships, contextual density, accessible reflow, native HTML semantics, low specificity and unrestricted developer customization.
+- Keep layout classes independent of palette, geometry and effects configuration under the approved class and data attribute responsibility boundaries.
+
+The proposed names grid, flex, stack, cluster, sidebar, split, center and container are illustrative candidates. Exact class identifiers, layout contracts, dimensions, responsive behavior and implementation remain open. Illustrative CSS is not an approved implementation.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) and CLS-001 (intent-oriented reusable classes).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) and CLS-002 (intrinsic layout patterns).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
