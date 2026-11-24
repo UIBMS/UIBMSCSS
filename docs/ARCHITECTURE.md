@@ -58,6 +58,10 @@ Review one decision at a time. Record the selected option, rationale, implicatio
 
 Candidate dimensions (expressed using the approved prefix): `data-ui-palette`, `data-ui-theme`, `data-ui-style`, `data-ui-corners`, `data-ui-decoration`, `data-ui-density`, `data-ui-typography`, `data-ui-motion`. The prefix is approved; the individual attributes and supported values remain illustrative. In particular, the proposed `data-ui-palette` selects an entire coordinated palette, not an individual CSS color. Its inclusion in the public API remains open.
 
+### DATA-003 / DATA-004 — Foreground and background contrast (open discussion)
+
+The user raised automatic text color adaptation on dark and light backgrounds on 2026-11-24. Consider both inherited light/dark design contexts and local surfaces that differ from the surrounding context. A local background change must not require changing the entire section's design theme. Candidate architecture: paired semantic foreground/background tokens for known surfaces and progressive enhancement with native `contrast-color()` for explicitly configured solid backgrounds, with a readable fallback and developer overrides. Native CSS does not automatically derive foregrounds from arbitrary rendered backgrounds, images, gradients or translucent compositions. Links, muted text, icons, focus states and other contrast-sensitive roles also require consideration. Evaluate compatibility and accessibility during the color-system decisions. No new attribute, implementation, color token names or inheritance option is approved by this note.
+
 ## Remaining foundation topics
 
 After the data-attribute decisions, review the reset, semantic element defaults, color architecture and accessible color roles, typography, measurement and spacing, layout and responsiveness, surfaces, interaction, motion, accessibility, internationalization, CSS organization, modularity and integrations. The earlier color architecture choice (CSS-001: predefined palette vs semantic roles vs hybrid vs completely native) has not yet been approved.
