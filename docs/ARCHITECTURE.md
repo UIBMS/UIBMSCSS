@@ -275,12 +275,27 @@ Use natural, concise and descriptive identifiers that follow established native 
 
 The examples used in the decision discussion illustrate the naming grammar only. Exact public class, attribute, token and layer identifiers and supported values remain open.
 
+### TOK-001 — Organic, relationship-based token architecture
+
+Status: approved — Option C, 2026-11-24.
+
+Design a flexible network of meaningful design values and relationships rather than requiring a fixed primitive, semantic and component hierarchy.
+
+- Create independent tokens where independent control provides value, and derived tokens where a meaningful relationship exists.
+- Introduce component-specific tokens only when independent customization justifies them.
+- Use native CSS custom properties, mathematics and interoperable color functions where appropriate.
+- Avoid redundant aliases, unnecessary intermediate tokens and mechanical tokenization of CSS declarations.
+- Support contextual overrides and preserve native CSS cascade and inheritance. Dependent values must resolve in the intended context; inherited custom properties do not automatically recompute their variable references in a descendant context.
+- Evaluate derived colors and other configurable values against applicable AAA accessibility requirements for framework-provided defaults and supported presets.
+
+The token inventory, exact identifiers, values, relationships, computation strategies, inheritance boundaries and registration rules remain open. Illustrative CSS is not an approved implementation.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Meaningful token architecture.
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
