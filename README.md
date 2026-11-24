@@ -17,12 +17,12 @@ The framework should be different because it makes development easier and produc
 
 ## Development status
 
-The native global development source implements the first five checkpoints: foundational tokens (IMP-001), native HTML styling (IMP-002), 13 reusable classes (IMP-003), independent configuration profiles (IMP-004), and signature materials, interactions and scroll effects (IMP-005), through [src/uibms.css](src/uibms.css). Seven alternative palettes and three alternative motion profiles remain independently loadable source stylesheets.
+The six initial implementation checkpoints have produced a development release candidate: foundational tokens, native HTML styling, 13 reusable classes, independent configuration profiles, signature effects and generated global/scoped distributions.
 
-Open the [native HTML showcase](examples/native-html.html), [reusable classes showcase](examples/classes.html), [configuration showcase](examples/profiles.html), or [signature experience showcase](examples/effects.html) from a local checkout.
+Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). The standard minified file is 26,604 bytes (4,901 gzip bytes). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
 
-IMP-005 passed 64 targeted Chromium checks against the embedded development source. Earlier checkpoints have their own documented verification results; their full regression suite was not rerun during this checkpoint. Materials are CSS optical approximations, not physical refraction; advanced optical rendering, true squircles and custom scrolling physics remain future research or compatibility work.
+The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation, licensing and version approval remain release gates. No public release or full WCAG certification is claimed.
 
-Next checkpoint: IMP-006 — production distributions and quality verification. Cross-engine, complete accessibility, regression, scoped adoption and release testing remain outstanding.
+Explore the [native HTML](examples/native-html.html), [reusable classes](examples/classes.html), [configuration](examples/profiles.html), [signature experience](examples/effects.html) and [scoped adoption](examples/scoped.html) showcases from a local checkout.
 
 See [Architecture and foundational principles](docs/ARCHITECTURE.md).
