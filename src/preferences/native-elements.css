@@ -1,0 +1,31 @@
+@layer preferences {
+
+    @media (forced-colors: active) {
+        :where(:focus-visible) {
+            outline-color: Highlight;
+        }
+
+        :where(:target:not(:focus-visible)) {
+            outline-color: Highlight;
+        }
+
+        :where(button, input:is([type="button"], [type="submit"], [type="reset"])),
+        :where(input[type="file"])::file-selector-button {
+            border-color: ButtonText;
+        }
+
+        :where(button:is(:disabled, [aria-disabled="true"]),
+            input:is(:disabled, [aria-disabled="true"]), select:is(:disabled, [aria-disabled="true"]),
+            textarea:is(:disabled, [aria-disabled="true"])),
+        :where(input[type="file"]:disabled)::file-selector-button {
+            color: GrayText;
+            border-color: GrayText;
+        }
+
+        :where(dialog, [popover]) {
+            box-shadow: none;
+            border-color: CanvasText;
+        }
+    }
+
+}
