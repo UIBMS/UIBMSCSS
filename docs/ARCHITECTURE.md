@@ -515,6 +515,21 @@ Compose individual effects through independent responsibilities and native CSS m
 
 Exact effect channels, composition functions, precedence rules, supported combinations, internal and public identifiers, and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
 
+### DAT-005 — Explicit control over default and individual effects
+
+Status: approved — Option C, 2026-11-24.
+
+Allow developers to retain, replace, extend, restore or disable optional default effects for each individual interaction context.
+
+- Omitting an individual feature attribute retains the default behavior supplied by the applicable contextual effects profile.
+- Explicit recognized effect requests replace the optional default effects for that interaction context unless the developer explicitly requests extension of the default behavior.
+- Provide a means to retain or restore the applicable default effects, combine them with compatible explicit effects, or disable optional effects for the selected context.
+- Keep other interaction contexts unaffected and preserve the independent contextual profile configuration and composition rules established in DAT-001 through DAT-004.
+- Preserve essential focus indicators, accessibility feedback, native interaction semantics and environmental preferences even when optional effects are disabled.
+- Maintain ordinary CSS developer customization and avoid requiring additional CSS merely to select the supported default, replacement, extension or disabling behaviors.
+
+The illustrative individual attribute values default and none, and effect names such as glow, are not finalized public API identifiers. Exact syntax, handling of invalid or contradictory combinations, precedence and implementation remain open.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -522,7 +537,7 @@ Exact effect channels, composition functions, precedence rules, supported combin
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) and DAT-004 (composable effect channels and predictable conflict resolution).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) and DAT-005 (explicit control over default and individual effects).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
