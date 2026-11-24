@@ -73,9 +73,22 @@ UIBMS CSS follows a native HTML-first approach with optional scoped adoption.
 
 The exact default element coverage, scoping interface, selector architecture, inheritance boundaries, reset behavior and delivery mechanism remain open. Scoped adoption must be tested for leakage and interaction with existing styles. This approval establishes the architectural direction, not a particular implementation.
 
+### ARC-002 — Scope of default HTML styling
+
+Status: approved — Option C, 2026-11-24.
+
+UIBMS CSS provides comprehensive, context-aware default styling for relevant visual native HTML elements, preserving native semantics and functionality.
+
+- Cover typography, links, buttons, form controls, tables, lists, basic document structure, dialogs, popovers, details and summaries, progress bars and meters, figures and captions, code blocks and quotations, fieldsets and legends, and media elements.
+- Adapt elements meaningfully to their surrounding design context, interaction states, inherited settings and available space. Examples include buttons adapting to theme, density and effects; tables adapting to available space; dialogs adapting dimensions and effects; images respecting available content dimensions; and preformatted content handling overflow appropriately.
+- Preserve predictable, minimal and overridable behavior. Do not automatically assign application-specific layout roles to structural or semantic elements (for example, do not turn every section into a card or every aside into a sidebar).
+- Apply the same principles in global and scoped adoption, as established in ARC-001.
+
+Exact element coverage, contextual adaptation rules, tokens, selectors and implementation details remain open. Illustrative behaviors are design targets rather than approved implementation contracts.
+
 ## Open architectural decisions
 
-1. Framework responsibilities and detailed default styling scope, following approved ARC-001 (native HTML-first with optional scoped adoption).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption) and ARC-002 (comprehensive, context-aware native HTML styling).
 2. CSS architecture, layering, delivery and extension mechanisms.
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
