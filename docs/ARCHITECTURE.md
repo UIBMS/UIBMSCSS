@@ -893,9 +893,25 @@ Use the following unprefixed, top-level native CSS cascade layer identifiers in 
 
 The five layer identifiers and the `data-uibms` marker are approved. Exact scoping implementation, handling of document-wide definitions, CSS generation tooling and implementation verification remain open.
 
+### ARC-014 — Minimal development tooling and deferred distribution automation
+
+Status: approved — revised approach, 2026-11-24.
+
+Prioritize development of the actual native CSS framework rather than building a CSS build ecosystem. A custom build engine or elaborate build pipeline is not required.
+
+- Author the framework directly in native CSS, without mandatory preprocessors, transpilation or proprietary styling syntax.
+- Use native CSS imports and the approved cascade-layer architecture during development where appropriate.
+- Do not introduce unnecessary development dependencies or a custom build engine.
+- Introduce simple distribution assembly, minification and scoped generation automation only when a concrete need arises. Use established syntax-aware processing if needed to preserve CSS semantics, rather than implementing a general-purpose CSS processor.
+- Introduce verification tooling when justified by actual testing and accessibility requirements.
+- Preserve the distribution commitments under ARC-005, ARC-010 and ARC-012, including equivalent global, scoped and minified variants from one maintained source and independently loadable extensions. Deferral of tooling does not remove these commitments.
+- Production use remains independent of JavaScript, consumer-side build tooling and external runtime dependencies.
+
+The simplified approach is approved in place of the earlier, unapproved build-engine alternatives. Exact release automation, commands, dependencies, scoped generation technique and verification tooling remain open until needed.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) and ARC-013 (natural cascade layer identifiers and scoped adoption marker).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
