@@ -206,10 +206,24 @@ Use a dedicated, unified configuration cascade layer with higher priority than t
 
 The exact layer identifier, token and attribute names, supported values, inheritance boundaries, configuration precedence rules and implementation remain open. Illustrative CSS is not an approved implementation.
 
+### LYR-004 — Unified features layer
+
+Status: approved — Option B, 2026-11-24.
+
+Use a dedicated, unified features cascade layer with higher priority than the configuration layer approved in LYR-003.
+
+- Handle explicitly requested reusable layout and styling functionality through CSS classes, and individual visual effects through meaningful data attributes, preserving the responsibility separation approved in ARC-003.
+- Keep default element styling and default interaction effects in the defaults layer, contextual design settings in the configuration layer, and browser normalization in the reset layer.
+- Allow both default and optional distributions to contribute to the features layer. Distribution packaging and cascade priority remain independent architectural concepts.
+- Introduce nested feature layers only where a demonstrated precedence problem justifies them.
+- Preserve low specificity, contextual configuration, scoped adoption, native CSS customization, minimalism and applicable AAA accessibility defaults.
+
+The exact layer identifier, feature catalog, class and attribute names, selectors, declarations, composition rules and packaging remain open. This approval does not authorize a particular component library or utility catalog; illustrative code is not an approved implementation.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) and LYR-003 (unified configuration layer; remaining layers open).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) and LYR-004 (unified features layer; remaining layers open).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
