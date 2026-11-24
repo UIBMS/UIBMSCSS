@@ -15,6 +15,7 @@
 @import url("profiles/density.css");
 @import url("profiles/shape.css");
 @import url("profiles/typography.css");
+@import url("profiles/effects.css");
 
 @import url("elements/document.css");
 @import url("elements/typography.css");
@@ -34,4 +35,11 @@
 @import url("styles/text.css");
 @import url("styles/accessibility.css");
 
+@import url("effects/channels.css");
+@import url("effects/materials.css");
+@import url("effects/interactions.css");
+@import url("effects/lifecycle.css");
+@import url("effects/scroll.css");
+
 @import url("preferences/native-elements.css");
+@import url("preferences/effects.css");
