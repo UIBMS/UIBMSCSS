@@ -875,9 +875,27 @@ Approved extension directories are `dist/extensions/palettes/`, `dist/extensions
 
 The eight distribution filenames and extension directory structure are approved. Exact extension filenames, scope marker, generation tooling, dependency resolution, compatibility checks and implementation remain open. No production distribution files are created by this documentation decision.
 
+### ARC-013 — Natural cascade layer identifiers and scoped adoption marker
+
+Status: approved — Option A, 2026-11-24.
+
+Use the following unprefixed, top-level native CSS cascade layer identifiers in ascending order of normal declaration priority:
+
+```css
+@layer reset, defaults, configuration, features, preferences;
+```
+
+- Preserve the responsibilities and precedence established in LYR-001 through LYR-005. No enclosing framework layer or brand prefix is required.
+- Generate distributions and extensions with consistent layer ordering. Respect native cascade behavior, including the reversal of layer precedence for important declarations.
+- Use the presence of the HTML attribute `data-uibms` as the scoped adoption marker. Its responsibility is to identify an adoption area, not to select a design configuration or effect.
+- Global adoption remains classless and does not require this marker. Scoped distributions and their corresponding extensions must honor the selected adoption areas.
+- Preserve the natural naming strategy approved in ARC-008 and ARC-009, low specificity, developer overrides and the scope limitations established in ARC-010.
+
+The five layer identifiers and the `data-uibms` marker are approved. Exact scoping implementation, handling of document-wide definitions, CSS generation tooling and implementation verification remain open.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) and ARC-012 (standard and comprehensive distributions with optional extensions).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) and ARC-013 (natural cascade layer identifiers and scoped adoption marker).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
