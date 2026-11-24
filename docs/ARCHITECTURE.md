@@ -176,10 +176,25 @@ Provide a dedicated, minimal UIBMS CSS reset layer using modern native CSS.
 
 The exact layer identifier, selectors, declarations and scoped implementation remain open. Illustrative reset code is not an approved implementation.
 
+### LYR-002 — Unified defaults layer
+
+Status: approved — Option B, 2026-11-24.
+
+Use a unified cascade layer for default design tokens and native HTML styling, with separate source files where useful. Do not introduce separate token, element or interaction sublayers without a demonstrated precedence requirement.
+
+- Provide default design tokens, native element appearance, typography, colors, native interaction states and the original UIBMS visual identity.
+- Give defaults higher cascade priority than the minimal reset approved in LYR-001.
+- Keep browser normalization outside the defaults layer.
+- Keep alternative palettes and profiles, and explicitly requested layout functionality, outside the defaults layer's responsibility; their precise cascade placement remains open.
+- Preserve low specificity, native CSS customization, contextual behavior, scoped adoption, meaningful tokenization and applicable AAA accessibility defaults.
+- Introduce nested layers only if a genuine cascade-priority problem subsequently justifies them.
+
+The exact layer identifier, source file organization, token names, selectors and declarations remain open. Illustrative CSS is not an approved implementation.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) and LYR-001 (minimal native reset layer; remaining layers open).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) and LYR-002 (unified defaults layer; remaining layers open).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
