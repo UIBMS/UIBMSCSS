@@ -1011,6 +1011,20 @@ Develop a distinctive, organic UIBMS corner geometry without copying Apple's vis
 
 Consistency review: this refinement preserves P-001 interoperability, P-002 minimalism, P-003 meaningful tokenization, P-004 accessibility, ARC-003 responsibility separation, TOK-002 context-local token resolution, TOK-010 geometry and DAT-011 profile independence. It does not change the existing token values, introduce an additional profile, or authorize unsupported CSS as part of the required baseline. Actual rounded and continuous-corner rendering must be verified in the relevant browser tests. IMP-002 is still a proposed implementation checkpoint; no element styling or profile files are created by this approval.
 
+### Future exploration — Material and optical design language (IMP-005)
+
+Status: direction agreed for later exploration, 2026-11-24. Deferred until the visual effects and animations checkpoint. Not an implementation approval.
+
+Explore a distinctive UIBMS material and optical design language integrating corner geometry, light, surface depth, reflections, translucency and motion. Glass should be understood as a material appearance, not merely a blurred backdrop. Investigate solid, frosted, optical-inspired glass, liquid, metallic and matte appearances as candidate concepts, not an approved profile catalog.
+
+- Start with lightweight interoperable native CSS techniques, such as backdrop filtering, translucency, gradients, edge illumination and shadows, subject to the established accessibility, performance and geometry requirements.
+- Distinguish visual approximations from optical simulation. Evaluate refraction, dispersion, curved meniscus geometry, Fresnel reflections and caustics as possible advanced techniques; do not assume CSS blur provides physical refraction.
+- Consider higher-fidelity optical rendering only as an optional extension if its technical feasibility, rendering cost, browser compatibility and actual backdrop access are established. Do not introduce mandatory JavaScript, SVG displacement, WebGL or WebGPU dependencies.
+- Evaluate how materials relate to the existing palette, geometry and effects dimensions. Consider the existing individual effects interface before proposing a dedicated contextual material attribute; neither a new attribute nor specific values have been approved.
+- Preserve readable contrast over changing backdrops, visible focus, reduced-motion and forced-color adaptations, native semantics, and usable fallback surfaces. Respect GEO-001 and the approved cross-browser baseline.
+
+This direction is recorded for future design work and does not change IMP-001, GEO-001 or the proposed IMP-002 implementation. No production files, material tokens, public API additions, rendering technology, numerical optical parameters or default material behavior are authorized by this note.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
