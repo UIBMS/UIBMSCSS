@@ -30,15 +30,17 @@ At the user's request, challenge each of the seven conceptual layers before fina
 
 | ID | Candidate layer | Status |
 | --- | --- | --- |
-| LYR-001 | Native HTML & CSS | Current discussion |
-| LYR-002 | CSS reset | Pending |
+| LYR-001 | Native HTML & CSS | Approved — Option B; external platform |
+| LYR-002 | CSS reset | Current discussion |
 | LYR-003 | Semantic foundation | Pending |
 | LYR-004 | Design foundation | Pending |
 | LYR-005 | Contextual design | Pending |
 | LYR-006 | Presentation patterns | Pending |
 | LYR-007 | Optional extensions | Pending |
 
-**LYR-001 proposal:** Treat native HTML, CSS and browser behavior as the external platform, not a distributed framework layer. Prefer native features; framework abstractions should provide real reusable value rather than duplicate native syntax or behavior. Browser compatibility and fallback policies, reset boundaries, and actual cascade-layer ordering remain open. No approval recorded yet.
+**LYR-001 outcome:** Approved Option B. Native HTML and CSS are the external browser platform, not an internal distributed framework layer. See the approved decision below.
+
+**LYR-002 — CSS reset (open):** Review whether the reset should be absent, minimal and non-destructive, or comprehensive and stripping browser defaults. Proposed direction: a standalone minimal reset/normalization responsibility, separate from semantic styling and visual design. Preserve useful native semantics, behavior and accessibility; avoid universal removal of margins, borders, outlines or control appearance. Evaluate each proposed declaration against a concrete problem and compatibility implications. Exact rules, scoping, distribution and cascade ordering remain open. No LYR-002 option is approved yet.
 
 ### Philosophical decisions (all pending review)
 
@@ -87,6 +89,16 @@ The technical IDs are discussion groupings, not replacements for DATA IDs or the
 Options to evaluate: A — reset and semantic CSS foundation only; B — adaptive semantic foundation and optional contextual design system with reusable presentation patterns; C — comprehensive UI component framework. B is the proposed direction, not approved. A small core should be distinguished from optional extensions, with no assumption that a full component catalogue is part of the initial framework.
 
 ## Approved decisions
+
+### LYR-001 — Native platform and intelligent enhancement
+
+**Status:** Approved (2026-11-24), Option B.
+
+**Decision:** Native HTML, CSS and browser behavior constitute the external platform on which UIBMS CSS operates, not an internal framework layer. Prefer native functionality over custom implementations. Introduce framework abstractions only where they solve recurring problems or deliver meaningful reusable value. Developers retain unrestricted access to native CSS. Enhance browser capabilities rather than replace them.
+
+**Rationale:** Preserve semantic structure, native behavior, accessibility, interoperability and minimalism. Avoid parallel styling languages, unnecessary wrappers, mandatory JavaScript for styling, and duplicating individual CSS properties without added value.
+
+**Boundaries:** This approval establishes the platform boundary and native-first philosophy. It does not approve specific classes, selectors, reset rules, browser support targets, compatibility fallbacks, distribution boundaries or CSS cascade layers. The six remaining candidate framework responsibilities are subject to layer review; retain LYR identifiers for continuity.
 
 ### DATA-001 — Separate design context and reusable presentation
 
@@ -142,8 +154,8 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 
 - Repository: `UIBMS/UIBMSCSS`, default branch `main`.
 - Current milestone: architecture discussion, not implementation.
-- Latest approved decision: DATA-002 (Option E).
+- Latest approved decision: LYR-001 (Option B). Earlier DATA-001 and DATA-002 (Option E) remain approved.
 - Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
-- Next discussion: LYR-001, native platform boundary. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
+- Next discussion: LYR-002, CSS reset. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
