@@ -1,9 +1,9 @@
 # UIBMS CSS — Architecture and foundational principles
 
-Status: foundational direction established; detailed architecture not yet approved.
+Status: foundational direction established; architectural decisions in progress.
 Baseline date: 2026-11-24.
 
-This document records the current, ground-up design direction. Earlier superseded CSS architecture discussions are not an active specification. Only the requirements in the Established principles section are adopted as foundational direction; proposals and open questions do not authorize implementation.
+This document records the current, ground-up design direction. Earlier superseded CSS architecture discussions are not an active specification. The Established principles and Approved architectural decisions sections record adopted direction; proposals and open questions do not authorize implementation.
 
 ## Product purpose
 
@@ -58,9 +58,24 @@ The following ideas were raised during discussion and have not been individually
 
 Additional architectural topics to resolve include semantic HTML-first defaults, responsibility boundaries between classes and data attributes, non-invasive adoption, modular extensibility, intelligent defaults and quality verification.
 
+## Approved architectural decisions
+
+### ARC-001 — Default HTML styling
+
+Status: approved — Option C, 2026-11-24.
+
+UIBMS CSS follows a native HTML-first approach with optional scoped adoption.
+
+- Including the framework normally provides modern, accessible and interactive default styling for standard HTML elements without requiring framework-specific classes or attributes.
+- Classes and data attributes enhance or customize the default experience rather than being prerequisites for basic styling.
+- Existing applications must also be able to adopt UIBMS CSS within selected areas without applying framework styling to the entire document.
+- Preserve ordinary CSS customization and avoid unnecessary duplication between global and scoped adoption.
+
+The exact default element coverage, scoping interface, selector architecture, inheritance boundaries, reset behavior and delivery mechanism remain open. Scoped adoption must be tested for leakage and interaction with existing styles. This approval establishes the architectural direction, not a particular implementation.
+
 ## Open architectural decisions
 
-1. Framework responsibilities and default styling scope, including native HTML behavior and compatibility with existing projects.
+1. Framework responsibilities and detailed default styling scope, following approved ARC-001 (native HTML-first with optional scoped adoption).
 2. CSS architecture, layering, delivery and extension mechanisms.
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
