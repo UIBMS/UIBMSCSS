@@ -1,0 +1,15 @@
+@layer configuration {
+
+    :where([data-theme="light"]) {
+        color-scheme: light;
+    }
+
+    :where([data-theme="dark"]) {
+        color-scheme: dark;
+    }
+
+    :where([data-theme="auto"]) {
+        color-scheme: light dark;
+    }
+
+}
