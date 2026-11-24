@@ -1,0 +1,21 @@
+@layer configuration {
+
+    :where([data-density="default"], [data-density="auto"]) {
+        --space: 1rem;
+    }
+
+    :where([data-density="compact"]) {
+        --space: 0.75rem;
+    }
+
+    :where([data-density="spacious"]) {
+        --space: 1.5rem;
+    }
+
+    @media (pointer: coarse) {
+        :where([data-density="auto"]) {
+            --space: 1.5rem;
+        }
+    }
+
+}
