@@ -1,173 +1,19 @@
-# UIBMS CSS — Architecture and decision register
+# UIBMSCSS — Clean-slate project record
 
-Last updated: 2026-11-24
+Reset authorized by the user on 2026-11-24.
 
-## Project status
+## Current status
 
-Architecture and specification phase. No CSS implementation is authorized by this record. Read this document before continuing in a new development session. The approved decisions below are the current baseline; proposed and open items are not requirements.
+The project is restarting from the ground up. All previous architectural ideas, assumptions, proposals, requirements and approvals are withdrawn as the active specification, including all former LYR, PHI, TECH, DATA and CSS decisions. No previous decision, naming convention, layer, feature, technical approach or roadmap is binding. Do not resume a former decision sequence or infer approval from earlier conversations or repository history.
 
-## Established direction
+## Active decisions
 
-- Native CSS and semantic HTML first. Enhance native capabilities rather than invent a parallel CSS language.
-- Build our own minimal, non-destructive reset. Its exact rules remain open.
-- Minimal by default; avoid unnecessary selectors, duplicated rules and unused features. No imposed numerical size budget or mandatory design conventions.
-- No mandatory JavaScript for the CSS foundation, no required third-party framework, and no technical dependency on WordPress or other UIBMS products.
-- RevaCSS may inform the design; its architecture and code are not automatically adopted.
-- Design presets are optional. Developers retain normal native CSS customization freedom.
-- The framework should support independent use as well as integration with UIBMS Theme, UIBMS Blocks, Gutenberg Animation Studio and UIBMS applications. Third-party CSS and WordPress global styles must be respected.
+None.
 
-## Foundational review — proposed roadmap (2026-11-24)
+## Current direction
 
-The user requested a return to first principles before continuing detailed data-attribute decisions. Review the conceptual layers first, then philosophy and technical foundations. This is a change in discussion order, not a reversal of any approved decision. Existing approvals remain the baseline unless explicitly superseded. No implementation is authorized.
-
-### Proposed identity
-
-UIBMS CSS is a native-first, semantic, context-aware CSS framework providing an intelligent and adaptable design foundation without restricting developers' creative or technical freedom. This wording is a proposal.
-
-### Layer review — current priority (proposed)
-
-At the user's request, challenge each of the seven conceptual layers before finalizing PHI and TECH decisions. For each layer, assess necessity, exclusive responsibility, exclusions, reliance on native functionality, and complexity. Layers may be removed, merged, renamed or reordered; these are not approved modules, file boundaries, or CSS cascade layers.
-
-| ID | Candidate layer | Status |
-| --- | --- | --- |
-| LYR-001 | Native HTML & CSS | Approved — Option B; external platform |
-| LYR-002 | CSS reset | Approved — Option B |
-| LYR-003 | Semantic foundation | Current discussion |
-| LYR-004 | Design foundation | Pending |
-| LYR-005 | Contextual design | Pending |
-| LYR-006 | Presentation patterns | Pending |
-| LYR-007 | Optional extensions | Pending |
-
-**LYR-001 outcome:** Approved Option B. Native HTML and CSS are the external browser platform, not an internal distributed framework layer. See the approved decision below.
-
-**LYR-002 outcome:** Approved Option B. Develop our own independent, minimal, non-destructive reset and normalization layer, separate from semantic styling and visual design. See the approved decision below.
-
-**LYR-003 — Semantic foundation (open):** Challenge whether a separate classless semantic styling layer is necessary and how far it should go. Options: A — no separate semantic styling beyond reset and native browser defaults; B — minimal, adaptive semantic defaults for ordinary HTML, preserving native meaning and behavior, with no imposed component appearance or layout; C — comprehensive classless visual styling of native HTML elements. Option B is proposed, not approved. Scope, element coverage, concrete rules, variable contracts, loading and integration boundaries remain open.
-
-### Philosophical decisions (all pending review)
-
-| ID | Topic | Proposed direction |
-| --- | --- | --- |
-| PHI-001 | Purpose and scope | Simplify web design rather than replace CSS; determine the boundary between foundation, design system and component library. |
-| PHI-002 | Native first | Prefer native browser functionality over unnecessary abstractions. |
-| PHI-003 | Semantic first | Respect HTML semantics and document structure. |
-| PHI-004 | Developer freedom | No mandatory markup, classes or design conventions. |
-| PHI-005 | Minimalism | Add functionality for demonstrated value rather than feature count. |
-| PHI-006 | Intelligent defaults | Handle predictable styling needs automatically. |
-| PHI-007 | Accessibility | Accessible defaults as a fundamental responsibility. |
-| PHI-008 | Adaptability | Separate structure from visual identity. |
-| PHI-009 | Predictability | Clear responsibilities and consistent behavior. |
-| PHI-010 | Independence | No mandatory JavaScript, CMS or external framework dependency. |
-| PHI-011 | Extensibility | Custom palettes, presets and styles. |
-| PHI-012 | Non-interference | Respect existing styles and third-party environments. |
-| PHI-013 | Performance | Avoid unnecessary CSS, processing and duplication by design, without imposed numerical size limits. |
-| PHI-014 | Maintainability | Prefer understandable and maintainable architecture. |
-| PHI-015 | Evolution | Modern CSS, progressive enhancement and an explicit compatibility policy. |
-
-### Technical foundation decisions (proposed, not approved)
-
-| ID | Topic |
-| --- | --- |
-| TECH-001 | Browser compatibility and progressive enhancement |
-| TECH-002 | Reset and normalization |
-| TECH-003 | Native semantic element defaults |
-| TECH-004 | Cascade, selector specificity, scoping and ownership |
-| TECH-005 | Custom properties and design-token architecture |
-| TECH-006 | Color system, semantic roles, schemes and automatic foreground contrast |
-| TECH-007 | Typography |
-| TECH-008 | Native units, sizing and spacing |
-| TECH-009 | Layout, responsiveness and containers |
-| TECH-010 | Surfaces, borders, corners, decorations and elevation |
-| TECH-011 | Design contexts, presets, inheritance and data attributes (resume DATA register) |
-| TECH-012 | Interaction, state, forms and motion |
-| TECH-013 | Accessibility and internationalization |
-| TECH-014 | Modularity, interoperability, delivery and build tooling |
-| TECH-015 | Testing, documentation, API stability and versioning |
-
-The technical IDs are discussion groupings, not replacements for DATA IDs or the previously proposed CSS-001 color architecture choice. Resolve overlapping questions once and cross-reference their eventual approved decisions. Technical decisions may be reordered where prerequisites require it.
-
-### PHI-001 — paused until layer review
-
-Options to evaluate: A — reset and semantic CSS foundation only; B — adaptive semantic foundation and optional contextual design system with reusable presentation patterns; C — comprehensive UI component framework. B is the proposed direction, not approved. A small core should be distinguished from optional extensions, with no assumption that a full component catalogue is part of the initial framework.
-
-## Approved decisions
-
-### LYR-001 — Native platform and intelligent enhancement
-
-**Status:** Approved (2026-11-24), Option B.
-
-**Decision:** Native HTML, CSS and browser behavior constitute the external platform on which UIBMS CSS operates, not an internal framework layer. Prefer native functionality over custom implementations. Introduce framework abstractions only where they solve recurring problems or deliver meaningful reusable value. Developers retain unrestricted access to native CSS. Enhance browser capabilities rather than replace them.
-
-**Rationale:** Preserve semantic structure, native behavior, accessibility, interoperability and minimalism. Avoid parallel styling languages, unnecessary wrappers, mandatory JavaScript for styling, and duplicating individual CSS properties without added value.
-
-**Boundaries:** This approval establishes the platform boundary and native-first philosophy. It does not approve specific classes, selectors, reset rules, browser support targets, compatibility fallbacks, distribution boundaries or CSS cascade layers. The six remaining candidate framework responsibilities are subject to layer review; retain LYR identifiers for continuity.
-
-### LYR-002 — Minimal, non-destructive CSS reset
-
-**Status:** Approved (2026-11-24), Option B.
-
-**Decision:** Develop our own independent, minimal reset/normalization layer. Address genuine browser inconsistencies and foundational styling problems without unnecessarily removing useful native presentation, behavior or accessibility. Every reset rule should have a meaningful technical justification. The reset must be independent of palettes, themes, design contexts, design tokens, presentation classes and component styling. It should be usable independently of the rest of UIBMS CSS, and integrations that already provide a suitable reset should not be forced to load it.
-
-**Rationale:** Reset only what needs resetting; preserve everything that already works correctly. Avoid stripping native styles merely to rebuild them in another layer. Preserve useful focus indicators, form control behavior, heading hierarchy, list markers, dialogs, popovers, browser zoom, selection and native accessibility preferences. Avoid indiscriminate removal of margins, padding, borders, outlines or control appearance.
-
-**Boundaries:** This is an architectural approval, not approval of any individual selector or declaration, including box sizing, body margins, form font inheritance or media sizing. Exact rules, compatibility requirements, cascade ordering, scoping and distribution mechanisms remain open for technical review. Typography, visual colors, design spacing, responsive layout, components, presets and animations are outside the reset's exclusive responsibility.
-
-### DATA-001 — Separate design context and reusable presentation
-
-**Status:** Approved (2026-11-24).
-
-**Decision:** HTML elements express meaning and structure. Native HTML attributes express native behavior and accessibility. Data attributes may establish a design context, whether document-wide or nested. Classes express reusable presentation and layout patterns. CSS custom properties carry configurable values. Native CSS remains available for direct customization.
-
-**Rationale:** Context and presentation have different responsibilities, rather than merely different scope. A design context can change without rewriting the markup or presentation classes. A nested context may differ from its surrounding document. Avoid duplicating the same styling operation in both a class and a data attribute. Preserve native semantics and avoid custom attributes for individual CSS property values.
-
-**Boundaries:** A global design context affects elements that are designed to consume it, not indiscriminately every element. No mandatory context attributes or classes. The exact attribute names, CSS variable contracts, context inheritance and precedence are not yet approved. Application-specific state and behavior attributes are not automatically part of the CSS framework.
-
-### DATA-002 — Functional attribute prefix
-
-**Status:** Approved (2026-11-24), Option E.
-
-**Decision:** Public UIBMS CSS design-context attributes use the `data-ui-<dimension>` naming convention, for example `data-ui-theme` and `data-ui-palette`. The `ui-` prefix identifies the functional design-context namespace without embedding the UIBMS brand in HTML. Use one canonical convention; do not provide equivalent generic, `data-uibms-*`, or `data-*-ui` aliases.
-
-**Rationale:** Concise, readable markup with related attributes grouped under a common prefix, easier discovery and editor tooling, and reduced collision risk compared with unprefixed generic names.
-
-**Trade-offs:** `ui` is not an exclusive namespace; third-party attributes can still collide. Integration and isolation policies remain open. Namespacing of CSS custom properties and classes is a separate decision. The prefix is reserved by UIBMS CSS for meaningful design contexts, not individual CSS property utilities or arbitrary application state. Specific dimensions, supported values, inheritance and implementation remain subject to subsequent decisions.
-
-## Open decision register — data attributes
-
-Review one decision at a time. Record the selected option, rationale, implications and any superseded decision after explicit approval. Do not implement unapproved proposals. IDs below are a proposed working sequence, not design approvals.
-
-| ID | Topic | Status |
-| --- | --- | --- |
-| DATA-002 | Attribute naming and namespace | Approved — Option E |
-| DATA-003 | Design-context scope and inheritance | Open — paused for foundational review |
-| DATA-004 | Palette selection and color scheme separation | Open |
-| DATA-005 | Complete design presets versus independent dimensions | Open |
-| DATA-006 | Corner geometry | Open |
-| DATA-007 | Surface decoration and effects | Open |
-| DATA-008 | Density and typography context | Open |
-| DATA-009 | Motion preferences and accessibility | Open |
-| DATA-010 | Cascade, variable ownership and override precedence | Open |
-| DATA-011 | Defaults, unknown values and opt-in loading | Open |
-| DATA-012 | Custom extensions, third-party interoperability and compatibility | Open |
-
-Candidate dimensions (expressed using the approved prefix): `data-ui-palette`, `data-ui-theme`, `data-ui-style`, `data-ui-corners`, `data-ui-decoration`, `data-ui-density`, `data-ui-typography`, `data-ui-motion`. The prefix is approved; the individual attributes and supported values remain illustrative. In particular, the proposed `data-ui-palette` selects an entire coordinated palette, not an individual CSS color. Its inclusion in the public API remains open.
-
-### DATA-003 / DATA-004 — Automatic foreground contrast (approved requirement; implementation open)
-
-**Approved requirement (2026-11-24):** Automatic readable foreground adaptation is a default capability of UIBMS CSS for framework-managed backgrounds, including inherited light/dark design contexts and local surfaces that differ from their surrounding context. A local background change must not require switching the entire design context. Do not introduce `data-ui-contrast` or any equivalent opt-in data attribute for this capability. No mandatory class, configuration switch or JavaScript is required to activate it. Developers retain native CSS override freedom.
-
-Candidate implementation: paired semantic foreground/background tokens for known surfaces and progressive enhancement with native `contrast-color()` for explicitly configured solid backgrounds, with readable fallbacks. CSS cannot automatically derive foregrounds from arbitrary rendered backgrounds, images, gradients or translucent compositions; these cases require appropriate authored foreground/background pairs or other explicit design treatment. Links, muted text, icons, focus states and other contrast-sensitive roles also require consideration. Evaluate browser compatibility and accessibility during the color-system decisions. The implementation, token names and inheritance option remain open.
-
-## Remaining foundation topics
-
-After the data-attribute decisions, review the reset, semantic element defaults, color architecture and accessible color roles, typography, measurement and spacing, layout and responsiveness, surfaces, interaction, motion, accessibility, internationalization, CSS organization, modularity and integrations. The earlier color architecture choice (CSS-001: predefined palette vs semantic roles vs hybrid vs completely native) has not yet been approved.
+No architectural philosophy, feature scope, technical architecture or implementation approach has been selected. Establish the project's purpose afresh through discussion with the user. Do not begin implementation or establish a new architecture before the user authorizes it.
 
 ## Handover
 
-- Repository: `UIBMS/UIBMSCSS`, default branch `main`.
-- Current milestone: architecture discussion, not implementation.
-- Latest approved decision: LYR-002 (Option B). Earlier LYR-001 (Option B), DATA-001 and DATA-002 (Option E) remain approved.
-- Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
-- Next discussion: LYR-003, semantic foundation. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
-- Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
-- Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
+Read this record first in every new session. The prior specification remains available only as historical material in Git history, not as a source of active requirements. Preserve the repository identity and existing license. Record only newly agreed decisions here as the project is reconsidered.
