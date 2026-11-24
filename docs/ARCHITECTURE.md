@@ -1188,6 +1188,37 @@ Technical references: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference
 
 Next checkpoint: IMP-006 — production distributions and quality verification.
 
+### IMP-006 — Production distribution candidates and release verification
+
+Status: initial packaging and Chromium release-candidate verification implemented, 2026-11-24. Public release, licensing selection, comprehensive accessibility and cross-engine verification remain pending. The user's instruction to proceed authorized the approved packaging and verification work, not a public release or license selection.
+
+#### Distribution implementation
+
+- Generate all eight filenames approved in ARC-012 from the same native source, with matching global/scoped and readable/minified variants for seven optional palettes and three optional motion profiles (40 extension stylesheets). The standard distribution excludes these ten optional modules. All generated CSS is self-contained, without imports, a consumer build, or a JavaScript runtime.
+- Add tools/build.cjs using PostCSS 8.5.6 and postcss-selector-parser 6.1.2 for native syntax-aware assembly, scope generation and conservative formatting compaction. No transpilation or value optimization is performed. Only two direct development-time dependencies are declared in tools/package.json. Dependency installation/lockfile generation could not be completed against the offline npm registry; locally installed pinned parser versions were used. A clean dependency install and lockfile remain release verification items.
+- Use native @scope for the scoped variants. Outermost data-uibms markers initialize the framework; nested markers inherit. Replace document-root/body selectors with scope-root equivalents. Include the root itself explicitly in scoped selectors so its configuration, reset and layout rules apply, while leaving the host document untouched. Keep the five approved cascade layers, including their existing names. Host cascade-layer collisions, inherited styles and unlayered developer CSS are still possible; selector scoping is not complete isolation. Scoped keyframes use separate uibms-scoped-* internal names but remain document-wide. Unsupported @scope engines receive no scoped selector styling; never silently fall back to global CSS. Scoped progress explicitly tracks document scrolling, without hijacking the host.
+- Resolve the IMP-005 issue in which explicit hover lift could override independent default pressed feedback across layers. Retain profile press while active unless individual active behavior disables/replaces it; explicit press still takes precedence. Test both full and standard variants.
+- Include docs/DISTRIBUTIONS.md, examples/scoped.html, tests/release.py, dist/manifest.json (size, gzip and SHA-256 inventory), and the generated files. Packaging commit 98881f051fc5f26078b543ff953618fed5fd5a00. The 56 changed/new files were transferred after exact Git-blob hash checks; all eight main CSS blobs were fetched again from the committed tree and verified. The prior source snapshot was checked against the corresponding repository modules using whitespace-normalized FNV-1a comparisons. The packager was rerun on this verified local snapshot, reproducing all generated file hashes. Static parser and manifest integrity checks passed for all 48 stylesheets.
+
+| Main distribution | Bytes | Gzip bytes |
+| --- | ---: | ---: |
+| uibms.css | 35003 | 5238 |
+| uibms.min.css | 26604 | 4901 |
+| uibms.full.css | 42518 | 5932 |
+| uibms.full.min.css | 32651 | 5409 |
+| uibms.scoped.css | 44921 | 5410 |
+| uibms.scoped.min.css | 32754 | 5023 |
+| uibms.scoped.full.css | 54696 | 6147 |
+| uibms.scoped.full.min.css | 40246 | 5545 |
+
+#### Verification and release gates
+
+- Chromium 144.0.7559.96 passed 556/556 checks in the new distribution-level suite: all eight principal bundles, all forty extension variants, native control and interaction regressions, nested and explicit default configurations, loaded/unloaded palettes and profiles, layout and surface conflicts, focus-restored truncation and visually hidden content, native validation/disclosure/dialog/popover, explicit and default effect precedence, reduced motion, forced-color material fallback, guarded scroll animations, ordinary CSS overrides, 320/375/768/1280px reflow, RTL, and scoped root/descendant/host isolation. The suite uses actual generated CSS embedded in a browser fixture; navigation to a synthetic test URL was blocked by the environment. The historical 193 + 64 checks were not rerun verbatim; the new suite covers targeted regression areas and does not imply exhaustive coverage.
+- A local synthetic 500-card theme-switch and forced-layout workload produced median times of 12.90ms (standard minified), 13.05ms (full minified), 25.15ms (scoped minified), and 25.85ms (scoped full minified). This is a single local browser workload, not a real-device performance benchmark, and does not establish performance targets or guarantees.
+- Native @scope and scroll timeline interoperability have advanced, but the project's exact supported browser-version policy and actual Firefox/Gecko and Safari/WebKit verification remain open. Browser binary downloads failed because network/DNS access was unavailable. The release harness accepts separate engine runs; no cross-engine pass, CI pass, older-browser compatibility certification or WCAG AAA certification is claimed.
+- Complete assistive-technology and device-level testing, comprehensive accessibility and contrast-state checks, clean tool installation and reproducibility on a fresh checkout, browser version policy, licensing terms and release version approval are gates before public publication. Advanced optics, true squircles, liquid materials and custom input-driven scroll physics remain separately deferred.
+- Consistency review: ARC-005/006/010/012/013/014 and LYR-001 through LYR-005 are implemented in the generated candidate architecture, without new public attributes/classes, forced global styles or runtime dependencies. Preserve P-001 and P-004 by treating unavailable engine/accessibility evidence as a release blocker rather than assuming conformance. Native scope and the two justified development parser dependencies are concrete implementation choices under the approved packaging direction, not new consumer requirements.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
@@ -1197,7 +1228,7 @@ Next checkpoint: IMP-006 — production distributions and quality verification.
 5. Remaining native HTML refinements and interaction-state verification (initial global styling implemented in IMP-002), following approved HTM-001 (comprehensive, context-aware native HTML styling) HTM-002 (semantic and context-aware interaction states) and HTM-003 (progressive native form control customization).
 6. Remaining data attribute and effects refinements (initial configuration and effect APIs implemented in IMP-004 and IMP-005), following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) DAT-009 (natural default palette and optional palette extensions) DAT-010 (original UIBMS effects profile with optional alternatives) DAT-011 (essential density, geometry and typography profiles) and DAT-012 (shared effect library with context-specific applicability).
 7. Remaining visual effects refinement, advanced optical/material and scrolling research, broader environmental adaptation and compatibility verification following IMP-005.
-8. Testing, accessibility verification, compatibility policy and performance measurement.
+8. Remaining release gates: Safari/WebKit and Firefox/Gecko verification, supported browser-version policy, full accessibility and device testing, clean dependency installation, licensing and release version selection. Initial packaging and Chromium verification are documented in IMP-006.
 
 The ordering is a proposed discussion sequence, not an approved implementation plan. Decide architectural questions individually before implementing the corresponding production CSS. Record subsequent approvals explicitly and distinguish them from illustrative examples.
 
