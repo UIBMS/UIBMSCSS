@@ -759,13 +759,27 @@ Establish the following 13 public class names and responsibilities as the initia
 
 The 13 identifiers and their responsibilities are approved. Exact class implementations, dimensions, token contracts, supported combinations, distribution and detailed composition behavior remain open. Illustrative markup is not an approved implementation.
 
+### HTM-001 — Comprehensive, context-aware native HTML styling
+
+Status: approved — Option C, 2026-11-24.
+
+Establish comprehensive native HTML styling according to each element's semantic responsibility, without mandatory classes, data attributes, predefined layouts or structural wrappers. This decision elaborates ARC-001 and ARC-002.
+
+- Cover relevant typography, links, forms, actions, lists, tables, native interactive elements, indicators, technical and editorial content, media and semantic structure.
+- Preserve native element semantics, functionality and browser interaction behavior, including specialized input types, dialogs, popovers and disclosure controls.
+- Apply meaningful foundational design tokens, inherited configuration, context-aware dimensions and appropriate interaction feedback.
+- Do not automatically turn semantic structural elements such as header, footer, main, nav, article, section and aside into particular layouts or component surfaces.
+- Preserve scoped adoption, low specificity, applicable AAA accessibility defaults, user preferences and unrestricted developer customization.
+
+The coverage categories are approved. The exact element and state inventory, visual styles, selectors, browser-specific treatment and implementation remain open. Illustrative previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) and CLS-003 (foundational public class catalog).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
-5. Default native HTML styling and interaction states.
+5. Detailed native HTML styling and interaction states, following approved HTM-001 (comprehensive, context-aware native HTML styling).
 6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) DAT-009 (natural default palette and optional palette extensions) DAT-010 (original UIBMS effects profile with optional alternatives) DAT-011 (essential density, geometry and typography profiles) and DAT-012 (shared effect library with context-specific applicability).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
