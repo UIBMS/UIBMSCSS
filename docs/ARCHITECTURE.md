@@ -58,9 +58,11 @@ Review one decision at a time. Record the selected option, rationale, implicatio
 
 Candidate dimensions (expressed using the approved prefix): `data-ui-palette`, `data-ui-theme`, `data-ui-style`, `data-ui-corners`, `data-ui-decoration`, `data-ui-density`, `data-ui-typography`, `data-ui-motion`. The prefix is approved; the individual attributes and supported values remain illustrative. In particular, the proposed `data-ui-palette` selects an entire coordinated palette, not an individual CSS color. Its inclusion in the public API remains open.
 
-### DATA-003 / DATA-004 — Foreground and background contrast (open discussion)
+### DATA-003 / DATA-004 — Automatic foreground contrast (approved requirement; implementation open)
 
-The user raised automatic text color adaptation on dark and light backgrounds on 2026-11-24. Consider both inherited light/dark design contexts and local surfaces that differ from the surrounding context. A local background change must not require changing the entire section's design theme. Candidate architecture: paired semantic foreground/background tokens for known surfaces and progressive enhancement with native `contrast-color()` for explicitly configured solid backgrounds, with a readable fallback and developer overrides. Native CSS does not automatically derive foregrounds from arbitrary rendered backgrounds, images, gradients or translucent compositions. Links, muted text, icons, focus states and other contrast-sensitive roles also require consideration. Evaluate compatibility and accessibility during the color-system decisions. No new attribute, implementation, color token names or inheritance option is approved by this note.
+**Approved requirement (2026-11-24):** Automatic readable foreground adaptation is a default capability of UIBMS CSS for framework-managed backgrounds, including inherited light/dark design contexts and local surfaces that differ from their surrounding context. A local background change must not require switching the entire design context. Do not introduce `data-ui-contrast` or any equivalent opt-in data attribute for this capability. No mandatory class, configuration switch or JavaScript is required to activate it. Developers retain native CSS override freedom.
+
+Candidate implementation: paired semantic foreground/background tokens for known surfaces and progressive enhancement with native `contrast-color()` for explicitly configured solid backgrounds, with readable fallbacks. CSS cannot automatically derive foregrounds from arbitrary rendered backgrounds, images, gradients or translucent compositions; these cases require appropriate authored foreground/background pairs or other explicit design treatment. Links, muted text, icons, focus states and other contrast-sensitive roles also require consideration. Evaluate browser compatibility and accessibility during the color-system decisions. The implementation, token names and inheritance option remain open.
 
 ## Remaining foundation topics
 
@@ -71,6 +73,7 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 - Repository: `UIBMS/UIBMSCSS`, default branch `main`.
 - Current milestone: architecture discussion, not implementation.
 - Latest approved decision: DATA-002 (Option E).
+- Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
 - Next discussion: DATA-003, design-context scope and inheritance.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
