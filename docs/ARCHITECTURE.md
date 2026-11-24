@@ -379,6 +379,8 @@ Establish a neutral foundational color identity with a distinctive, independentl
 
 The default accent color, exact color values, public token identifiers, configuration mechanism and palette catalog remain open. Illustrative previews are not approved implementations.
 
+Clarification — 2026-11-24: The default framework color identity must remain natural and brand-independent. Do not select Bordeaux or any other corporate branding color merely because it belongs to the UIBMS company identity. Company branding and the CSS framework's visual identity are independent. The exact default colors and accent values remain open. This clarification does not approve the proposed DAT-009 palette catalog or distribution strategy.
+
 ### TOK-008 — Intrinsic and computational typography
 
 Status: approved — Option C, 2026-11-24.
