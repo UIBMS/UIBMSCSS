@@ -984,6 +984,12 @@ References for technical verification: https://developer.mozilla.org/en-US/docs/
 
 Conclusion: no fundamental redesign is required. Several contracts still need implementation-level resolution and verification. Consolidate them within the relevant implementation checkpoints rather than reopening the established architectural decisions.
 
+### Implementation checkpoint review requirement
+
+Status: agreed, 2026-11-24.
+
+Every subsequent implementation checkpoint must include a consistency review against the current approved architecture and prior implementations. Identify conflicting responsibilities, precedence and inheritance problems, accessibility regressions, compatibility limitations and unnecessary duplication where relevant. Resolve matters already governed by approved contracts directly; identify unresolved contract changes for explicit approval within the relevant checkpoint. Record material findings, implementation decisions and actual verification results, distinguishing static checks from rendered browser evidence. Continue with consolidated implementation proposals instead of reopening individual architectural decisions unnecessarily.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
