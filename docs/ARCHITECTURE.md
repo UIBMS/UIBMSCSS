@@ -132,10 +132,24 @@ Provide a ready-to-use, lightweight default distribution, independently availabl
 
 Exact source structure, distribution names, extension boundaries, dependency contracts, layer ordering and build tooling are open. Examples of how distributions could be consumed are illustrative, not an approved public API.
 
+### ARC-006 — Source CSS language and build tooling
+
+Status: approved — Option C, 2026-11-24.
+
+Maintain exclusively native CSS source and use automated tooling to generate, validate and minify distributions.
+
+- Author framework styles in native, interoperable CSS, not Sass, Less or a proprietary styling language.
+- Automate distribution assembly, dependency resolution, validation and minification while preserving native CSS semantics and the approved cascade architecture.
+- Build tooling serves maintainers and must not be required by consumers of published CSS distributions.
+- Do not require experimental syntax transformations or browser runtime polyfills for the established native CSS baseline.
+- Generate default, extension and comprehensive distributions from the same maintained source according to ARC-005.
+
+The tooling, package manager, source directory structure, validation rules, build pipeline and output filenames remain undecided. This decision approves the approach, not a specific toolchain.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) and ARC-005 (default distribution with modular extensions and a comprehensive distribution).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) and ARC-006 (native CSS source with automated distribution generation, validation and minification).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
