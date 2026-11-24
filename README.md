@@ -17,10 +17,12 @@ The framework should be different because it makes development easier and produc
 
 ## Development status
 
-The native global development source implements IMP-001 (foundational tokens), IMP-002 (native HTML styling) and IMP-003 (all 13 approved reusable classes) through [src/uibms.css](src/uibms.css). Open the [native HTML showcase](examples/native-html.html) and [reusable classes showcase](examples/classes.html) from a local checkout to evaluate the current appearance and interactions.
+The native global development source implements IMP-001 (foundational tokens), IMP-002 (native HTML styling), IMP-003 (13 reusable classes) and IMP-004 (independent configuration profiles) through [src/uibms.css](src/uibms.css). Seven optional palettes are available as separate source stylesheets in [src/palettes/](src/palettes/).
 
-Chromium testing passed 59 class/showcase checks and all 46 earlier native HTML regression checks using verified source CSS. Cross-engine compatibility, full accessibility verification, scoped and production distributions, alternative configuration profiles and signature effects remain under development.
+Open the [native HTML showcase](examples/native-html.html), [reusable classes showcase](examples/classes.html) or [configuration showcase](examples/profiles.html) from a local checkout.
 
-Next checkpoint: IMP-004 — configuration profiles.
+Chromium testing passed 88 configuration checks and all 105 earlier native HTML and class regression checks using the assembled development source. Cross-engine compatibility, full accessibility verification, signature effects and scoped and production distributions remain under development.
+
+Next checkpoint: IMP-005 — signature visual experience.
 
 See [Architecture and foundational principles](docs/ARCHITECTURE.md).
