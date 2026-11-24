@@ -1,0 +1,7 @@
+@layer defaults {
+
+    :where(:root) {
+        --shadow: 0 0.25rem 1rem light-dark(rgb(36 37 34 / 0.12), rgb(0 0 0 / 0.35));
+    }
+
+}
