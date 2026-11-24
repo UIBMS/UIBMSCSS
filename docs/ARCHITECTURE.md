@@ -1,9 +1,9 @@
 # UIBMS CSS — Architecture and foundational principles
 
-Status: foundational direction established; architectural decisions in progress.
+Status: foundational direction established; initial source implementation in progress.
 Baseline date: 2026-11-24.
 
-This document records the current, ground-up design direction. Earlier superseded CSS architecture discussions are not an active specification. The Established principles and Approved architectural decisions sections record adopted direction; proposals and open questions do not authorize implementation.
+This document records the current, ground-up design direction. Earlier superseded CSS architecture discussions are not an active specification. The Established principles and Approved architectural decisions sections record adopted direction; proposals and open questions do not authorize implementation. Where an earlier decision leaves a detail open and a later explicit approval resolves it, the later approval governs that detail; historical decision text is retained.
 
 ## Product purpose
 
@@ -936,12 +936,60 @@ The starting reset implementation is limited to consistent border-box sizing for
 - The initial source is implemented in `src/reset/reset.css` (commit `6a0da9adc6ba6dca21d18b244269b6dc364be0bc`).
 - Scoped generation, stylesheet assembly and browser/accessibility verification remain to be implemented or performed. This source file alone is not the scoped distribution or a complete framework.
 
+### IMP-001 — Foundational design tokens
+
+Status: approved and initial global source implemented, 2026-11-24.
+
+The user approved the consolidated foundational token proposal. Implement it under TOK-001 through TOK-012, DAT-008, DAT-009 and the approved cascade architecture.
+
+- `src/tokens/colors.css`: 13 coordinated natural color roles (background, surface, surface-subtle, text, text-muted, accent, on-accent, border, focus, success, warning, danger and info) with the approved exact light/dark values. Use ordinary, unregistered custom properties containing the two-color form of light-dark(), with color-scheme: light dark at the global root. Resolve colors in consuming declarations; do not register these tokens as typed colors or cache context-dependent derived values on an ancestor.
+- `src/tokens/typography.css`: system font stacks; font-size 1rem, line-height 1.6, heading-line-height 1.2 and reading-width 65ch.
+- `src/tokens/spacing.css`: space 1rem, with derived relationships calculated where consumed.
+- `src/tokens/geometry.css`: radius 0.5rem, border-width 1px and target-size max(44px, 2.75rem). The latter is a target-size starting value, not a guarantee of accessible hit areas.
+- `src/tokens/depth.css`: a subtle theme-aware shadow. Initial implementation chooses 0 0.25rem 1rem with light-mode rgb(36 37 34 / 0.12) and dark-mode rgb(0 0 0 / 0.35).
+- `src/tokens/motion.css`: motion-duration 180ms, motion-easing cubic-bezier(.2, .7, .3, 1) and motion-distance 0.25rem.
+- `src/profiles/theme.css`: minimal implementation of the previously approved light, dark and auto data-theme values in the configuration layer. Unknown values have no matching rule.
+- `src/uibms.css`: native development entry point, establishing the five approved layers before importing the reset, six token modules and theme selectors. This is not yet a released distribution.
+
+The initial font stacks, shadow expression and development entry point are implementation choices made within the approved proposal. All token declarations remain in the defaults layer; explicit theme selection remains in configuration. No alternative palette, additional profile, default HTML element styling, individual effect implementation or scoped distribution is claimed complete.
+
+Source implementation commits: colors `64c255c2f3d7432c20f17846e885a7eed06a71ca`, typography `5ca26d6b5331a5396b67c4e05ffca986d5ee6838`, spacing `57600fd6fa44e7b995ab22e7d329fe776e7b7801`, geometry `2eb0b5186a1fd7a134703ac69485ad6b1664eeb4`, depth `7adee620163bb44eee07f8d321296525724970b3`, motion `b0306dbad762f20c06858f409335e87b77a99ff8`, theme `766bbef93b96edb15b0003050d33daa82cf0dfa3`, entry point `34ea9789ea49a5975c4d8c9735b93df7a9c1cca0`.
+
+Verification: retrieved all nine source files (including RST-001 reset) from main and matched local validation inputs to their Git blob hashes. Static CSS parsing, import resolution and declared layer-order checks passed. Recalculated contrast from the committed hex values: the minimum across tested text pairs is 7.13:1 in light and 7.87:1 in dark; the minimum across border/focus colors and the three background/surface colors is 3.85:1 in light and 4.62:1 in dark. These are limited pairwise calculations, not full AAA conformance or interaction-state testing. Attempted headless Chromium navigation was blocked by the execution environment; browser behavior, nested theme rendering, forced colors, actual target sizes, scoped adoption and cross-engine compatibility remain unverified. No CI result is claimed.
+
+## Architectural consistency audit — 2026-11-24
+
+Status: reviewed during IMP-001 at the user's request. Findings and implementation guardrails below do not constitute new feature approvals or silently change any approved public behavior. The review covers the established principles and approved architecture through IMP-001.
+
+### Reconciled decisions and historical documentation
+
+- ARC-006 versus ARC-014: automation remains a release requirement for distribution generation and validation, not an immediate requirement to build a dedicated engine. ARC-014 controls timing and complexity.
+- ARC-008/009 versus ARC-013: natural unprefixed public names remain the rule; data-uibms is the explicitly approved adoption marker, not an additional design configuration dimension. Unprefixed cascade layer names also remain approved. Host styles that use those same names may merge into or pre-establish layer ordering, so scoped selectors alone do not guarantee cascade isolation. Document this limitation and test it; do not rename the approved layers without a new decision.
+- ARC-010 versus LYR-001/RST-001: the current reset and token files are global source modules. Generate scoped variants from that source, including reset rules and token initialization at the intended adoption root. Do not allow global reset leakage or unintentionally reset inherited contextual settings at nested scope markers. Document global definitions and external host style interactions.
+- Historical decisions that state particular names or values remain open are snapshots of their original approval date. Subsequent explicit approvals govern those details; earlier illustrative examples do not supersede them.
+
+### Implementation guardrails and unresolved contracts
+
+| Related decisions | Risk or ambiguity | Required treatment |
+| --- | --- | --- |
+| TOK-001/002/006, DAT-001/002/008/009 | Inherited computed color or derived tokens can retain ancestor values across a nested theme or palette boundary. | Keep the two-color tokens unregistered; resolve colors and derived relationships at the consuming element. Native element styling must re-establish inherited text color at recognized theme and palette boundaries, with matching surface treatment where appropriate. Test nested light/dark/auto and independent palette changes. |
+| LYR-003/004/005, DAT-011, TOK-009/012 | Higher layer priority does not beat declarations on a descendant solely by inheritance. Reduced-motion and target-size protections can be undermined by local profiles. | Apply preference adaptations at the actual consuming element or property as required, preserve focus/essential feedback, and verify nested profiles, forced colors and reduced motion. Do not use a blanket root override as proof of accessibility. |
+| DAT-001/003/004/005/007/010 | Effect custom properties can leak to descendants. Blank/unknown words must preserve defaults; recognized words replace defaults unless default is present; individual none wins. Contextual data-effects=none and an explicit individual request have potentially ambiguous precedence. | Initialize element-local channels without activating descendant effects. Use positive recognized-value selectors and explicit channel precedence, not attribute presence or word order. Resolve contextual none versus explicit requests in the effects checkpoint; preserve essential feedback and environmental preferences regardless. |
+| DAT-006/012 and ARC-006 | Generic entrance/exit/scroll attributes do not create lifecycle events or unsupported browser features by themselves. | Limit initial implementations to meaningful, interoperable native CSS triggers and document prerequisites. Any additional runtime or unsupported capability requires a separate decision; do not promise universal exit behavior or hide content when a feature cannot run. |
+| CLS-001/002/003, ARC-003 | grid, flex, stack, cluster, sidebar and split may compete for the same layout properties; center and container may overlap with layout patterns; card and panel need clear differentiation. | Define supported combinations and predictable conflict handling in the class checkpoint; avoid redundant APIs and do not invent an arbitrary cascade precedence as an approved contract. |
+| P-004, ARC-004, TOK-005/009/011, HTM-003 | Pairwise contrast is not full WCAG conformance, density can shrink real hit areas, and shadows, opacity, focus rings, text resizing and interaction states can change the tested result. | Validate final rendered states and actual target dimensions with applicable exceptions; keep accessible defaults and preserve developer overrides. Test focus rings against adjacent colors, not only background tokens. |
+| P-002, ARC-005/012, DAT-009/010/011/012 | Broad feature coverage and optional distributions could encourage CSS duplication or premature APIs. | Keep the standard experience complete but optional additions modular. Share source definitions; do not require all optional extensions for the default distribution. Defer unneeded tooling and additions. |
+
+References for technical verification: https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/color_value/light-dark ; https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Introduction ; https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Cascade/Inheritance ; https://www.w3.org/TR/WCAG22/ ; https://www.w3.org/WAI/WCAG22/Understanding/target-size-enhanced.html .
+
+Conclusion: no fundamental redesign is required. Several contracts still need implementation-level resolution and verification. Consolidate them within the relevant implementation checkpoints rather than reopening the established architectural decisions.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer; initial implementation approved in RST-001) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved; exact identifiers established by ARC-013; implementation in progress).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
+4. Remaining token relationships, context resolution and implementation (initial token inventory and global source approved and implemented in IMP-001), following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Detailed native HTML styling and interaction states, following approved HTM-001 (comprehensive, context-aware native HTML styling) HTM-002 (semantic and context-aware interaction states) and HTM-003 (progressive native form control customization).
 6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) DAT-009 (natural default palette and optional palette extensions) DAT-010 (original UIBMS effects profile with optional alternatives) DAT-011 (essential density, geometry and typography profiles) and DAT-012 (shared effect library with context-specific applicability).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
@@ -957,4 +1005,4 @@ The ordering is a proposed discussion sequence, not an approved implementation p
 - Web Platform Tests: https://wpt.fyi/
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 
-No CSS selector API, token schema, module structure, browser version policy or implementation is approved by this foundational document alone.
+Only explicitly approved public contracts and implementations are authorized. Historical examples and unapproved proposals do not establish additional contracts; browser version policy and unresolved implementation details remain open.
