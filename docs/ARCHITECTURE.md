@@ -1025,6 +1025,21 @@ Explore a distinctive UIBMS material and optical design language integrating cor
 
 This direction is recorded for future design work and does not change IMP-001, GEO-001 or the proposed IMP-002 implementation. No production files, material tokens, public API additions, rendering technology, numerical optical parameters or default material behavior are authorized by this note.
 
+### Future exploration — Signature scrolling experience (IMP-005)
+
+Status: direction agreed for later exploration, 2026-11-24. Deferred until the visual effects and animations checkpoint. Not an implementation approval.
+
+Develop a recognizable UIBMS scrolling experience coordinated with its geometry, material, optical and motion design language. Investigate natural momentum and responsiveness, smooth navigation, theme-aware scrollbars, context-appropriate snapping, sticky transitions, subtle depth and parallax, and material and lighting responses to scroll progress.
+
+- Preserve native wheel, trackpad, touch, keyboard and assistive-technology scrolling by default, including platform-specific momentum, overscroll, nested scroll containers, focus navigation and access to all content. Avoid scroll hijacking and mandatory custom inertia.
+- Distinguish scroll navigation, actual input-driven scrolling physics, scroll-driven visual animation and scroll-container layout. Native CSS scroll-behavior provides browser-defined smooth navigation or programmatic scrolling, not custom physics for direct user scrolling.
+- Investigate native CSS scrollbar styling, scroll snapping, sticky positioning, scroll offsets, and scroll/view timelines where they meet P-001 interoperability requirements. Preserve ordinary scrolling and visible content when enhancements are unavailable. Avoid forcing snap points, sticky behavior, scroll locking, or decorative effects on ordinary documents.
+- Evaluate meaningful use of the already approved data-scroll individual effect interface (DAT-006 and DAT-012). Do not conflate individual scroll-driven effects with the scrolling mechanics of an entire container. A new contextual scrolling attribute, specific values, classes or additional runtime would require separate justification and approval.
+- If custom momentum or physically modeled scrolling is desirable, investigate it as an optional extension with an explicit opt-in and independently usable native CSS foundation. Evaluate interaction latency, performance, accessibility, nested scrolling and native input behavior before selecting any implementation. No mandatory JavaScript, custom scroll engine or external library is approved.
+- Respect reduced-motion preferences, visible scroll affordances, keyboard navigation, focus visibility, content reflow and applicable AAA accessibility requirements. Ensure that any effects and material response remain consistent with GEO-001, the deferred material and optical design exploration, and the approved effect-channel architecture.
+
+No scrolling physics, specific effect catalog, public API additions, defaults, dependencies or source changes are approved by this note. IMP-002 remains the next implementation checkpoint.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
