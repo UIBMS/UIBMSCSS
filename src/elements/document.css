@@ -1,9 +1,13 @@
-@layer defaults {
+@layer defaults.contexts {
 
     :where(:root, [data-theme="light"], [data-theme="dark"], [data-theme="auto"]) {
         color: var(--color-text);
         background-color: var(--color-background);
     }
+
+}
+
+@layer defaults {
 
     :where(body) {
         margin: 0;
