@@ -1,0 +1,12 @@
+@layer defaults {
+
+    :where(:root) {
+        --font-family: system-ui, sans-serif;
+        --font-family-mono: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+        --font-size: 1rem;
+        --line-height: 1.6;
+        --heading-line-height: 1.2;
+        --reading-width: 65ch;
+    }
+
+}
