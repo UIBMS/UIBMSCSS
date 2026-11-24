@@ -1,0 +1,25 @@
+@layer defaults {
+
+    :where(ul, ol) {
+        padding-inline-start: calc(var(--space) * 1.5);
+        margin-block: var(--space);
+    }
+
+    :where(li + li) {
+        margin-block-start: calc(var(--space) * 0.25);
+    }
+
+    :where(dl) {
+        margin-block: var(--space);
+    }
+
+    :where(dt) {
+        font-weight: 600;
+    }
+
+    :where(dd) {
+        margin-inline-start: var(--space);
+        margin-block-end: calc(var(--space) * 0.5);
+    }
+
+}
