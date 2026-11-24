@@ -86,9 +86,26 @@ UIBMS CSS provides comprehensive, context-aware default styling for relevant vis
 
 Exact element coverage, contextual adaptation rules, tokens, selectors and implementation details remain open. Illustrative behaviors are design targets rather than approved implementation contracts.
 
+### ARC-003 — Separation of CSS classes and data attributes
+
+Status: approved — Option C, 2026-11-24.
+
+Maintain strict separation of responsibilities with contextual configuration.
+
+- Native HTML provides document structure and semantics.
+- CSS classes provide reusable styling and layout functionality.
+- HTML data attributes express meaningful configuration, appearance and effects, including design contexts that apply to descendant elements where appropriate.
+- Design tokens expose meaningful customizable design values.
+- Native pseudo-classes express interaction states; native CSS mechanisms handle environmental conditions.
+- Custom CSS remains unrestricted for individual developer requirements.
+- Avoid offering the same framework functionality through interchangeable classes and data attributes. Keep their public responsibilities clear and predictable.
+- Support nested design contexts and localized overrides through native cascade and inheritance where appropriate, without requiring repeated attributes on every descendant.
+
+The precise class and attribute names, accepted values, responsibility boundaries, inheritance rules, precedence and scoping implementation remain open. Illustrative markup is not a finalized API.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption) and ARC-002 (comprehensive, context-aware native HTML styling).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layering, delivery and extension mechanisms.
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
