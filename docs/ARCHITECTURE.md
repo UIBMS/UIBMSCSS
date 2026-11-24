@@ -727,9 +727,41 @@ Provide meaningful reusable layout patterns that adapt intrinsically to availabl
 
 The proposed names grid, flex, stack, cluster, sidebar, split, center and container are illustrative candidates. Exact class identifiers, layout contracts, dimensions, responsive behavior and implementation remain open. Illustrative CSS is not an approved implementation.
 
+### CLS-003 — Foundational public class catalog
+
+Status: approved — Option C, 2026-11-24.
+
+Establish the following 13 public class names and responsibilities as the initial UIBMS CSS class catalog.
+
+| Layout class | Responsibility |
+| --- | --- |
+| `grid` | Adaptive grid arrangement |
+| `flex` | Flexible content arrangement |
+| `stack` | Vertical content flow |
+| `cluster` | Wrapping content arrangement |
+| `sidebar` | Adaptive sidebar layout |
+| `split` | Coordinated content areas |
+| `center` | Content centering |
+| `container` | Content width management |
+
+| Styling class | Responsibility |
+| --- | --- |
+| `card` | Self-contained content surface |
+| `panel` | Structured interface surface |
+| `lead` | Introductory text |
+| `truncate` | Single-line text truncation |
+| `visually-hidden` | Visually hidden but assistive-technology-accessible content |
+
+- Preserve the intent-oriented, intrinsic layout architecture approved in CLS-001 and CLS-002, including optional classes, native HTML defaults, low specificity and unrestricted native CSS customization.
+- Keep classes distinct from contextual configuration and individual effects attributes.
+- Introduce additional classes only where genuine reusable functionality justifies them, without a speculative utility inventory or imposed component markup.
+- Verify accessibility, including reflow, access to meaningful truncated content and appropriate treatment of focusable visually hidden elements.
+
+The 13 identifiers and their responsibilities are approved. Exact class implementations, dimensions, token contracts, supported combinations, distribution and detailed composition behavior remain open. Illustrative markup is not an approved implementation.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) and CLS-002 (intrinsic layout patterns).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) and CLS-003 (foundational public class catalog).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
