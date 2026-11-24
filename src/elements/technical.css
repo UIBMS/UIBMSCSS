@@ -1,0 +1,39 @@
+@layer defaults {
+
+    :where(code, pre, kbd, samp) {
+        font-family: var(--font-family-mono);
+        font-size: 0.9375em;
+    }
+
+    :where(code, kbd) {
+        background-color: var(--color-surface-subtle);
+        color: var(--color-text);
+        padding: 0.125em 0.25em;
+        border-radius: calc(var(--radius) * 0.5);
+    }
+
+    :where(kbd) {
+        border: var(--border-width) solid var(--color-border);
+    }
+
+    :where(pre) {
+        background-color: var(--color-surface-subtle);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: var(--radius);
+        padding: var(--space);
+        margin-block: var(--space);
+        max-inline-size: 100%;
+        overflow: auto;
+        white-space: pre;
+        overflow-wrap: normal;
+    }
+
+    :where(pre code, pre samp) {
+        font-size: inherit;
+        background-color: transparent;
+        color: inherit;
+        padding: 0;
+    }
+
+}
