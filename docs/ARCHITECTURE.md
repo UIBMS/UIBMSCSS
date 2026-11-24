@@ -817,9 +817,40 @@ Provide global and explicitly scoped adoption modes generated from the same main
 
 Exact distribution filenames, scope marker, selectors, treatment of document-wide definitions, integration behavior and verification remain open. Illustrative filenames and markup are not approved implementation contracts.
 
+### ARC-011 — Responsibility-based modular source structure
+
+Status: approved — Option C, 2026-11-24.
+
+Organize maintained native CSS source files by functional responsibility, independently of cascade-layer priority and generated distribution boundaries.
+
+| Approved directory | Responsibility |
+| --- | --- |
+| `src/reset/` | Native CSS reset |
+| `src/tokens/` | Foundational design properties |
+| `src/elements/` | Native HTML styling |
+| `src/layouts/` | Reusable layout classes |
+| `src/styles/` | Reusable styling classes |
+| `src/palettes/` | Color identities |
+| `src/profiles/` | Contextual design configurations |
+| `src/effects/` | Shared visual effects library |
+| `src/preferences/` | Environmental and accessibility adaptations |
+| `dist/` | Generated distributions |
+| `tests/` | Automated verification |
+| `examples/` | Demonstrations |
+| `docs/` | Architecture and developer documentation |
+| `tools/` | Build and validation tooling |
+
+- Maintain repository-level README.md and a LICENSE file; this directory decision does not select licensing terms.
+- Preserve the five-layer cascade architecture approved in ARC-007 and LYR-001 through LYR-005; source directories do not establish cascade priority.
+- Preserve a single maintained native CSS source with generated global, scoped and modular distributions under ARC-005, ARC-006 and ARC-010.
+- Create directories, subdirectories and files only when required. Avoid empty scaffolding, redundant implementations and unnecessary organizational complexity.
+- Preserve discoverability and clear responsibilities for human developers and coding agents.
+
+The directory names and responsibilities are approved. Exact source filenames, internal organization, build tooling, distribution filenames and packaging contracts remain open. No source directories or production CSS are created by this documentation decision.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) and ARC-010 (global by default with optional scoped distribution).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) and ARC-011 (responsibility-based modular source structure).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
