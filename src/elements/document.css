@@ -1,0 +1,33 @@
+@layer defaults {
+
+    :where(:root, [data-theme="light"], [data-theme="dark"], [data-theme="auto"]) {
+        color: var(--color-text);
+        background-color: var(--color-background);
+    }
+
+    :where(body) {
+        margin: 0;
+        font-family: var(--font-family);
+        font-size: var(--font-size);
+        line-height: var(--line-height);
+        overflow-wrap: anywhere;
+    }
+
+    :where(:focus-visible) {
+        outline: 2px solid var(--color-focus);
+        outline-offset: 3px;
+    }
+
+    :where(:target:not(:focus-visible)) {
+        outline: 2px dashed var(--color-focus);
+        outline-offset: 3px;
+        scroll-margin-block-start: var(--space);
+    }
+
+    :where(hr) {
+        border: 0;
+        border-block-start: var(--border-width) solid var(--color-border);
+        margin-block: var(--space);
+    }
+
+}
