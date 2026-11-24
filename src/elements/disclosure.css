@@ -1,0 +1,29 @@
+@layer defaults {
+
+    :where(details) {
+        border: var(--border-width) solid var(--color-border);
+        border-radius: var(--radius);
+        padding: calc(var(--space) * 0.75);
+        margin-block: var(--space);
+    }
+
+    :where(summary) {
+        cursor: pointer;
+        min-block-size: var(--target-size);
+        padding-block: calc(var(--space) * 0.5);
+        font-weight: 600;
+    }
+
+    @media (hover: hover) {
+        :where(summary:hover) {
+            text-decoration: underline;
+            text-underline-offset: 0.15em;
+        }
+    }
+
+    :where(details[open] > summary) {
+        border-block-end: var(--border-width) solid var(--color-border);
+        margin-block-end: calc(var(--space) * 0.75);
+    }
+
+}
