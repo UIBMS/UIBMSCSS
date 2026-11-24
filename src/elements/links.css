@@ -1,0 +1,26 @@
+@layer defaults {
+
+    :where(a[href]) {
+        color: var(--color-accent);
+        text-decoration: underline;
+        text-decoration-thickness: max(1px, 0.08em);
+        text-underline-offset: 0.15em;
+    }
+
+    @media (hover: hover) {
+        :where(a[href]:not([aria-disabled="true"]):hover) {
+            text-decoration-thickness: max(2px, 0.14em);
+        }
+    }
+
+    :where(a[href]:active) {
+        text-decoration-style: double;
+    }
+
+    :where(a[href][aria-disabled="true"]) {
+        color: var(--color-text-muted);
+        cursor: not-allowed;
+        text-decoration-style: dashed;
+    }
+
+}
