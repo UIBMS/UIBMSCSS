@@ -909,10 +909,37 @@ Prioritize development of the actual native CSS framework rather than building a
 
 The simplified approach is approved in place of the earlier, unapproved build-engine alternatives. Exact release automation, commands, dependencies, scoped generation technique and verification tooling remain open until needed.
 
+### RST-001 — Initial minimal native CSS reset implementation
+
+Status: approved, 2026-11-24.
+
+The starting reset implementation is limited to consistent border-box sizing for elements and their before/after pseudo-elements, and font inheritance for native button, input, select and textarea controls. This implements the minimal reset approach established in LYR-001 using the reset cascade layer approved in ARC-013.
+
+```css
+@layer reset {
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    :where(button, input, select, textarea) {
+        font: inherit;
+    }
+
+}
+```
+
+- Preserve native margins, padding, list markers, focus outlines and form control appearances in the reset. Visual styling belongs in subsequent layers.
+- Add further reset declarations only when a demonstrated technical need justifies them.
+- The initial source is implemented in `src/reset/reset.css` (commit `6a0da9adc6ba6dca21d18b244269b6dc364be0bc`).
+- Scoped generation, stylesheet assembly and browser/accessibility verification remain to be implemented or performed. This source file alone is not the scoped distribution or a complete framework.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer; initial implementation approved in RST-001) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved; exact identifiers established by ARC-013; implementation in progress).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Detailed native HTML styling and interaction states, following approved HTM-001 (comprehensive, context-aware native HTML styling) HTM-002 (semantic and context-aware interaction states) and HTM-003 (progressive native form control customization).
