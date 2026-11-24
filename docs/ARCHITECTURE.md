@@ -247,11 +247,25 @@ The approved responsibility-based layer order, from lowest to highest priority f
 
 Normal unlayered author CSS overrides normal layered framework declarations according to the native CSS cascade. Layer priorities do not supersede inheritance rules; important declarations have reversed layer precedence. Source organization and distribution packaging remain independent of cascade layers. Exact public layer identifiers, declaration order syntax and extension contracts are not yet approved.
 
+### ARC-008 — Natural, unprefixed naming
+
+Status: approved — Option A, 2026-11-24.
+
+Use natural, concise and descriptive unprefixed names as the framework's naming strategy. Prioritize UIBMS CSS's own coherent conventions rather than designing its public interfaces around compatibility with competing CSS frameworks.
+
+- Use meaningful, readable names for CSS classes, data attributes and design tokens without requiring a UIBMS brand prefix.
+- Avoid duplicate prefixed and unprefixed interfaces.
+- Prioritize consistency, discoverability and ease of use for humans and AI coding agents.
+- Do not introduce naming complexity merely to avoid collisions with other CSS frameworks. Document potential conflicts rather than promising automatic compatibility with competing naming systems.
+- Retain native web standards compatibility, approved scoped adoption, ordinary CSS overrides and developer freedom. Independence from competing frameworks does not change these requirements.
+
+Exact identifiers, naming grammar and any technically necessary private implementation identifiers remain open. No particular class, attribute, token or cascade layer identifier is approved by the illustrative naming examples.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
-3. Public naming and interface conventions.
+3. Detailed naming grammar and public interface conventions, following approved ARC-008 (natural, unprefixed naming).
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
