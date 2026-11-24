@@ -10,9 +10,13 @@
         min-block-size: var(--target-size);
         min-inline-size: var(--target-size);
         max-inline-size: 100%;
-        font: inherit;
         font-weight: 600;
         cursor: pointer;
+    }
+
+    :where(input[type="file"])::file-selector-button {
+        font: inherit;
+        font-weight: 600;
     }
 
     @media (hover: hover) {
