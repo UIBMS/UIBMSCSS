@@ -28,14 +28,24 @@ Architecture and specification phase. No CSS implementation is authorized by thi
 
 **Boundaries:** A global design context affects elements that are designed to consume it, not indiscriminately every element. No mandatory context attributes or classes. The exact attribute names, CSS variable contracts, context inheritance and precedence are not yet approved. Application-specific state and behavior attributes are not automatically part of the CSS framework.
 
+### DATA-002 — Functional attribute prefix
+
+**Status:** Approved (2026-11-24), Option E.
+
+**Decision:** Public UIBMS CSS design-context attributes use the `data-ui-<dimension>` naming convention, for example `data-ui-theme` and `data-ui-palette`. The `ui-` prefix identifies the functional design-context namespace without embedding the UIBMS brand in HTML. Use one canonical convention; do not provide equivalent generic, `data-uibms-*`, or `data-*-ui` aliases.
+
+**Rationale:** Concise, readable markup with related attributes grouped under a common prefix, easier discovery and editor tooling, and reduced collision risk compared with unprefixed generic names.
+
+**Trade-offs:** `ui` is not an exclusive namespace; third-party attributes can still collide. Integration and isolation policies remain open. Namespacing of CSS custom properties and classes is a separate decision. The prefix is reserved by UIBMS CSS for meaningful design contexts, not individual CSS property utilities or arbitrary application state. Specific dimensions, supported values, inheritance and implementation remain subject to subsequent decisions.
+
 ## Open decision register — data attributes
 
 Review one decision at a time. Record the selected option, rationale, implications and any superseded decision after explicit approval. Do not implement unapproved proposals. IDs below are a proposed working sequence, not design approvals.
 
 | ID | Topic | Status |
 | --- | --- | --- |
-| DATA-002 | Attribute naming and namespace | Next decision |
-| DATA-003 | Design-context scope and inheritance | Open |
+| DATA-002 | Attribute naming and namespace | Approved — Option E |
+| DATA-003 | Design-context scope and inheritance | Next decision |
 | DATA-004 | Palette selection and color scheme separation | Open |
 | DATA-005 | Complete design presets versus independent dimensions | Open |
 | DATA-006 | Corner geometry | Open |
@@ -46,7 +56,7 @@ Review one decision at a time. Record the selected option, rationale, implicatio
 | DATA-011 | Defaults, unknown values and opt-in loading | Open |
 | DATA-012 | Custom extensions, third-party interoperability and compatibility | Open |
 
-Candidate attributes discussed: `data-palette`, `data-theme`, `data-style`, `data-corners`, `data-decoration`, `data-density`, `data-typography`, `data-motion`. These spellings and supported values are illustrative only. In particular, `data-palette` refers to selecting an entire coordinated palette, not specifying an individual CSS color. Whether it belongs in the public API and how it is named remain open.
+Candidate dimensions (expressed using the approved prefix): `data-ui-palette`, `data-ui-theme`, `data-ui-style`, `data-ui-corners`, `data-ui-decoration`, `data-ui-density`, `data-ui-typography`, `data-ui-motion`. The prefix is approved; the individual attributes and supported values remain illustrative. In particular, the proposed `data-ui-palette` selects an entire coordinated palette, not an individual CSS color. Its inclusion in the public API remains open.
 
 ## Remaining foundation topics
 
@@ -56,7 +66,7 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 
 - Repository: `UIBMS/UIBMSCSS`, default branch `main`.
 - Current milestone: architecture discussion, not implementation.
-- Latest approved decision: DATA-001.
-- Next discussion: DATA-002, attribute naming and namespace.
+- Latest approved decision: DATA-002 (Option E).
+- Next discussion: DATA-003, design-context scope and inheritance.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
