@@ -1,0 +1,30 @@
+/* UIBMS CSS | generated from native source by tools/build.cjs */
+@layer reset, defaults, configuration, features, preferences;
+@layer defaults.contexts;
+@layer configuration {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        :where(:scope,:scope *):where([data-palette="gold"]) {
+            --color-background: light-dark(#fcfaf4, #201d16);
+            --color-surface: light-dark(#ffffff, #29261e);
+            --color-surface-subtle: light-dark(#f3efe3, #353127);
+            --color-accent: light-dark(#694700, #f4d794);
+            --color-on-accent: light-dark(#ffffff, #242522);
+            --color-text: light-dark(#242522, #f4f5f2);
+            --color-text-muted: light-dark(#494b46, #c4c8c0);
+            --color-border: light-dark(#767871, #939a90);
+            --color-focus: light-dark(#234f76, #b9d9f7);
+            --color-success: light-dark(#205433, #b9e1c3);
+            --color-warning: light-dark(#704500, #f5d59b);
+            --color-danger: light-dark(#8f2929, #ffbbbb);
+            --color-info: light-dark(#234f76, #b9d9f7);
+        }
+    }
+}
+@layer defaults.contexts {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        :where(:scope,:scope *):where([data-palette="gold"]) {
+            color: var(--color-text);
+            background-color: var(--color-background);
+        }
+    }
+}

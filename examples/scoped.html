@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UIBMS CSS | Scoped adoption</title>
+  <link rel="stylesheet" href="../dist/uibms.scoped.full.min.css">
+  <style>
+    body { margin: 1.5rem; font-family: Georgia, serif; color: #332d27; background: #f4efe5; }
+    #host-nav { padding-block: 1rem; }
+    #workspace { padding: 1.5rem; }
+  </style>
+</head>
+<body>
+  <header><h1>Existing website</h1><p>These elements use the host site's own appearance.</p><button>Host button</button></header>
+  <nav id="host-nav"><a href="#workspace">Workspace</a></nav>
+  <main id="workspace" data-uibms data-theme="dark" data-palette="ocean" data-density="compact" data-shape="organic" data-effects="fluid" class="panel stack">
+    <h2>UIBMS workspace</h2><p class="lead">Only the marked adoption area receives UIBMS styles.</p>
+    <div class="grid">
+      <article class="card stack"><h3>Projects</h3><button data-hover="lift glow">Continue</button></article>
+      <article class="card stack" data-theme="light"><h3>Local light scheme</h3><p>Same Ocean palette.</p><button>View report</button></article>
+      <article class="card stack" data-uibms><h3>Nested marker</h3><p>Inherits Ocean, compact spacing and the organic radius.</p><button>Continue</button></article>
+    </div>
+    <details><summary>About scoped adoption</summary><p>Host styles can still be inherited or override the layered defaults. No framework runtime is required.</p></details>
+  </main>
+  <footer><p>Host footer. <a href="#">Return to top</a>.</p></footer>
+</body>
+</html>

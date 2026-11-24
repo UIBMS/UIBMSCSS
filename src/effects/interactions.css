@@ -18,6 +18,11 @@
             }
         }
 
+        /* An explicit hover must not suppress the independent profile press. */
+        &:where(button, input:is([type="button"], [type="submit"], [type="reset"])):where(:active[data-hover~="lift"]:not([data-hover~="none"], [data-active~="none"]):is(:not([data-active~="press"]), [data-active~="default"])) {
+            translate: var(--signature-press, 0 0.0625rem);
+        }
+
         &:where([data-active~="press"]:not([data-active~="none"]):active) {
             translate: 0 calc(var(--motion-distance) * 0.5);
         }

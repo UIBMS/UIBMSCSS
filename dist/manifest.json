@@ -1,0 +1,246 @@
+{
+  "coreModules": 36,
+  "optionalModules": 10,
+  "files": {
+    "uibms.css": {
+      "bytes": 35003,
+      "gzip": 5238,
+      "sha256": "14b5e5d1cda232d57323106f5aba8ce7a2cb69f7e31e3878f8349471581e49e6"
+    },
+    "uibms.min.css": {
+      "bytes": 26604,
+      "gzip": 4901,
+      "sha256": "82511b649e3a0ba0891fc9520b29c2797af5f4e31298d36a2f198ff345407330"
+    },
+    "uibms.full.css": {
+      "bytes": 42518,
+      "gzip": 5932,
+      "sha256": "094360346c57e529ef133d7d3fa7025a5db5cb7c2a9b7d3cdf23ede06e4e9cf2"
+    },
+    "uibms.full.min.css": {
+      "bytes": 32651,
+      "gzip": 5409,
+      "sha256": "99ddca4931b11a9c70e8da8eecc8dc54c5e030f889d4b45c82ec2ac4b49edebd"
+    },
+    "uibms.scoped.css": {
+      "bytes": 44921,
+      "gzip": 5410,
+      "sha256": "2c9a75fbdb10a2528bb96c88ae90fc40491c10a02b062333316dbb297bf2658a"
+    },
+    "uibms.scoped.min.css": {
+      "bytes": 32754,
+      "gzip": 5023,
+      "sha256": "fa23161cc739c0d619bb3f1b80017f27e10dbb067e936968de4cd58bf4eac08f"
+    },
+    "uibms.scoped.full.css": {
+      "bytes": 54696,
+      "gzip": 6147,
+      "sha256": "d7dc1e5f13d62cc96d03c539da45797246b8ab01791ff56832365b9ad79c5c84"
+    },
+    "uibms.scoped.full.min.css": {
+      "bytes": 40246,
+      "gzip": 5545,
+      "sha256": "6605d8a911a1aa0401206a0278f765ef31b5c787097d5112724551803aff08b1"
+    },
+    "extensions/palettes/ocean.css": {
+      "bytes": 1098,
+      "gzip": 442,
+      "sha256": "8204c40479be534940000d7c9d41f893d521928e0ac5fd1474dfeadf8dfb77c9"
+    },
+    "extensions/palettes/ocean.min.css": {
+      "bytes": 880,
+      "gzip": 404,
+      "sha256": "3873e81f323890c12eff9caf113653b8c7c0fe4a247c347be31b63ab50b0e226"
+    },
+    "extensions/palettes/ocean.scoped.css": {
+      "bytes": 1366,
+      "gzip": 483,
+      "sha256": "3cd6dcff1f751cd1ab7b0b90da9f2a7e3fb52c08b919e5903d86752896ea4950"
+    },
+    "extensions/palettes/ocean.scoped.min.css": {
+      "bytes": 1050,
+      "gzip": 441,
+      "sha256": "0da49a9c910eb38767206cc24ad329c171e1f67b399bd01fa24ad8155f307544"
+    },
+    "extensions/palettes/gold.css": {
+      "bytes": 1096,
+      "gzip": 438,
+      "sha256": "fb40859a4ae651d24aefb13520dd9d5d5cec6b55be6dbf333b5540c8b637ba1e"
+    },
+    "extensions/palettes/gold.min.css": {
+      "bytes": 878,
+      "gzip": 401,
+      "sha256": "8e79434195448c5af2ceec5095327a6071456c92caa70222e747442c06d35e5e"
+    },
+    "extensions/palettes/gold.scoped.css": {
+      "bytes": 1364,
+      "gzip": 479,
+      "sha256": "a30d9f7043054528ee3e80bc0fc51cebfe73a0bef1f7c193384121ff265a1e4a"
+    },
+    "extensions/palettes/gold.scoped.min.css": {
+      "bytes": 1048,
+      "gzip": 437,
+      "sha256": "80d0c53e935af6f8069a68b048907767c3f2334d1778e0b2334886bf7f18b89f"
+    },
+    "extensions/palettes/forest.css": {
+      "bytes": 1100,
+      "gzip": 441,
+      "sha256": "16f51cfaa5ada3f566000397689cffc17f896897e4fadc727eb78a2df997a94d"
+    },
+    "extensions/palettes/forest.min.css": {
+      "bytes": 882,
+      "gzip": 405,
+      "sha256": "a8183dffbb100a99739903b3ab1628be4671efb78fe8b09858b4fcb4eddb1888"
+    },
+    "extensions/palettes/forest.scoped.css": {
+      "bytes": 1368,
+      "gzip": 483,
+      "sha256": "731317c987a32a618a508d78fe4cb2bdba6454c537a45687353bf2b02ee9570d"
+    },
+    "extensions/palettes/forest.scoped.min.css": {
+      "bytes": 1052,
+      "gzip": 441,
+      "sha256": "e1a1df25e5590ac283d00c07adae8e4dc097b0cc1fcd05a8140b6fecc3dd9362"
+    },
+    "extensions/palettes/bordeaux.css": {
+      "bytes": 1104,
+      "gzip": 440,
+      "sha256": "f4beb44c7f5c3dce44d51c08f64511b6dd7c9562f710cee624b55938517a125b"
+    },
+    "extensions/palettes/bordeaux.min.css": {
+      "bytes": 886,
+      "gzip": 402,
+      "sha256": "8465e45eb1c8e8f85ade2afc1eeb4ef428c2eb475362813acf56b200c1dec703"
+    },
+    "extensions/palettes/bordeaux.scoped.css": {
+      "bytes": 1372,
+      "gzip": 481,
+      "sha256": "505df9cb112ed882ae4a8dae96a00bba63924db4397ce265343721c59f3dbe1b"
+    },
+    "extensions/palettes/bordeaux.scoped.min.css": {
+      "bytes": 1056,
+      "gzip": 439,
+      "sha256": "e89fdd135ae6e47a62ec43f11cf766d3d763973fc23ee5081b2232bcc3a36fd4"
+    },
+    "extensions/palettes/slate.css": {
+      "bytes": 1098,
+      "gzip": 438,
+      "sha256": "9c552fd296d41340946ddfe5a97bb6b443a2c5ec9a47ab9f6c05b16fcfce5892"
+    },
+    "extensions/palettes/slate.min.css": {
+      "bytes": 880,
+      "gzip": 401,
+      "sha256": "50779d07dc722523d254b54649d43f7f723aa6fbd0db43399c0b79de1df42d43"
+    },
+    "extensions/palettes/slate.scoped.css": {
+      "bytes": 1366,
+      "gzip": 480,
+      "sha256": "70d7ff7def9fe8a93a286d1962995bb1b3bd1d509b844b088523c3b883729fbb"
+    },
+    "extensions/palettes/slate.scoped.min.css": {
+      "bytes": 1050,
+      "gzip": 438,
+      "sha256": "4fe9c72903ddbdbac7ff0c1c5b858bc09042a783dcb8e1b7cd626f61c48e424b"
+    },
+    "extensions/palettes/royal.css": {
+      "bytes": 1098,
+      "gzip": 442,
+      "sha256": "f4a26cff4a2fad3793c5cdf26b9cd1cd0f980d1dea7c47b02ced604b7ec50656"
+    },
+    "extensions/palettes/royal.min.css": {
+      "bytes": 880,
+      "gzip": 405,
+      "sha256": "b9f0bd98ced5d676c7b3c9d67c610c0f0db2a9aa85ef918c5f33a20152456fb1"
+    },
+    "extensions/palettes/royal.scoped.css": {
+      "bytes": 1366,
+      "gzip": 483,
+      "sha256": "5cefff784b43d44b37dafb66f80ba81d685b556ef42305bbb4537af9f3900b30"
+    },
+    "extensions/palettes/royal.scoped.min.css": {
+      "bytes": 1050,
+      "gzip": 442,
+      "sha256": "a2003b69bc43dbf9663c599548b0922269c250c5de4af7542d00d2d5d130f128"
+    },
+    "extensions/palettes/terracotta.css": {
+      "bytes": 1108,
+      "gzip": 443,
+      "sha256": "6e2027a6075baf25f5f6f3351576801a1cb965ed32dab9885255d092fb5bd298"
+    },
+    "extensions/palettes/terracotta.min.css": {
+      "bytes": 890,
+      "gzip": 406,
+      "sha256": "999247f1b04e48a1a28aebdbcf5f8fef41fc226897f0652d356ae35bde6c179f"
+    },
+    "extensions/palettes/terracotta.scoped.css": {
+      "bytes": 1376,
+      "gzip": 485,
+      "sha256": "560f8e19545ded59d93ca2a7288831245b5ef3bbe96c8f864e0e139a3134f0e7"
+    },
+    "extensions/palettes/terracotta.scoped.min.css": {
+      "bytes": 1060,
+      "gzip": 442,
+      "sha256": "2de1dda2b77158c42fa4404e57faa342e8a72eeab4fa6f4fcb324238667e89ce"
+    },
+    "extensions/profiles/effects-minimal.css": {
+      "bytes": 448,
+      "gzip": 268,
+      "sha256": "e05de14cdc26726dda5635cd4187c0251a73c2779df3294adb49c1f13fb37244"
+    },
+    "extensions/profiles/effects-minimal.min.css": {
+      "bytes": 334,
+      "gzip": 229,
+      "sha256": "dc4233e2d9b5353a5eee895cb6c3d23c2ded2fd23d4a9d6f413ec0fc3a39d002"
+    },
+    "extensions/profiles/effects-minimal.scoped.css": {
+      "bytes": 576,
+      "gzip": 305,
+      "sha256": "131ca9b39652edca2aa4f5568b4921c5855373a37fa32c88231454e420ce6925"
+    },
+    "extensions/profiles/effects-minimal.scoped.min.css": {
+      "bytes": 419,
+      "gzip": 261,
+      "sha256": "97a40165f55b40f8c010d23ccd58e7de2c8ce4d2f8560d13a7557f89ee9f7824"
+    },
+    "extensions/profiles/effects-fluid.css": {
+      "bytes": 453,
+      "gzip": 270,
+      "sha256": "3daa44705fb11e13311b4a21eaa55ba89ee6ba41ddab40d4daaaa1fc0d9a0ca9"
+    },
+    "extensions/profiles/effects-fluid.min.css": {
+      "bytes": 339,
+      "gzip": 232,
+      "sha256": "16f56aba9acedf97a5060ce47b975ee28130cccec8743f184c63d4439b3dad65"
+    },
+    "extensions/profiles/effects-fluid.scoped.css": {
+      "bytes": 581,
+      "gzip": 308,
+      "sha256": "d8f6ee850f8924ec0748e9800c28c6b6e335bb049d3688988fe7ba183edbd6eb"
+    },
+    "extensions/profiles/effects-fluid.scoped.min.css": {
+      "bytes": 424,
+      "gzip": 265,
+      "sha256": "1a154cfc161b828b550227ea8ab10d04570da940b49df1ddb5b567abe5ef79aa"
+    },
+    "extensions/profiles/effects-dynamic.css": {
+      "bytes": 452,
+      "gzip": 268,
+      "sha256": "aed2f1e09ac40c04cd60ab799b719ba6adf9d79f6743ff1108991b3a5d476326"
+    },
+    "extensions/profiles/effects-dynamic.min.css": {
+      "bytes": 338,
+      "gzip": 229,
+      "sha256": "2441102149cf62243ac6de561f06b21b21d3aa0ebd00ad4a01c01958feb337c8"
+    },
+    "extensions/profiles/effects-dynamic.scoped.css": {
+      "bytes": 580,
+      "gzip": 305,
+      "sha256": "a71f79e99702a5530f4caf7b0f405836c1375edd280635b47e2efeb2a0565c59"
+    },
+    "extensions/profiles/effects-dynamic.scoped.min.css": {
+      "bytes": 423,
+      "gzip": 261,
+      "sha256": "9fdb44b9438915626325cf7bde470a6d24d6721498393f5b41be2d65e21c5660"
+    }
+  }
+}
