@@ -990,6 +990,27 @@ Status: agreed, 2026-11-24.
 
 Every subsequent implementation checkpoint must include a consistency review against the current approved architecture and prior implementations. Identify conflicting responsibilities, precedence and inheritance problems, accessibility regressions, compatibility limitations and unnecessary duplication where relevant. Resolve matters already governed by approved contracts directly; identify unresolved contract changes for explicit approval within the relevant checkpoint. Record material findings, implementation decisions and actual verification results, distinguishing static checks from rendered browser evidence. Continue with consolidated implementation proposals instead of reopening individual architectural decisions unnecessarily.
 
+### GEO-001 — Coordinated, squircle-inspired geometry
+
+Status: approved, 2026-11-24. Refines TOK-010, DAT-011 and IMP-001; applies to the forthcoming IMP-002 native element styling and IMP-003 reusable classes.
+
+Develop a distinctive, organic UIBMS corner geometry without copying Apple's visual identity. Use interoperable native border-radius as the initial foundation. Derive element-specific radii from the existing --radius token at the point of consumption rather than introducing redundant fixed scales.
+
+| Element or surface | Radius relationship |
+| --- | --- |
+| Buttons and applicable form controls | var(--radius) |
+| Cards and panels | calc(var(--radius) * 2) |
+| Dialogs | calc(var(--radius) * 3) |
+| Intentionally circular controls | 50%, with suitable equal dimensions |
+
+- Preserve the approved initial --radius value of 0.5rem and the other IMP-001 geometry tokens. The relationships apply to suitable element designs, not indiscriminately to every native control.
+- Retain all five approved data-shape profile names: default, sharp, soft, rounded and organic. The default profile expresses UIBMS's own coordinated geometry; the organic profile is intended to explore smoother, continuous, squircle-inspired corners. Exact alternative profile values remain for the configuration checkpoint. Do not treat organic as a newly selected default profile.
+- Prefer native CSS corner-shape capabilities, including squircle or superellipse geometry, when they satisfy the approved cross-engine interoperability baseline. Until verified, use border-radius; any earlier optional progressive enhancement must be separately evaluated and approved. Do not claim that ordinary rounded corners reproduce true continuous corners.
+- Do not use SVG masking, clipping workarounds, JavaScript or additional dependencies merely to imitate squircle geometry.
+- Keep geometry independently configurable, with low specificity and native developer overrides. Preserve native semantics, focus indicators, visible boundaries, readable content, actual accessible hit areas and responsive reflow.
+
+Consistency review: this refinement preserves P-001 interoperability, P-002 minimalism, P-003 meaningful tokenization, P-004 accessibility, ARC-003 responsibility separation, TOK-002 context-local token resolution, TOK-010 geometry and DAT-011 profile independence. It does not change the existing token values, introduce an additional profile, or authorize unsupported CSS as part of the required baseline. Actual rounded and continuous-corner rendering must be verified in the relevant browser tests. IMP-002 is still a proposed implementation checkpoint; no element styling or profile files are created by this approval.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) ARC-012 (standard and comprehensive distributions with optional extensions) ARC-013 (natural cascade layer identifiers and scoped adoption marker) and ARC-014 (minimal development tooling and deferred distribution automation).
