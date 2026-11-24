@@ -146,10 +146,25 @@ Maintain exclusively native CSS source and use automated tooling to generate, va
 
 The tooling, package manager, source directory structure, validation rules, build pipeline and output filenames remain undecided. This decision approves the approach, not a specific toolchain.
 
+### ARC-007 — Cascade layer architecture
+
+Status: approved — Option C, 2026-11-24.
+
+Use a responsibility-based native CSS cascade layer architecture.
+
+- Introduce a cascade layer only when it serves a meaningful styling-priority or precedence purpose, not merely because a source directory, feature or CSS category exists.
+- Keep source organization independent from cascade layer organization.
+- Use nested layers where they solve a genuine architectural problem, while avoiding unnecessary hierarchy and complexity.
+- Maintain predictable framework priorities, low-specificity defaults and ordinary developer overrides, as established in ARC-004.
+- Preserve consistency across default, extended, complete and scoped distributions.
+- Accessibility must be integrated throughout the framework; it is not solely the responsibility of any dedicated preferences or accessibility layer.
+
+The illustrated reset, defaults, configuration, features and preferences layers are candidates, not approved layer names, boundaries or ordering. Evaluate each proposed layer individually before establishing the actual architecture.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
-2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) and ARC-006 (native CSS source with automated distribution generation, validation and minification).
+2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers; individual layers remain open).
 3. Public naming and interface conventions.
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
