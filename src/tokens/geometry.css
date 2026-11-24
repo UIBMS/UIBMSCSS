@@ -1,0 +1,9 @@
+@layer defaults {
+
+    :where(:root) {
+        --radius: 0.5rem;
+        --border-width: 1px;
+        --target-size: max(44px, 2.75rem);
+    }
+
+}
