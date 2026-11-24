@@ -16,6 +16,60 @@ Architecture and specification phase. No CSS implementation is authorized by thi
 - Design presets are optional. Developers retain normal native CSS customization freedom.
 - The framework should support independent use as well as integration with UIBMS Theme, UIBMS Blocks, Gutenberg Animation Studio and UIBMS applications. Third-party CSS and WordPress global styles must be respected.
 
+## Foundational review — proposed roadmap (2026-11-24)
+
+The user requested a return to first principles before continuing detailed data-attribute decisions. Review the philosophy first, then technical foundations. This is a change in discussion order, not a reversal of any approved decision. Existing approvals remain the baseline unless explicitly superseded. No implementation is authorized.
+
+### Proposed identity
+
+UIBMS CSS is a native-first, semantic, context-aware CSS framework providing an intelligent and adaptable design foundation without restricting developers' creative or technical freedom. This wording is a proposal.
+
+### Philosophical decisions (all pending review)
+
+| ID | Topic | Proposed direction |
+| --- | --- | --- |
+| PHI-001 | Purpose and scope | Simplify web design rather than replace CSS; determine the boundary between foundation, design system and component library. |
+| PHI-002 | Native first | Prefer native browser functionality over unnecessary abstractions. |
+| PHI-003 | Semantic first | Respect HTML semantics and document structure. |
+| PHI-004 | Developer freedom | No mandatory markup, classes or design conventions. |
+| PHI-005 | Minimalism | Add functionality for demonstrated value rather than feature count. |
+| PHI-006 | Intelligent defaults | Handle predictable styling needs automatically. |
+| PHI-007 | Accessibility | Accessible defaults as a fundamental responsibility. |
+| PHI-008 | Adaptability | Separate structure from visual identity. |
+| PHI-009 | Predictability | Clear responsibilities and consistent behavior. |
+| PHI-010 | Independence | No mandatory JavaScript, CMS or external framework dependency. |
+| PHI-011 | Extensibility | Custom palettes, presets and styles. |
+| PHI-012 | Non-interference | Respect existing styles and third-party environments. |
+| PHI-013 | Performance | Avoid unnecessary CSS, processing and duplication by design, without imposed numerical size limits. |
+| PHI-014 | Maintainability | Prefer understandable and maintainable architecture. |
+| PHI-015 | Evolution | Modern CSS, progressive enhancement and an explicit compatibility policy. |
+
+### Technical foundation decisions (proposed, not approved)
+
+| ID | Topic |
+| --- | --- |
+| TECH-001 | Browser compatibility and progressive enhancement |
+| TECH-002 | Reset and normalization |
+| TECH-003 | Native semantic element defaults |
+| TECH-004 | Cascade, selector specificity, scoping and ownership |
+| TECH-005 | Custom properties and design-token architecture |
+| TECH-006 | Color system, semantic roles, schemes and automatic foreground contrast |
+| TECH-007 | Typography |
+| TECH-008 | Native units, sizing and spacing |
+| TECH-009 | Layout, responsiveness and containers |
+| TECH-010 | Surfaces, borders, corners, decorations and elevation |
+| TECH-011 | Design contexts, presets, inheritance and data attributes (resume DATA register) |
+| TECH-012 | Interaction, state, forms and motion |
+| TECH-013 | Accessibility and internationalization |
+| TECH-014 | Modularity, interoperability, delivery and build tooling |
+| TECH-015 | Testing, documentation, API stability and versioning |
+
+The technical IDs are discussion groupings, not replacements for DATA IDs or the previously proposed CSS-001 color architecture choice. Resolve overlapping questions once and cross-reference their eventual approved decisions. Technical decisions may be reordered where prerequisites require it.
+
+### Current discussion — PHI-001
+
+Options to evaluate: A — reset and semantic CSS foundation only; B — adaptive semantic foundation and optional contextual design system with reusable presentation patterns; C — comprehensive UI component framework. B is the proposed direction, not approved. A small core should be distinguished from optional extensions, with no assumption that a full component catalogue is part of the initial framework.
+
 ## Approved decisions
 
 ### DATA-001 — Separate design context and reusable presentation
@@ -45,7 +99,7 @@ Review one decision at a time. Record the selected option, rationale, implicatio
 | ID | Topic | Status |
 | --- | --- | --- |
 | DATA-002 | Attribute naming and namespace | Approved — Option E |
-| DATA-003 | Design-context scope and inheritance | Next decision |
+| DATA-003 | Design-context scope and inheritance | Open — paused for foundational review |
 | DATA-004 | Palette selection and color scheme separation | Open |
 | DATA-005 | Complete design presets versus independent dimensions | Open |
 | DATA-006 | Corner geometry | Open |
@@ -74,6 +128,6 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 - Current milestone: architecture discussion, not implementation.
 - Latest approved decision: DATA-002 (Option E).
 - Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
-- Next discussion: DATA-003, design-context scope and inheritance.
+- Next discussion: PHI-001, purpose and scope. Resume DATA-003 after the foundational review at the appropriate technical stage.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
