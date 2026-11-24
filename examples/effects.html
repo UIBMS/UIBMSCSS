@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="auto" data-shape="organic">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UIBMS CSS - Signature experience</title>
+    <link rel="stylesheet" href="../src/uibms.css">
+    <link rel="stylesheet" href="../src/palettes/ocean.css">
+    <link rel="stylesheet" href="../src/palettes/gold.css">
+    <link rel="stylesheet" href="../src/palettes/forest.css">
+    <link rel="stylesheet" href="../src/profiles/effects-minimal.css">
+    <link rel="stylesheet" href="../src/profiles/effects-fluid.css">
+    <link rel="stylesheet" href="../src/profiles/effects-dynamic.css">
+    <style>
+        /* Example-only layout, decorative scene and optional native proximity snapping. */
+        main { padding-block: 2rem; }
+        main > section { margin-block: 2rem; }
+        #controls label { display: block; }
+        #controls select { inline-size: 100%; }
+        #studio { background: radial-gradient(ellipse at 15% 15%, #f7e4a1, transparent 45%), radial-gradient(ellipse at 90% 20%, #80d5d1, transparent 50%), linear-gradient(125deg, #264f5a, #254458 42%, #8b759a 72%, #d9a67d); padding: clamp(1rem, 4vw, 3rem); border-radius: calc(var(--radius) * 3); }
+        #hero { max-inline-size: 35rem; margin-inline: auto; }
+        #readout { font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 650; }
+        #tray { display: flex; overflow-x: auto; scroll-snap-type: inline proximity; gap: var(--space); padding: var(--space); }
+        #tray > article { flex: 0 0 min(85%, 18rem); scroll-snap-align: start; }
+        #scroll-sample { min-block-size: 12rem; }
+        @media (forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce) { #studio { background: var(--color-surface); } }
+        @media (prefers-reduced-motion: reduce) { #tray { scroll-snap-type: none; } }
+    </style>
+</head>
+<body>
+    <a class="visually-hidden" href="#content">Skip to content</a>
+    <main id="content" class="container">
+        <header class="stack">
+            <small>UIBMS CSS / IMP-005</small>
+            <h1>Interfaces that feel alive.</h1>
+            <p class="lead">Materials, coordinated light, responsive motion and native scrolling. No framework JavaScript.</p>
+            <nav class="cluster" aria-label="Showcase sections"><a href="#materials">Materials</a><a href="#interaction">Interaction</a><a href="#lifecycle">Lifecycle</a><a href="#scrolling">Scrolling</a></nav>
+        </header>
+        <section id="controls" class="grid">
+            <div><label for="theme">Theme</label><select id="theme"><option>auto</option><option>light</option><option>dark</option></select></div>
+            <div><label for="palette">Palette</label><select id="palette"><option>natural</option><option>ocean</option><option>gold</option><option>forest</option></select></div>
+            <div><label for="effects">Motion profile</label><select id="effects"><option>default</option><option>minimal</option><option>fluid</option><option>dynamic</option><option>none</option></select></div>
+        </section>
+        <section id="materials" class="stack">
+            <h2>Light meets geometry.</h2>
+            <div id="studio">
+                <article id="hero" class="card stack" data-effect="glass">
+                    <small>WORKSPACE / OVERVIEW</small><h2>Clarity in motion.</h2><p id="readout">24</p><p>Active projects. Optical-inspired edges and a high-opacity, readable content surface.</p>
+                    <div class="cluster"><button type="button" data-hover="lift glow" data-active="press" data-focus="glow">Continue</button><button type="button" data-hover="none">No hover effect</button></div>
+                </article>
+            </div>
+            <p><small>Glass is a native CSS approximation, not a physical optics simulation. Organic corners use the rounded fallback.</small></p>
+            <div class="grid">
+                <article class="card stack"><h3>Solid</h3><p>Original opaque surface.</p></article>
+                <article class="card stack" data-effect="frosted"><h3>Frosted</h3><p>Soft backdrop diffusion.</p></article>
+                <article class="card stack" data-effect="metallic"><h3>Metallic</h3><p>Directional edge light.</p></article>
+                <article class="card stack" data-effect="matte"><h3>Matte</h3><p>Restrained, flat depth.</p></article>
+            </div>
+        </section>
+        <section id="interaction" class="panel stack">
+            <h2>Responsive, not distracting.</h2>
+            <p>Hover, press and use the keyboard. Explicit effects can replace or extend the selected profile.</p>
+            <div class="cluster"><button type="button" id="default-button">Profile default</button><button type="button" data-hover="lift" id="lift-button">Lift</button><button type="button" data-hover="glow" id="glow-button">Glow</button><button type="button" data-hover="lift glow" data-active="press" data-focus="glow" id="compose-button">Compose</button><button type="button" data-hover="none lift" id="none-button">None</button></div>
+            <p><small>Press uses a small downward translation, not a smaller hit target.</small></p>
+        </section>
+        <section id="lifecycle" class="stack">
+            <h2>Native lifecycle.</h2>
+            <p>Fade is a decorative edge-light transition; rise is a small movement. Text stays readable throughout.</p>
+            <div class="cluster"><button type="button" id="open-dialog">Open dialog</button><button type="button" popovertarget="popover">Open popover</button></div>
+            <dialog id="dialog" data-entrance="fade rise" data-exit="fade rise" aria-labelledby="dialog-title"><h3 id="dialog-title">Native dialog</h3><p>Close with Escape or the native dialog form.</p><form method="dialog"><button autofocus>Close</button></form></dialog>
+            <div id="popover" popover data-entrance="fade rise" data-exit="fade rise"><h3>Native popover</h3><p>Focus and dismissal retain browser behavior.</p><button type="button" popovertarget="popover" popovertargetaction="hide">Close</button></div>
+        </section>
+        <section id="scrolling" class="stack">
+            <h2>Movement with the page.</h2><p>Scroll the collection with native momentum. Proximity snapping belongs to this example's CSS, not global framework defaults.</p>
+            <div id="tray" role="region" aria-label="Scrollable collection" tabindex="0"><article class="card"><h3>Discover</h3><p>Native scrolling.</p></article><article class="card"><h3>Explore</h3><p>Coordinated surfaces.</p></article><article class="card"><h3>Focus</h3><p>Accessible scroll targets.</p></article><article class="card"><h3>Create</h3><p>Subtle motion.</p></article></div>
+            <article id="scroll-sample" class="card stack" data-scroll="reveal progress"><h3>Scroll-linked depth</h3><p>Small movement and a decorative page progress line. No content is hidden in fallback browsers.</p><a href="#content">Return to top</a></article>
+            <article class="panel stack" data-scroll="parallax"><h3>Subtle parallax</h3><p>Native view timeline, no scroll event handler.</p></article>
+        </section>
+        <footer><hr><small>Development source. Physical optical rendering, true continuous corners and custom input-driven scroll physics remain future research.</small></footer>
+    </main>
+    <script>
+        // Example controls only; UIBMS CSS has no JavaScript runtime.
+        for (const id of ['theme', 'palette', 'effects']) {
+            const select = document.getElementById(id);
+            select.addEventListener('change', () => document.documentElement.setAttribute('data-' + id, select.value));
+        }
+        document.getElementById('open-dialog').addEventListener('click', () => document.getElementById('dialog').showModal());
+    </script>
+</body>
+</html>
