@@ -1,0 +1,32 @@
+@layer defaults {
+
+    :where(table) {
+        inline-size: 100%;
+        max-inline-size: 100%;
+        border-collapse: collapse;
+        text-align: start;
+    }
+
+    :where(caption) {
+        caption-side: top;
+        text-align: start;
+        font-weight: 600;
+        padding-block-end: calc(var(--space) * 0.5);
+    }
+
+    :where(th, td) {
+        padding: calc(var(--space) * 0.75);
+        border-block-end: var(--border-width) solid var(--color-border);
+        text-align: start;
+        vertical-align: top;
+        overflow-wrap: anywhere;
+    }
+
+    :where(th) { font-weight: 650; }
+
+    :where(thead, tfoot) {
+        background-color: var(--color-surface-subtle);
+        color: var(--color-text);
+    }
+
+}
