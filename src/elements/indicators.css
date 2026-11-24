@@ -1,0 +1,10 @@
+@layer defaults {
+
+    :where(progress, meter) {
+        accent-color: var(--color-accent);
+        max-inline-size: 100%;
+        block-size: 1em;
+        vertical-align: middle;
+    }
+
+}
