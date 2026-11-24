@@ -24,4 +24,9 @@
 @import url("elements/technical.css");
 @import url("elements/media.css");
 
+@import url("layouts/patterns.css");
+@import url("styles/surfaces.css");
+@import url("styles/text.css");
+@import url("styles/accessibility.css");
+
 @import url("preferences/native-elements.css");
