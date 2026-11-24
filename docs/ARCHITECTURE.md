@@ -290,12 +290,27 @@ Design a flexible network of meaningful design values and relationships rather t
 
 The token inventory, exact identifiers, values, relationships, computation strategies, inheritance boundaries and registration rules remain open. Illustrative CSS is not an approved implementation.
 
+### TOK-002 — Context-aware token resolution
+
+Status: approved — Option C, 2026-11-24.
+
+Provide global token defaults, contextual overrides, scoped adoption and nested design environments using native CSS cascade and inheritance.
+
+- Inherit settings from the surrounding design context unless explicitly overridden.
+- Preserve independent configuration dimensions so changing one setting does not unintentionally reset unrelated settings.
+- Support local developer overrides and ensure dependent values resolve within the intended context.
+- Account for the fact that inherited custom properties have already resolved their variable references at the element on which their computed values were established. Overriding a referenced token on a descendant does not automatically recompute an inherited dependent custom property.
+- Choose appropriate native computation strategies per relationship, including calculations at the point of consumption or context-local derived declarations where justified.
+- Avoid mechanically redeclaring every token in every design context. Preserve minimalism, predictable composition, accessibility preferences and ordinary CSS customization.
+
+Exact token declarations, computation strategies, context boundaries, selectors and inheritance rules remain open. Illustrative markup, palettes and CSS are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture).
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) and TOK-002 (context-aware token resolution).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
