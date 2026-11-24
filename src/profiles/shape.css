@@ -1,0 +1,9 @@
+@layer configuration {
+
+    :where([data-shape="default"]) { --radius: 0.5rem; }
+    :where([data-shape="sharp"]) { --radius: 0; }
+    :where([data-shape="soft"]) { --radius: 0.25rem; }
+    :where([data-shape="rounded"]) { --radius: 0.75rem; }
+    :where([data-shape="organic"]) { --radius: 1rem; }
+
+}
