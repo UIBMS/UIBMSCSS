@@ -1,0 +1,22 @@
+@layer defaults {
+
+    :where(img, video) {
+        max-inline-size: 100%;
+        block-size: auto;
+    }
+
+    :where(audio, iframe, embed, object, canvas, svg) {
+        max-inline-size: 100%;
+    }
+
+    :where(figure) {
+        margin-inline: 0;
+        margin-block: var(--space);
+    }
+
+    :where(figcaption) {
+        margin-block-start: calc(var(--space) * 0.5);
+        font-size: 0.875em;
+    }
+
+}
