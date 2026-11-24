@@ -349,12 +349,28 @@ Use meaningful foundational color roles, native computational relationships wher
 
 The exact color roles, token inventory, identifiers, values, palette definitions, computation strategies, theme composition rules and verification methods remain open. Illustrative palettes and CSS are not approved implementations.
 
+### TOK-006 — Independent themes and coordinated palettes
+
+Status: approved — Option C, 2026-11-24.
+
+Keep color scheme selection and palette selection independent, with coordinated light and dark color values within each palette wherever required.
+
+- Support light, dark and automatic color schemes; automatic selection follows the user's system preference.
+- Palettes establish coordinated color identities rather than separate combined theme-palette names.
+- Use native interoperable CSS mechanisms, including color-scheme and light-dark() where appropriate, to resolve the color scheme in the intended context.
+- Permit nested light and dark environments to retain the inherited palette, and nested palette environments to retain their inherited color scheme unless explicitly overridden.
+- Keep effects profiles independently configurable. Reuse shared element styling rather than duplicate implementations for each combination.
+- Verify framework-provided palette and scheme combinations, including interaction states, against applicable AAA accessibility requirements. Do not rely on automatic color inversion or transformation alone.
+- Preserve contextual token resolution, scoped adoption, low specificity and developer customization.
+
+Exact attribute and token identifiers, default palette, color values, derivation methods and implementation remain open. The illustrative selectors, palettes and code are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) and TOK-005 (intelligent hybrid color system).
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) and TOK-006 (independent themes and coordinated palettes).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
