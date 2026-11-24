@@ -17,6 +17,10 @@ The framework should be different because it makes development easier and produc
 
 ## Development status
 
-Foundational principles are established. Detailed architecture, naming, public interfaces, compatibility versions, effect catalogs and implementation are under design. No production CSS is specified by this document.
+The native development source is now in implementation. IMP-001 (foundational design tokens) and IMP-002 (native HTML styling) are implemented in the global development entry point, [src/uibms.css](src/uibms.css). Open the [native HTML showcase](examples/native-html.html) from a local checkout to evaluate the current appearance and interactions.
+
+Initial Chromium testing passed 46 targeted checks using a representative fixture with the verified source CSS. Cross-engine compatibility, complete accessibility verification, scoped and production distributions, optional profiles, reusable classes and signature effects remain under development.
+
+Next checkpoint: IMP-003 — reusable layout and styling classes.
 
 See [Architecture and foundational principles](docs/ARCHITECTURE.md).
