@@ -1,0 +1,7 @@
+@layer defaults {
+
+    :where(:root) {
+        --space: 1rem;
+    }
+
+}
