@@ -31,8 +31,8 @@ At the user's request, challenge each of the seven conceptual layers before fina
 | ID | Candidate layer | Status |
 | --- | --- | --- |
 | LYR-001 | Native HTML & CSS | Approved — Option B; external platform |
-| LYR-002 | CSS reset | Current discussion |
-| LYR-003 | Semantic foundation | Pending |
+| LYR-002 | CSS reset | Approved — Option B |
+| LYR-003 | Semantic foundation | Current discussion |
 | LYR-004 | Design foundation | Pending |
 | LYR-005 | Contextual design | Pending |
 | LYR-006 | Presentation patterns | Pending |
@@ -40,7 +40,9 @@ At the user's request, challenge each of the seven conceptual layers before fina
 
 **LYR-001 outcome:** Approved Option B. Native HTML and CSS are the external browser platform, not an internal distributed framework layer. See the approved decision below.
 
-**LYR-002 — CSS reset (open):** Review whether the reset should be absent, minimal and non-destructive, or comprehensive and stripping browser defaults. Proposed direction: a standalone minimal reset/normalization responsibility, separate from semantic styling and visual design. Preserve useful native semantics, behavior and accessibility; avoid universal removal of margins, borders, outlines or control appearance. Evaluate each proposed declaration against a concrete problem and compatibility implications. Exact rules, scoping, distribution and cascade ordering remain open. No LYR-002 option is approved yet.
+**LYR-002 outcome:** Approved Option B. Develop our own independent, minimal, non-destructive reset and normalization layer, separate from semantic styling and visual design. See the approved decision below.
+
+**LYR-003 — Semantic foundation (open):** Challenge whether a separate classless semantic styling layer is necessary and how far it should go. Options: A — no separate semantic styling beyond reset and native browser defaults; B — minimal, adaptive semantic defaults for ordinary HTML, preserving native meaning and behavior, with no imposed component appearance or layout; C — comprehensive classless visual styling of native HTML elements. Option B is proposed, not approved. Scope, element coverage, concrete rules, variable contracts, loading and integration boundaries remain open.
 
 ### Philosophical decisions (all pending review)
 
@@ -100,6 +102,16 @@ Options to evaluate: A — reset and semantic CSS foundation only; B — adaptiv
 
 **Boundaries:** This approval establishes the platform boundary and native-first philosophy. It does not approve specific classes, selectors, reset rules, browser support targets, compatibility fallbacks, distribution boundaries or CSS cascade layers. The six remaining candidate framework responsibilities are subject to layer review; retain LYR identifiers for continuity.
 
+### LYR-002 — Minimal, non-destructive CSS reset
+
+**Status:** Approved (2026-11-24), Option B.
+
+**Decision:** Develop our own independent, minimal reset/normalization layer. Address genuine browser inconsistencies and foundational styling problems without unnecessarily removing useful native presentation, behavior or accessibility. Every reset rule should have a meaningful technical justification. The reset must be independent of palettes, themes, design contexts, design tokens, presentation classes and component styling. It should be usable independently of the rest of UIBMS CSS, and integrations that already provide a suitable reset should not be forced to load it.
+
+**Rationale:** Reset only what needs resetting; preserve everything that already works correctly. Avoid stripping native styles merely to rebuild them in another layer. Preserve useful focus indicators, form control behavior, heading hierarchy, list markers, dialogs, popovers, browser zoom, selection and native accessibility preferences. Avoid indiscriminate removal of margins, padding, borders, outlines or control appearance.
+
+**Boundaries:** This is an architectural approval, not approval of any individual selector or declaration, including box sizing, body margins, form font inheritance or media sizing. Exact rules, compatibility requirements, cascade ordering, scoping and distribution mechanisms remain open for technical review. Typography, visual colors, design spacing, responsive layout, components, presets and animations are outside the reset's exclusive responsibility.
+
 ### DATA-001 — Separate design context and reusable presentation
 
 **Status:** Approved (2026-11-24).
@@ -154,8 +166,8 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 
 - Repository: `UIBMS/UIBMSCSS`, default branch `main`.
 - Current milestone: architecture discussion, not implementation.
-- Latest approved decision: LYR-001 (Option B). Earlier DATA-001 and DATA-002 (Option E) remain approved.
+- Latest approved decision: LYR-002 (Option B). Earlier LYR-001 (Option B), DATA-001 and DATA-002 (Option E) remain approved.
 - Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
-- Next discussion: LYR-002, CSS reset. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
+- Next discussion: LYR-003, semantic foundation. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
