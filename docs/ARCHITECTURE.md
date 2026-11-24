@@ -609,6 +609,22 @@ The public contextual attribute `data-theme` controls the color scheme independe
 
 The named values and behavioral contract are approved. Selectors, token resolution, scoped-adoption implementation and accessibility verification remain open. Illustrative CSS is not an approved implementation.
 
+### DAT-009 — Natural default palette and optional palette extensions
+
+Status: approved — revised Option C, 2026-11-24.
+
+Provide a natural, neutral and brand-independent default palette in the standard UIBMS CSS distribution. The corporate UIBMS branding does not determine the CSS framework's visual identity.
+
+- Provide additional color identities as independently loadable optional palette extensions, with all official palettes available in the comprehensive distribution.
+- Support developer-defined palettes through documented native CSS color token contracts without requiring modifications to the framework.
+- Preserve independent light, dark and automatic color schemes, contextual palette inheritance, explicit restoration and the applicable AAA accessibility defaults.
+- Avoid duplicating native element styling across palettes. Do not require separate palette extensions for the natural default appearance.
+- Treat the palette catalog as extensible, with additions driven by genuine design requirements.
+
+The revised proposed collection consists of Natural (default), Ocean, Gold, Forest, Bordeaux, Slate, Royal and Terracotta. Bordeaux is an optional color identity only, not the framework default. The natural default makes a separate Neutral palette unnecessary. The user's latest approval establishes the natural default and optional/custom palette distribution strategy; exact palette identifiers, optional collection membership, color values, filenames, token contracts and accessibility verification remain open.
+
+Illustrative previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -616,7 +632,7 @@ The named values and behavioral contract are approved. Selectors, token resoluti
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) and DAT-008 (environment-first color scheme configuration).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) and DAT-009 (natural default palette and optional palette extensions).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
