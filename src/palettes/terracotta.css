@@ -1,0 +1,28 @@
+@layer configuration {
+
+    :where([data-palette="terracotta"]) {
+        --color-background: light-dark(#fcf8f4, #221a17);
+        --color-surface: light-dark(#ffffff, #30241f);
+        --color-surface-subtle: light-dark(#f7efe8, #392c25);
+        --color-accent: light-dark(#79402c, #f7c6ac);
+        --color-on-accent: light-dark(#ffffff, #242522);
+        --color-text: light-dark(#242522, #f4f5f2);
+        --color-text-muted: light-dark(#494b46, #c4c8c0);
+        --color-border: light-dark(#767871, #939a90);
+        --color-focus: light-dark(#234f76, #b9d9f7);
+        --color-success: light-dark(#205433, #b9e1c3);
+        --color-warning: light-dark(#704500, #f5d59b);
+        --color-danger: light-dark(#8f2929, #ffbbbb);
+        --color-info: light-dark(#234f76, #b9d9f7);
+    }
+
+}
+
+@layer defaults.contexts {
+
+    :where([data-palette="terracotta"]) {
+        color: var(--color-text);
+        background-color: var(--color-background);
+    }
+
+}
