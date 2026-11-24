@@ -1,0 +1,19 @@
+@layer features {
+
+    :where(.card:not(.panel), .panel:not(.card)) {
+        color: var(--color-text);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: calc(var(--radius) * 2);
+        padding: var(--space);
+    }
+
+    :where(.card:not(.panel)) {
+        background-color: var(--color-surface);
+        box-shadow: var(--shadow);
+    }
+
+    :where(.panel:not(.card)) {
+        background-color: var(--color-surface-subtle);
+    }
+
+}
