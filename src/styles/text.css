@@ -1,0 +1,17 @@
+@layer features {
+
+    :where(.lead) {
+        font-size: 1.125em;
+        line-height: var(--line-height);
+        max-inline-size: var(--reading-width);
+    }
+
+    /* Use on a constrained block or flex/grid item; focus restores full text. */
+    :where(.truncate:not(:focus-within)) {
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        max-inline-size: 100%;
+    }
+
+}
