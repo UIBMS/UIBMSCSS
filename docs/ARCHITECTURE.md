@@ -848,9 +848,36 @@ Organize maintained native CSS source files by functional responsibility, indepe
 
 The directory names and responsibilities are approved. Exact source filenames, internal organization, build tooling, distribution filenames and packaging contracts remain open. No source directories or production CSS are created by this documentation decision.
 
+### ARC-012 — Standard and comprehensive distributions with optional extensions
+
+Status: approved — Option C, 2026-11-24.
+
+Generate ready-to-use standard and comprehensive CSS distributions for both global and scoped adoption from the same maintained native CSS source.
+
+| Approved distribution filename | Responsibility |
+| --- | --- |
+| `dist/uibms.css` | Standard global framework |
+| `dist/uibms.min.css` | Minified standard global framework |
+| `dist/uibms.full.css` | Comprehensive global framework including official extensions |
+| `dist/uibms.full.min.css` | Minified comprehensive global framework |
+| `dist/uibms.scoped.css` | Standard scoped framework |
+| `dist/uibms.scoped.min.css` | Minified standard scoped framework |
+| `dist/uibms.scoped.full.css` | Comprehensive scoped framework including official extensions |
+| `dist/uibms.scoped.full.min.css` | Minified comprehensive scoped framework |
+
+Approved extension directories are `dist/extensions/palettes/`, `dist/extensions/profiles/` and `dist/extensions/effects/`.
+
+- The standard distribution must provide a complete default experience through a single stylesheet without requiring a consumer build process, JavaScript or external dependencies.
+- Additional official palettes, profiles and effects may be independently loaded as extensions; the comprehensive distribution incorporates all official extensions.
+- Extensions must support the corresponding adoption mode, including scoped installations, without inadvertently styling the surrounding document.
+- Minified distributions must preserve the behavior of their corresponding unminified distributions.
+- Preserve the approved native source architecture, cascade-layer ordering, contextual configuration, applicable AAA accessibility defaults and automated generation.
+
+The eight distribution filenames and extension directory structure are approved. Exact extension filenames, scope marker, generation tooling, dependency resolution, compatibility checks and implementation remain open. No production distribution files are created by this documentation decision.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) and ARC-011 (responsibility-based modular source structure).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) ARC-010 (global by default with optional scoped distribution) ARC-011 (responsibility-based modular source structure) and ARC-012 (standard and comprehensive distributions with optional extensions).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
