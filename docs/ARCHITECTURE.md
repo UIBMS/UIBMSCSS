@@ -424,12 +424,27 @@ Establish coordinated geometry through meaningful foundational tokens, native co
 
 The exact geometry tokens, profile names, attribute identifiers, default values, shape definitions and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
 
+### TOK-011 — Context-aware surface and depth system
+
+Status: approved — Option C, 2026-11-24.
+
+Establish a coordinated surface and visual depth architecture using meaningful shared tokens and native CSS mechanisms rather than relying exclusively on fixed shadow scales.
+
+- Express visual depth through appropriate combinations of shadows, inset shadows, borders, illumination, transparency, backdrop filters, gradients, color relationships and interaction-driven changes.
+- Distinguish surface appearance, perceived elevation and interaction effects, and keep visual elevation independent of actual stacking order and z-index.
+- Support light and dark environments and share meaningful surface and depth tokens across configurable effects profiles instead of duplicating implementations.
+- Preserve predictable composition, contextual inheritance, ordinary developer overrides and the approved cascade architecture.
+- Verify visible boundaries, foreground/background contrast and applicable AAA accessibility requirements, including translucency and changing interaction states.
+- Evaluate rendering cost and avoid unnecessary filters, shadows or other effects; preserve useful fallbacks and environmental preferences.
+
+Exact surface profiles, depth tokens, elevation calculations, configuration mechanisms, defaults and implementation remain open. Illustrative CSS and previews are not approved implementation contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
-4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) and TOK-010 (context-aware geometry with configurable identity).
+4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) and TOK-011 (context-aware surface and depth system).
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
