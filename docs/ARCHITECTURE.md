@@ -18,11 +18,27 @@ Architecture and specification phase. No CSS implementation is authorized by thi
 
 ## Foundational review — proposed roadmap (2026-11-24)
 
-The user requested a return to first principles before continuing detailed data-attribute decisions. Review the philosophy first, then technical foundations. This is a change in discussion order, not a reversal of any approved decision. Existing approvals remain the baseline unless explicitly superseded. No implementation is authorized.
+The user requested a return to first principles before continuing detailed data-attribute decisions. Review the conceptual layers first, then philosophy and technical foundations. This is a change in discussion order, not a reversal of any approved decision. Existing approvals remain the baseline unless explicitly superseded. No implementation is authorized.
 
 ### Proposed identity
 
 UIBMS CSS is a native-first, semantic, context-aware CSS framework providing an intelligent and adaptable design foundation without restricting developers' creative or technical freedom. This wording is a proposal.
+
+### Layer review — current priority (proposed)
+
+At the user's request, challenge each of the seven conceptual layers before finalizing PHI and TECH decisions. For each layer, assess necessity, exclusive responsibility, exclusions, reliance on native functionality, and complexity. Layers may be removed, merged, renamed or reordered; these are not approved modules, file boundaries, or CSS cascade layers.
+
+| ID | Candidate layer | Status |
+| --- | --- | --- |
+| LYR-001 | Native HTML & CSS | Current discussion |
+| LYR-002 | CSS reset | Pending |
+| LYR-003 | Semantic foundation | Pending |
+| LYR-004 | Design foundation | Pending |
+| LYR-005 | Contextual design | Pending |
+| LYR-006 | Presentation patterns | Pending |
+| LYR-007 | Optional extensions | Pending |
+
+**LYR-001 proposal:** Treat native HTML, CSS and browser behavior as the external platform, not a distributed framework layer. Prefer native features; framework abstractions should provide real reusable value rather than duplicate native syntax or behavior. Browser compatibility and fallback policies, reset boundaries, and actual cascade-layer ordering remain open. No approval recorded yet.
 
 ### Philosophical decisions (all pending review)
 
@@ -66,7 +82,7 @@ UIBMS CSS is a native-first, semantic, context-aware CSS framework providing an 
 
 The technical IDs are discussion groupings, not replacements for DATA IDs or the previously proposed CSS-001 color architecture choice. Resolve overlapping questions once and cross-reference their eventual approved decisions. Technical decisions may be reordered where prerequisites require it.
 
-### Current discussion — PHI-001
+### PHI-001 — paused until layer review
 
 Options to evaluate: A — reset and semantic CSS foundation only; B — adaptive semantic foundation and optional contextual design system with reusable presentation patterns; C — comprehensive UI component framework. B is the proposed direction, not approved. A small core should be distinguished from optional extensions, with no assumption that a full component catalogue is part of the initial framework.
 
@@ -128,6 +144,6 @@ After the data-attribute decisions, review the reset, semantic element defaults,
 - Current milestone: architecture discussion, not implementation.
 - Latest approved decision: DATA-002 (Option E).
 - Approved cross-cutting requirement: automatic foreground contrast by default, without an opt-in data attribute (DATA-003 / DATA-004).
-- Next discussion: PHI-001, purpose and scope. Resume DATA-003 after the foundational review at the appropriate technical stage.
+- Next discussion: LYR-001, native platform boundary. Resume PHI-001 after the layer review; resume DATA-003 at the appropriate technical stage.
 - Before changing any approved architectural direction, identify the existing decision and record an explicit superseding decision.
 - Keep this register current with approvals; do not treat discussion examples as accepted API contracts.
