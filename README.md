@@ -2,12 +2,8 @@
 
 UIBMS CSS FRAMEWORK
 
-A native-CSS-first, semantic and minimal-by-default CSS foundation.
+## Project status
 
-## Current stage
+Restarting from the ground up. No architectural decisions or implementation requirements are currently approved.
 
-Architecture and specification. Implementation decisions are being reviewed individually.
-
-## Architecture and handover
-
-Start with the [architecture and decision register](docs/ARCHITECTURE.md). It records the approved baseline, open decisions and the next discussion topic for new sessions.
+For the current project status and session handover, see [the project record](docs/ARCHITECTURE.md).
