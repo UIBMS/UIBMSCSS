@@ -261,11 +261,25 @@ Use natural, concise and descriptive unprefixed names as the framework's naming 
 
 Exact identifiers, naming grammar and any technically necessary private implementation identifiers remain open. No particular class, attribute, token or cascade layer identifier is approved by the illustrative naming examples.
 
+### ARC-009 — Natural, descriptive and native CSS-aligned naming
+
+Status: approved — Option C, 2026-11-24.
+
+Use natural, concise and descriptive identifiers that follow established native CSS terminology wherever appropriate.
+
+- Use lowercase, hyphen-separated words for framework-defined classes, data attributes, custom properties and their named values.
+- Avoid arbitrary abbreviations and redundant words; prefer familiar terminology over framework-specific vocabulary.
+- Use meaningful, discoverable names for attribute values instead of opaque codes.
+- Preserve the unprefixed naming strategy approved in ARC-008.
+- Prioritize clarity and consistency for both humans and AI coding agents without introducing a separate styling language.
+
+The examples used in the decision discussion illustrate the naming grammar only. Exact public class, attribute, token and layer identifiers and supported values remain open.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
-3. Detailed naming grammar and public interface conventions, following approved ARC-008 (natural, unprefixed naming).
+3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Meaningful token architecture.
 5. Default native HTML styling and interaction states.
 6. Data attribute responsibilities, configuration, inheritance and composition.
