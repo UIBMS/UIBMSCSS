@@ -1,0 +1,19 @@
+@layer defaults {
+
+    :where(dialog, [popover]) {
+        color: var(--color-text);
+        background-color: var(--color-surface);
+        border: var(--border-width) solid var(--color-border);
+        border-radius: calc(var(--radius) * 3);
+        padding: var(--space);
+        max-inline-size: min(36rem, calc(100% - var(--space) * 2));
+        max-block-size: calc(100% - var(--space) * 2);
+        overflow: auto;
+        box-shadow: var(--shadow);
+    }
+
+    :where(dialog)::backdrop {
+        background-color: rgb(0 0 0 / 0.45);
+    }
+
+}
