@@ -802,9 +802,24 @@ Customize native form controls where meaningful while preserving their underlyin
 
 The progressive customization approach is approved. Exact control designs, specialized selectors, supported enhancement capabilities, browser-specific treatment and implementation remain open.
 
+### ARC-010 — Global by default with optional scoped distribution
+
+Status: approved — Option C, 2026-11-24.
+
+Provide global and explicitly scoped adoption modes generated from the same maintained native CSS source.
+
+- The global distribution applies the default UIBMS CSS experience without requiring special HTML classes or data attributes.
+- The optional scoped distribution applies framework styling within explicitly selected adoption areas, supporting embedded applications, plugins and gradual adoption without applying framework selector rules indiscriminately to the surrounding document.
+- Cover reset, defaults, contextual configurations, reusable classes, effects and applicable preference adaptations within the scope.
+- Evaluate native @scope and low-specificity scoped selectors against the approved cross-browser interoperability requirements; preserve natural inheritance, native cascade behavior and developer overrides.
+- Account explicitly for document-wide definitions, including custom property registrations and animation identifiers, which are not isolated merely by scoping selectors. Scoped adoption is not equivalent to complete isolation from host styles.
+- Preserve the single maintained native CSS source, automated packaging, optional extension architecture, applicable AAA accessibility defaults and native HTML functionality.
+
+Exact distribution filenames, scope marker, selectors, treatment of document-wide definitions, integration behavior and verification remain open. Illustrative filenames and markup are not approved implementation contracts.
+
 ## Open architectural decisions
 
-1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) and CLS-003 (foundational public class catalog).
+1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) ARC-003 (strict separation of classes and data attributes with contextual configuration) CLS-001 (intent-oriented reusable classes) CLS-002 (intrinsic layout patterns) CLS-003 (foundational public class catalog) and ARC-010 (global by default with optional scoped distribution).
 2. CSS architecture, layer structure, distribution packaging and extension mechanisms, following approved ARC-004 (native cascade layers and deliberately low specificity) ARC-005 (default distribution with modular extensions and a comprehensive distribution) ARC-006 (native CSS source with automated distribution generation, validation and minification) and ARC-007 (responsibility-based cascade layers) LYR-001 (minimal native reset layer) LYR-002 (unified defaults layer) LYR-003 (unified configuration layer) LYR-004 (unified features layer) and LYR-005 (hybrid preferences layer; five-layer responsibility and precedence architecture approved, exact identifiers and implementation open).
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
