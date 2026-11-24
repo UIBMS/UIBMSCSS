@@ -470,6 +470,21 @@ Organize meaningful HTML data attributes into independent contextual configurati
 
 Exact attribute identifiers, supported values, inheritance and reset rules, feature composition, validation, extension contracts and implementation remain open. Illustrative attribute names and markup are not a finalized public API.
 
+### DAT-002 — Selective inheritance with explicit restoration
+
+Status: approved — Option C, 2026-11-24.
+
+Contextual attributes override only their own design dimension. Other dimensions retain their surrounding configuration through the approved native CSS inheritance and token resolution architecture.
+
+- Omitted contextual attributes retain the surrounding configuration, or framework defaults where no surrounding configuration applies.
+- Recognized values configure the corresponding dimension without resetting unrelated settings.
+- Provide an explicit means to restore the framework default for an individual dimension without resetting other dimensions.
+- Support automatic environmental adaptation and explicit disabling where meaningful for the particular dimension or optional functionality.
+- Unrecognized values should leave inherited or default configuration unaffected rather than produce unrelated changes.
+- Preserve nested-context predictability, developer overrides, accessibility preferences and the distinction between contextual configurations and individual feature requests.
+
+The proposed values default, auto and none are illustrative conventions; not every attribute requires every special value. Exact reserved values, selectors, reset mechanisms and implementation remain open.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -477,7 +492,7 @@ Exact attribute identifiers, supported values, inheritance and reset rules, feat
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) and DAT-002 (selective inheritance with explicit restoration).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
