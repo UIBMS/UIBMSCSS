@@ -485,6 +485,21 @@ Contextual attributes override only their own design dimension. Other dimensions
 
 The proposed values default, auto and none are illustrative conventions; not every attribute requires every special value. Exact reserved values, selectors, reset mechanisms and implementation remain open.
 
+### DAT-003 — Composable individual features and interaction contexts
+
+Status: approved — Option C, 2026-11-24.
+
+Support multiple space-separated feature values in meaningful individual feature attributes, with distinct interaction contexts where they provide genuine value.
+
+- Allow compatible visual effects to compose on the same element through a declarative, human-readable and agent-friendly HTML interface.
+- Distinguish general visual effects from context-specific requests, such as hover, activation, focus, entrance, exit and scroll-driven effects, wherever appropriate.
+- Use native interoperable CSS mechanisms wherever technically possible; evaluate any features requiring additional runtime behavior separately rather than introducing a mandatory runtime.
+- Establish predictable composition and documented conflict-resolution behavior for effects that manipulate overlapping CSS properties.
+- Preserve native interaction semantics, keyboard focus, environmental preferences, applicable AAA accessibility defaults and developer customization.
+- Preserve the distinction between contextual effects profiles and individual feature requests established in DAT-001. Individual requests do not automatically activate those features on descendants.
+
+The attribute names, interaction contexts, supported effect values, composition and conflict-resolution rules, fallback behavior and implementation remain open. Illustrative CSS, markup and previews are not approved public API contracts.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -492,7 +507,7 @@ The proposed values default, auto and none are illustrative conventions; not eve
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) and DAT-002 (selective inheritance with explicit restoration).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) and DAT-003 (composable individual features and interaction contexts).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
