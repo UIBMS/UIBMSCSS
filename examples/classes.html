@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>UIBMS CSS - Reusable classes showcase</title>
+    <link rel="stylesheet" href="../src/uibms.css">
+    <style>
+        /* Example-only spacing and size constraints; the 13 classes do the layout. */
+        main { padding-block: calc(var(--space) * 2); }
+        main > section + section { margin-block-start: var(--space); }
+        #center-sample { min-block-size: 9rem; }
+        #truncate-sample { max-inline-size: 24rem; }
+    </style>
+</head>
+<body>
+    <a class="visually-hidden" href="#content">Skip to content</a>
+    <main class="container stack" id="content">
+        <header class="stack">
+            <small>UIBMS CSS / IMP-003</small>
+            <h1>Layout by intention.</h1>
+            <p class="lead">Thirteen reusable classes complement native HTML, giving content space to adapt without a fixed grid or a utility catalog.</p>
+            <nav class="cluster" aria-label="Showcase sections">
+                <a href="#grids">Grid</a>
+                <a href="#arrangements">Flex and cluster</a>
+                <a href="#regions">Sidebar and split</a>
+                <a href="#surfaces">Surfaces</a>
+                <a href="#text">Text and accessibility</a>
+            </nav>
+            <div class="cluster">
+                <label for="theme">Page appearance</label>
+                <select id="theme">
+                    <option value="auto">Automatic</option>
+                    <option value="light">Light</option>
+                    <option value="dark">Dark</option>
+                </select>
+            </div>
+        </header>
+
+        <section class="stack" id="grids">
+            <h2>01. Intrinsic grid</h2>
+            <p>Content fits the available width. Cards flow to new rows naturally.</p>
+            <div class="grid" id="grid-sample">
+                <article class="card stack" id="grid-card">
+                    <small>Projects</small><h3>24 active</h3><p>Self-contained surfaces.</p><button type="button">View projects</button>
+                </article>
+                <article class="card stack">
+                    <small>Reports</small><h3>12 available</h3><p>Content-aware tracks.</p><button type="button">View reports</button>
+                </article>
+                <article class="card stack">
+                    <small>Activity</small><h3>8 updates</h3><p>Readable native elements.</p><button type="button">View activity</button>
+                </article>
+            </div>
+        </section>
+
+        <section class="stack" id="arrangements">
+            <h2>02. Flexible arrangements</h2>
+            <div class="panel stack">
+                <h3>Flex</h3><p>Children expand to use available space, wrapping when necessary.</p>
+                <div class="flex" id="flex-sample"><button type="button" id="flex-short">Save</button><button type="button">Save as template</button><button type="button">Export</button></div>
+            </div>
+            <div class="panel stack">
+                <h3>Cluster</h3><p>Items keep their natural size and wrap as a compact group.</p>
+                <div class="cluster" id="cluster-sample"><button type="button" id="cluster-short">Save</button><button type="button">Save as template</button><button type="button">Export</button></div>
+            </div>
+        </section>
+
+        <section class="stack" id="regions">
+            <h2>03. Coordinated regions</h2>
+            <p>Sidebar and split work with two content regions and stack when space is limited.</p>
+            <div class="sidebar" id="sidebar-sample">
+                <aside class="panel stack" id="sidebar-region"><h3>Workspace</h3><nav class="stack" aria-label="Workspace"><a href="#grids">Projects</a><a href="#surfaces">Reports</a><a href="#text">Settings</a></nav></aside>
+                <article class="card stack" id="main-region"><h3>Project overview</h3><p>The main region receives the available space while the first region supplies contextual navigation.</p><p>On narrower screens, both regions retain their source order and become full-width rows.</p></article>
+            </div>
+            <div class="split" id="split-sample">
+                <article class="card stack"><h3>Plan</h3><p>Equal-basis regions without a fixed column system.</p></article>
+                <article class="card stack"><h3>Deliver</h3><p>Intrinsic wrapping as the containing space changes.</p></article>
+            </div>
+        </section>
+
+        <section class="stack" id="surfaces">
+            <h2>04. Surfaces and alignment</h2>
+            <div class="split">
+                <article class="card stack" id="light-card" data-theme="light"><h3>Card</h3><p>Raised, self-contained content.</p><div class="panel stack" id="nested-dark" data-theme="dark"><h4>Nested dark panel</h4><p>Local colors and flat depth.</p></div></article>
+                <article class="panel stack" id="dark-panel" data-theme="dark"><h3>Panel</h3><p>Structured, subtle interface surface.</p><div class="card stack" id="nested-light" data-theme="light"><h4>Nested light card</h4><p>Local surface and depth.</p></div></article>
+            </div>
+            <div class="card center" id="center-sample"><p>Centered content</p></div>
+        </section>
+
+        <section class="stack" id="text">
+            <h2>05. Text and accessibility</h2>
+            <p class="lead" id="lead-sample">An introductory paragraph has its own readable measure, without overriding the selected theme.</p>
+            <div class="panel stack">
+                <h3>Truncate</h3>
+                <p>Focus the next paragraph to reveal the full text, or use the disclosure below.</p>
+                <p class="truncate" tabindex="0" id="truncate-sample">This is a longer example of supplementary text that can be displayed on one line when space is limited.</p>
+                <details><summary>Read full text</summary><p>This is a longer example of supplementary text that can be displayed on one line when space is limited.</p></details>
+            </div>
+            <div class="panel stack">
+                <h3>Visually hidden</h3><p>The button has a visible symbol and an assistive-technology-accessible label. The skip link at the start of this document also becomes visible when focused.</p>
+                <div class="cluster"><button type="button" id="icon-button"><span aria-hidden="true">+</span><span class="visually-hidden">Add item</span></button></div>
+            </div>
+        </section>
+        <footer><hr><small>Development showcase. Native CSS only; the theme selector uses example-only JavaScript. Production distributions and signature effects remain under development.</small></footer>
+    </main>
+    <script>
+        document.querySelector('#theme').addEventListener('change', event => {
+            document.documentElement.dataset.theme = event.target.value;
+        });
+    </script>
+</body>
+</html>
