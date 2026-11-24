@@ -647,6 +647,41 @@ The public contextual attribute `data-effects` selects a coordinated visual and 
 
 The five profile identifiers and their responsibilities are approved. Exact visual designs, effects, token values, distribution filenames, precedence details, and implementation and verification remain open. Illustrative previews are not approved implementation contracts.
 
+### DAT-011 — Essential density, geometry and typography profiles
+
+Status: approved — Option C, 2026-11-24.
+
+Establish the following initial public profile identifiers and responsibilities, with organic expansion and support for developer-defined profiles.
+
+| `data-density` value | Responsibility |
+| --- | --- |
+| `default` | Balanced spacing |
+| `compact` | Space-efficient interfaces |
+| `spacious` | Generous spacing |
+| `auto` | Context-aware density |
+
+| `data-shape` value | Responsibility |
+| --- | --- |
+| `default` | Original UIBMS geometry |
+| `sharp` | Angular geometry |
+| `soft` | Subtly rounded geometry |
+| `rounded` | Pronounced rounded geometry |
+| `organic` | Expressive geometry |
+
+| `data-typography` value | Responsibility |
+| --- | --- |
+| `default` | Native system typography |
+| `editorial` | Reading-oriented typography |
+| `technical` | Technical content and interfaces |
+| `expressive` | Stronger typographic hierarchy |
+
+- Keep all three contextual dimensions independent, optional and inheritable, in accordance with DAT-001, DAT-002 and DAT-007.
+- Include original defaults in the core distribution; introduce alternative profiles according to genuine implementation requirements without unnecessary CSS growth.
+- Preserve intrinsic spacing, context-aware geometry and accessible computational typography under TOK-008 through TOK-010, including user font preferences, content reflow, visible boundaries and applicable AAA interaction target sizes.
+- Support developer-defined profiles through documented native CSS token contracts.
+
+The 13 profile identifiers and their responsibilities across the three attributes are approved. Exact styles, measurements, font stacks, automatic density behavior, distribution details and implementation remain open. Illustrative markup does not approve additional palette identifiers or other API values.
+
 ## Open architectural decisions
 
 1. Remaining framework responsibility boundaries and detailed styling rules, following approved ARC-001 (native HTML-first with optional scoped adoption), ARC-002 (comprehensive, context-aware native HTML styling) and ARC-003 (strict separation of classes and data attributes with contextual configuration).
@@ -654,7 +689,7 @@ The five profile identifiers and their responsibilities are approved. Exact visu
 3. Detailed public identifiers and interface contracts, following approved ARC-008 (natural, unprefixed naming) and ARC-009 (natural, descriptive, native CSS-aligned naming grammar).
 4. Detailed token inventory, relationships, context resolution and implementation, following approved TOK-001 (organic, relationship-based token architecture) TOK-002 (context-aware token resolution) TOK-003 (meaningful custom property registration) TOK-004 (foundational tokens with organic expansion) TOK-005 (intelligent hybrid color system) TOK-006 (independent themes and coordinated palettes) TOK-007 (neutral foundation with configurable accent identity) TOK-008 (intrinsic and computational typography) TOK-009 (intrinsic and context-aware spacing) TOK-010 (context-aware geometry with configurable identity) TOK-011 (context-aware surface and depth system) and TOK-012 (context-aware motion language).
 5. Default native HTML styling and interaction states.
-6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) DAT-009 (natural default palette and optional palette extensions) and DAT-010 (original UIBMS effects profile with optional alternatives).
+6. Detailed data attribute inventory, configuration, inheritance and composition, following approved DAT-001 (independent contextual and individual feature attributes) DAT-002 (selective inheritance with explicit restoration) DAT-003 (composable individual features and interaction contexts) DAT-004 (composable effect channels and predictable conflict resolution) DAT-005 (explicit control over default and individual effects) DAT-006 (purpose-driven foundational public attribute catalog) DAT-007 (shared attribute vocabulary and context-specific applicability) DAT-008 (environment-first color scheme configuration) DAT-009 (natural default palette and optional palette extensions) DAT-010 (original UIBMS effects profile with optional alternatives) and DAT-011 (essential density, geometry and typography profiles).
 7. Original visual effects identity, reusable effects, alternate profiles and environmental adaptation.
 8. Testing, accessibility verification, compatibility policy and performance measurement.
 
