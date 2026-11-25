@@ -57,3 +57,7 @@ python tests/release.py --browser webkit
 The test embeds the actual generated stylesheets in declared order, so it does not depend on a dev server. It exercises principal bundles, extension isolation, selected native HTML and class regressions, profile inheritance, effects, user preferences and responsive reflow. Additional engine-specific support may require newer browser binaries than the Playwright defaults; use `--executable` with a suitable compatible executable. An unsupported required capability is a release blocker, not grounds to silently apply global styles. Real-device accessibility, all WCAG criteria, native Safari/Firefox versions, and browser performance need their own evidence. Current results are recorded in the architecture document; the local synthetic measurement is not a real-world benchmark.
 
 The original scope and layer contracts remain unchanged. Physical optics, true continuous corners, custom scroll physics, and advanced liquid materials are not part of this initial candidate. License terms, release version and public publication are not selected by the packaging work.
+
+## Border intensity
+
+Use `data-border="default|subtle|strong"` on the adoption root or a nested region (choose one value). The standard and full distributions include this profile. Decorative borders follow the inherited setting; functional control boundaries retain `--color-border-strong`.

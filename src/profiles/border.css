@@ -1,0 +1,41 @@
+/* Independent, inheritable decorative border intensity. The strong role
+   remains the palette's original accessible control boundary. */
+@layer defaults {
+    :where(:root) {
+        --border-subtle-intensity: 22%;
+        --border-intensity: 50%;
+    }
+
+    /* Resolve at each palette/profile boundary so nesting stays independent.
+       Unregistered color values resolve light-dark() where consumed. */
+    :where(:root, [data-palette], [data-border]) {
+        --color-border-subtle: color-mix(in srgb, var(--color-border-strong) var(--border-subtle-intensity), transparent);
+        --color-border: color-mix(in srgb, var(--color-border-strong) var(--border-intensity), transparent);
+    }
+}
+
+@layer configuration {
+    :where([data-border="default"]) {
+        --border-subtle-intensity: 22%;
+        --border-intensity: 50%;
+    }
+
+    :where([data-border="subtle"]) {
+        --border-subtle-intensity: 12%;
+        --border-intensity: 28%;
+    }
+
+    :where([data-border="strong"]) {
+        --border-subtle-intensity: 100%;
+        --border-intensity: 100%;
+    }
+}
+
+@layer preferences {
+    @media (prefers-contrast: more), (forced-colors: active) {
+        :where(:root, [data-border]) {
+            --border-subtle-intensity: 100%;
+            --border-intensity: 100%;
+        }
+    }
+}
