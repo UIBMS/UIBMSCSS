@@ -17,7 +17,7 @@ The framework should be different because it makes development easier and produc
 
 ## Development status
 
-The six initial implementation checkpoints have produced a development release candidate: foundational tokens, native HTML styling, 13 reusable classes, independent configuration profiles, signature effects and generated global/scoped distributions.
+The six initial implementation checkpoints have produced a development release candidate: foundational tokens, native HTML styling, 13 reusable classes, independent configuration profiles (including the new border appearance profile), signature effects and generated global/scoped distributions.
 
 Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). Exact distribution sizes and hashes are recorded in [the generated manifest](dist/manifest.json). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
 

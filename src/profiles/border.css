@@ -1,0 +1,36 @@
+@layer configuration {
+
+    /* Strength is inherited independently from palette and color scheme. */
+    :where(:root, [data-border="default"]) {
+        --_border-strength: 40%;
+        --_border-decoration-strength: 15%;
+    }
+
+    :where([data-border="subtle"]) {
+        --_border-strength: 0%;
+        --_border-decoration-strength: 0%;
+    }
+
+    :where([data-border="strong"]) {
+        --_border-strength: 100%;
+        --_border-decoration-strength: 100%;
+    }
+
+    /* Rebind at palette/profile boundaries so nested settings compose. */
+    :where(:root, [data-palette], [data-border]) {
+        --color-border: color-mix(in srgb, var(--color-border-subtle), var(--color-border-strong) var(--_border-strength));
+        --color-border-decorative: color-mix(in srgb, var(--color-border-subtle), var(--color-border-strong) var(--_border-decoration-strength));
+    }
+
+}
+
+@layer preferences {
+
+    @media (prefers-contrast: more) {
+        :where(:root, [data-border]) {
+            --_border-strength: 100%;
+            --_border-decoration-strength: 100%;
+        }
+    }
+
+}

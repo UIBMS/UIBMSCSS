@@ -10,7 +10,7 @@ Choose one principal stylesheet, not both global and scoped variants. No consume
 <link rel="stylesheet" href="dist/uibms.min.css">
 ```
 
-The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `.css` version. The standard stylesheet includes the natural palette, native HTML styling, 13 classes, density/shape/typography configurations and initial signature effects. Seven alternative palettes and three alternative effects profiles are optional.
+The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `.css` version. The standard stylesheet includes the natural palette, native HTML styling, 13 classes, density/shape/border/typography configurations and initial signature effects. Seven alternative palettes and three alternative effects profiles are optional.
 
 ```html
 <link rel="stylesheet" href="dist/uibms.min.css">
@@ -18,6 +18,10 @@ The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `
 <link rel="stylesheet" href="dist/extensions/profiles/effects-fluid.min.css">
 <section data-palette="ocean" data-effects="fluid">...</section>
 ```
+
+## Border appearance
+
+Use `data-border="subtle"`, `data-border="default"`, or `data-border="strong"` on the document root or a local context. The profile is independent of the current theme, palette, density and shape. Subtle and strong palette colors are exposed as `--color-border-subtle` and `--color-border-strong`. The profile derives `--color-border` for structural boundaries and `--color-border-decorative` for separators and surface outlines. Native input boundaries and scrollbars retain the strong role; focus and validation retain their own colors. A user preference for more contrast takes precedence.
 
 ## Scoped adoption
 

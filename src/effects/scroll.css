@@ -5,7 +5,7 @@
     }
 
     :where(:root, [data-theme="light"], [data-theme="dark"], [data-theme="auto"], pre, dialog, [popover]) {
-        scrollbar-color: var(--color-border) transparent;
+        scrollbar-color: var(--color-border-strong) transparent;
     }
 
 }

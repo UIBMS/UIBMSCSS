@@ -16,7 +16,7 @@
 
     :where(th, td) {
         padding: calc(var(--space) * 0.75);
-        border-block-end: var(--border-width) solid var(--color-border);
+        border-block-end: var(--border-width) solid var(--color-border-decorative);
         text-align: start;
         vertical-align: top;
         overflow-wrap: normal;

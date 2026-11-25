@@ -1241,3 +1241,8 @@ The ordering is a proposed discussion sequence, not an approved implementation p
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 
 Only explicitly approved public contracts and implementations are authorized. Historical examples and unapproved proposals do not establish additional contracts; browser version policy and unresolved implementation details remain open.
+
+
+## Border appearance profile (approved 2026-11-25)
+
+The border color roles distinguish visual structure from functional contrast. Each of the eight palettes supplies a coordinated subtle endpoint and retains the previously verified strong endpoint. The inheritable `data-border` configuration accepts `subtle`, `default`, and `strong`. The default derives structural borders using 40% of the strong endpoint and decorative borders using 15%; subtle uses the subtle endpoint for both, and strong uses the strong endpoint for both. Profiles compose with nested palettes, color schemes and scoped adoption; the more-contrast preference takes precedence. Native form boundaries, button hover boundaries, scrollbars, focus and validation preserve their existing functional contrast. The two derived colors are not intended to meet non-text contrast requirements when used decoratively; use the strong role where identifying a control or other meaningful boundary depends on its border. The website exposes the same profile in its data-driven appearance menu and persists it with the other settings.

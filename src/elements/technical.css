@@ -19,7 +19,7 @@
     :where(pre) {
         background-color: var(--color-surface-subtle);
         color: var(--color-text);
-        border: var(--border-width) solid var(--color-border);
+        border: var(--border-width) solid var(--color-border-decorative);
         border-radius: var(--radius);
         padding: var(--space);
         margin-block: var(--space);

@@ -1,0 +1,48 @@
+name: Rebuild border appearance distributions
+on:
+  push:
+    branches: ['fix/border-appearance-build']
+permissions:
+  contents: write
+jobs:
+  rebuild:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm --prefix tools install --ignore-scripts --no-audit --no-fund
+      - run: npm --prefix tools run build
+      - name: Commit generated distributions to build branch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add dist
+          if ! git diff --cached --quiet; then
+            git commit -m "Regenerate distributions for border appearance profile"
+            git push origin HEAD:fix/border-appearance-build
+          fi
+      - run: npm --prefix website install --no-audit --no-fund
+      - run: npm --prefix website run check:content
+      - run: npm --prefix website run build
+        env:
+          SITE_BASE: /UIBMSCSS/
+          SITE_PUBLIC: '1'
+      - run: node website/tools/check-build.mjs
+        env:
+          SITE_BASE: /UIBMSCSS/
+          SITE_PUBLIC: '1'
+      - run: npm --prefix website run preview:offline
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install playwright
+      - run: python -m playwright install --with-deps chromium firefox webkit
+      - run: |
+          for browser in chromium firefox webkit; do
+            python tests/borders.py --browser "$browser"
+            python tests/tables.py --browser "$browser"
+          done
+      - run: python website/tests/borders.py

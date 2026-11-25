@@ -22,7 +22,7 @@
     }
 
     :where(details[open] > summary) {
-        border-block-end: var(--border-width) solid var(--color-border);
+        border-block-end: var(--border-width) solid var(--color-border-decorative);
         margin-block-end: calc(var(--space) * 0.75);
     }
 

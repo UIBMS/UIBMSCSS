@@ -30,7 +30,7 @@
 
     :where(hr) {
         border: 0;
-        border-block-start: var(--border-width) solid var(--color-border);
+        border-block-start: var(--border-width) solid var(--color-border-decorative);
         margin-block: var(--space);
     }
 

@@ -9,7 +9,7 @@
         &:where([data-effect~="matte"]:not([data-effect~="glass"], [data-effect~="frosted"], [data-effect~="metallic"])) {
             color: var(--color-text);
             background-color: var(--color-surface);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-decorative);
             box-shadow: var(--_effect-depth);
 
             &:where(:not(.card, .panel, dialog, [popover])) {

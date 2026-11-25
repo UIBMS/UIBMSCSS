@@ -22,7 +22,7 @@ for(const p of pages){
       }
     }
   }
-  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));assert(html.includes('id="site-appearance"'));assert(!html.includes('{{base}}'));checks+=4;}
+  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));assert(html.includes('id="site-appearance"'));assert(html.includes('id="appearance-border"'));assert(!html.includes('{{base}}'));checks+=5;}
 }
 assert(codeBlock('<button>Copy</button>').includes('token tag'));
 console.log(JSON.stringify({pages:pages.length,documentationPages:docPages.length,groups:groups.length,codeExamples,liveExamples,checks},null,2));

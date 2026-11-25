@@ -2,7 +2,7 @@
 
     :where(.card:not(.panel), .panel:not(.card)) {
         color: var(--color-text);
-        border: var(--border-width) solid var(--color-border);
+        border: var(--border-width) solid var(--color-border-decorative);
         border-radius: calc(var(--radius) * 2);
         padding: var(--space);
     }

@@ -3,6 +3,7 @@ export const profiles = [
   { key:'palette', label:'Palette', default:'natural', values:['natural','ocean','gold','forest','bordeaux','slate','royal','terracotta'] },
   { key:'density', label:'Density', default:'default', values:['default','auto','compact','spacious'] },
   { key:'shape', label:'Shape', default:'default', values:['default','sharp','soft','rounded','organic'] },
+  { key:'border', label:'Borders', default:'default', values:['subtle','default','strong'] },
   { key:'typography', label:'Typography', default:'default', values:['default','editorial','technical','expressive'] },
   { key:'effects', label:'Effects', default:'default', values:['default','none','minimal','fluid','dynamic'] }
 ];

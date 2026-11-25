@@ -13,7 +13,7 @@ root=HERE/'preview-output'; base='/'+args.base.strip('/')+'/' if args.base.strip
 def check(name,condition,detail=''):
  report.append({'check':name,'passed':bool(condition),'detail':str(detail)})
  if not condition: issues.append((name,str(detail)));print('FAIL',name,detail,flush=True)
-files=sorted(site.rglob('index.html'));check('68 HTML review pages',len(files)==68,len(files))
+files=sorted(site.rglob('index.html'));check('69 HTML review pages',len(files)==69,len(files))
 manifest=json.loads((site/'framework/manifest.json').read_text()); import hashlib
 for name,v in manifest['files'].items():
  b=(site/'framework'/name).read_bytes(); check('framework integrity '+name,len(b)==v['bytes'] and hashlib.sha256(b).hexdigest()==v['sha256'])
@@ -98,9 +98,9 @@ try:
   page.set_viewport_size({'width':1440,'height':900});open_page('docs/buttons')
   if args.screenshots:
    shots=Path(args.screenshots);shots.mkdir(parents=True,exist_ok=True);page.screenshot(path=str(shots/'desktop.png'))
-  check('one global appearance control',page.locator('#site-appearance').count()==1 and page.locator('#site-appearance select').count()==6)
+  check('one global appearance control',page.locator('#site-appearance').count()==1 and page.locator('#site-appearance select').count()==7)
   page.locator('#site-appearance summary').click()
-  for k,v in [('theme','dark'),('palette','bordeaux'),('density','compact'),('shape','sharp'),('typography','technical'),('effects','fluid')]:
+  for k,v in [('theme','dark'),('palette','bordeaux'),('density','compact'),('shape','sharp'),('border','subtle'),('typography','technical'),('effects','fluid')]:
    page.locator('#appearance-'+k).select_option(v);check('appearance '+k,page.locator('html').get_attribute('data-'+k)==v)
   # The site is really consuming UIBMS CSS, not just changing strings.
   check('sharp geometry consumed',page.locator('[data-site-demo-content] button').first.evaluate('(e)=>getComputedStyle(e).borderRadius')=='0px')
@@ -108,8 +108,8 @@ try:
   if args.screenshots:page.screenshot(path=str(shots/'appearance.png'))
   state=page.evaluate('window.__store') if args.inline else None
   print('appearance done',flush=True)
-  open_page('docs/grid',state);check('settings reloaded on next page',page.locator('html').get_attribute('data-palette')=='bordeaux' and page.locator('html').get_attribute('data-effects')=='fluid')
-  page.locator('#site-appearance summary').click();page.locator('#site-appearance-reset').click();check('restore defaults',page.locator('html').get_attribute('data-theme')=='auto' and page.locator('html').get_attribute('data-density')=='default');page.keyboard.press('Escape');check('escape appearance',not page.locator('#site-appearance').evaluate('(e)=>e.open'))
+  open_page('docs/grid',state);check('settings reloaded on next page',page.locator('html').get_attribute('data-palette')=='bordeaux' and page.locator('html').get_attribute('data-effects')=='fluid' and page.locator('html').get_attribute('data-border')=='subtle')
+  page.locator('#site-appearance summary').click();page.locator('#site-appearance-reset').click();check('restore defaults',page.locator('html').get_attribute('data-theme')=='auto' and page.locator('html').get_attribute('data-density')=='default' and page.locator('html').get_attribute('data-border')=='default');page.keyboard.press('Escape');check('escape appearance',not page.locator('#site-appearance').evaluate('(e)=>e.open'))
   print('next page/reset done',flush=True)
   # Search, copy exact text, active category, responsive menu.
   page.locator('#site-search-open').click();page.locator('#site-search-input').fill('materials');check('search results',page.locator('#site-search-results a').count()>0 and 'Materials' in page.locator('#site-search-results').inner_text());page.keyboard.press('Escape');page.wait_for_timeout(100);check('escape search',not page.locator('#site-search').evaluate('(e)=>e.open'))
