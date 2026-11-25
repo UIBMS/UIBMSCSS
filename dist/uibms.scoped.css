@@ -22,7 +22,7 @@
             --color-text-muted: light-dark(#494b46, #c4c8c0);
             --color-accent: light-dark(#343b35, #d8dfd6);
             --color-on-accent: light-dark(#ffffff, #242522);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -98,7 +98,7 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -149,6 +149,44 @@
         }
         :where(:scope,:scope *):where([data-shape="organic"]) {
             --radius: 1rem;
+        }
+    }
+}
+@layer defaults {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        :where(:scope,:scope *):where(:scope) {
+            --border-subtle-intensity: 22%;
+            --border-intensity: 50%;
+        }
+        :where(:scope,:scope *):where(:scope,[data-palette],[data-border]) {
+            --color-border-subtle: color-mix(in srgb, var(--color-border-strong) var(--border-subtle-intensity), transparent);
+            --color-border: color-mix(in srgb, var(--color-border-strong) var(--border-intensity), transparent);
+        }
+    }
+}
+@layer configuration {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        :where(:scope,:scope *):where([data-border="default"]) {
+            --border-subtle-intensity: 22%;
+            --border-intensity: 50%;
+        }
+        :where(:scope,:scope *):where([data-border="subtle"]) {
+            --border-subtle-intensity: 12%;
+            --border-intensity: 28%;
+        }
+        :where(:scope,:scope *):where([data-border="strong"]) {
+            --border-subtle-intensity: 100%;
+            --border-intensity: 100%;
+        }
+    }
+}
+@layer preferences {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        @media (prefers-contrast: more), (forced-colors: active) {
+            :where(:scope,:scope *):where(:scope,[data-border]) {
+                --border-subtle-intensity: 100%;
+                --border-intensity: 100%;
+            }
         }
     }
 }
@@ -247,7 +285,7 @@
         }
         :where(:scope,:scope *):where(hr) {
             border: 0;
-            border-block-start: var(--border-width) solid var(--color-border);
+            border-block-start: var(--border-width) solid var(--color-border-subtle);
             margin-block: var(--space);
         }
     }
@@ -346,7 +384,7 @@
             :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):hover,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):hover),:where(:scope,:scope *) :where(input[type="file"]:not(:disabled):hover)::file-selector-button {
                 background-color: var(--color-surface-subtle);
                 color: var(--color-text);
-                border-color: var(--color-border);
+                border-color: var(--color-border-strong);
             }
         }
         :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):active,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):active) {
@@ -358,7 +396,7 @@
         :where(:scope,:scope *):where(button:is(:disabled,[aria-disabled="true"]),input:is([type="button"],[type="submit"],[type="reset"]):is(:disabled,[aria-disabled="true"])),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
             background-color: var(--color-surface-subtle);
             color: var(--color-text-muted);
-            border-color: var(--color-border);
+            border-color: var(--color-border-strong);
             cursor: not-allowed;
         }
     }
@@ -368,7 +406,7 @@
         :where(:scope,:scope *):where(input:not([type="hidden"],[type="button"],[type="submit"],[type="reset"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"]),select,textarea) {
             color: var(--color-text);
             background-color: var(--color-surface);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-strong);
             border-radius: var(--radius);
             padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
             min-block-size: var(--target-size);
@@ -391,7 +429,7 @@
         }
         :where(:scope,:scope *):where(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"],[type="button"],[type="submit"],[type="reset"]),select,textarea):where(:disabled,[aria-disabled="true"]) {
             background-color: var(--color-surface-subtle);
-            border-color: var(--color-border);
+            border-color: var(--color-border-strong);
         }
         :where(:scope,:scope *):where(input,select,textarea):where(:user-invalid) {
             border-color: var(--color-danger);
@@ -494,7 +532,7 @@
         }
         :where(:scope,:scope *):where(th,td) {
             padding: calc(var(--space) * 0.75);
-            border-block-end: var(--border-width) solid var(--color-border);
+            border-block-end: var(--border-width) solid var(--color-border-subtle);
             text-align: start;
             vertical-align: top;
             overflow-wrap: normal;
@@ -697,7 +735,7 @@
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
         :where(:scope,:scope *):where(.card:not(.panel),.panel:not(.card)) {
             color: var(--color-text);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-subtle);
             border-radius: calc(var(--radius) * 2);
             padding: var(--space);
         }
