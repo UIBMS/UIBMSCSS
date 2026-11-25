@@ -10,7 +10,8 @@
         --color-on-accent: light-dark(#ffffff, #242522);
         --color-text: light-dark(#242522, #f4f5f2);
         --color-text-muted: light-dark(#494b46, #c4c8c0);
-        --color-border: light-dark(#767871, #939a90);
+        --color-border-subtle: light-dark(#e5ddde, #3f343a);
+        --color-border-strong: light-dark(#767871, #939a90);
         --color-focus: light-dark(#234f76, #b9d9f7);
         --color-success: light-dark(#205433, #b9e1c3);
         --color-warning: light-dark(#704500, #f5d59b);

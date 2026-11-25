@@ -1,186 +1,186 @@
 {
-  "coreModules": 36,
+  "coreModules": 37,
   "optionalModules": 10,
   "files": {
     "uibms.css": {
-      "bytes": 35123,
-      "gzip": 5275,
-      "sha256": "7367a54786a095539c1cbe8013584c6b0ca47c4b6881caee7ab5f6277b743bab"
+      "bytes": 36286,
+      "gzip": 5430,
+      "sha256": "c204cb02201254ffb27d46848bc4667479fcc55140d4cb63baf3825492d49f0d"
     },
     "uibms.min.css": {
-      "bytes": 26693,
-      "gzip": 4938,
-      "sha256": "44054357e1158ed50b4fc397e284772280593559abd75df0e9c8618544a5ac4e"
+      "bytes": 27648,
+      "gzip": 5085,
+      "sha256": "0164f76ef40abd64e6cf85ef13df07b952560bece4a69624a2ae99d19a61a45d"
     },
     "uibms.full.css": {
-      "bytes": 42638,
-      "gzip": 5969,
-      "sha256": "077803fccd3320af4c5c09aecb543d07ffcfd1c1b6f97ef40f854f95fce83163"
+      "bytes": 44277,
+      "gzip": 6209,
+      "sha256": "c699fddebd6e6e3490f28fb17e8c0fe953346c3401d8f26c38bf7cc1dd5f4b22"
     },
     "uibms.full.min.css": {
-      "bytes": 32740,
-      "gzip": 5446,
-      "sha256": "7497fe07b8551a1fd44b1a93ce616ab1f0cbc28ca6642bd84f8b1f09f58b2400"
+      "bytes": 34101,
+      "gzip": 5680,
+      "sha256": "b5c2b52cdcee932bc4fb722ceee4c13730bb5a708cf80b7972c76dcedaf3dd33"
     },
     "uibms.scoped.css": {
-      "bytes": 45080,
-      "gzip": 5445,
-      "sha256": "3f93b8d0b186f5344e1b119013489007d4d8857595825dc35dff6a34dff93335"
+      "bytes": 46603,
+      "gzip": 5626,
+      "sha256": "2ad6b8d0019d2c2a356890ea182f3d957d31415aef15d6150c3fdd0550511ad7"
     },
     "uibms.scoped.min.css": {
-      "bytes": 32866,
-      "gzip": 5061,
-      "sha256": "6749fd3d0bb208b8a8ace596970e2f2f9dff767ff9cb74ea88be22bfcd668375"
+      "bytes": 34063,
+      "gzip": 5213,
+      "sha256": "47420b14c2197534b7cd81a8999344adb7e0936bacd2150d5201a5d95dfb32f0"
     },
     "uibms.scoped.full.css": {
-      "bytes": 54855,
-      "gzip": 6185,
-      "sha256": "12c76ec02f0520614d91c048293c7d0ae1b2acb2553d824249ab3854a87acc1e"
+      "bytes": 56882,
+      "gzip": 6437,
+      "sha256": "14e3667106209c131e020d61d297400d3124fa16e32a93ae44ebd34382206f4f"
     },
     "uibms.scoped.full.min.css": {
-      "bytes": 40358,
-      "gzip": 5583,
-      "sha256": "740dc66e43c2d64fba7b60f653135b9e40cbaeaa140f440f0d47ea2749525d9f"
+      "bytes": 41961,
+      "gzip": 5827,
+      "sha256": "596983dad678e7d85339188850c36aa778a81f10853bfe647c920e332f4787b4"
     },
     "extensions/palettes/ocean.css": {
-      "bytes": 1098,
-      "gzip": 442,
-      "sha256": "8204c40479be534940000d7c9d41f893d521928e0ac5fd1474dfeadf8dfb77c9"
+      "bytes": 1166,
+      "gzip": 461,
+      "sha256": "48ecea96d344271cd8495c832cef45367ee5e423fe80d6c8c730e9610347d988"
     },
     "extensions/palettes/ocean.min.css": {
-      "bytes": 880,
-      "gzip": 404,
-      "sha256": "3873e81f323890c12eff9caf113653b8c7c0fe4a247c347be31b63ab50b0e226"
+      "bytes": 938,
+      "gzip": 422,
+      "sha256": "befaecd3cc46f6c7f2df98809a2b7f14e60fd1920d2347fcacef6a5c8e34e021"
     },
     "extensions/palettes/ocean.scoped.css": {
-      "bytes": 1366,
-      "gzip": 483,
-      "sha256": "3cd6dcff1f751cd1ab7b0b90da9f2a7e3fb52c08b919e5903d86752896ea4950"
+      "bytes": 1438,
+      "gzip": 504,
+      "sha256": "3c6fdda25b8b328ea970b1a2583a66df6cbaf1a6816fc895d8f466d6a530d0a4"
     },
     "extensions/palettes/ocean.scoped.min.css": {
-      "bytes": 1050,
-      "gzip": 441,
-      "sha256": "0da49a9c910eb38767206cc24ad329c171e1f67b399bd01fa24ad8155f307544"
+      "bytes": 1108,
+      "gzip": 460,
+      "sha256": "6afebf03dc1d970d7d635e046e57ca395ffd8cfbb378ef4e64fdaafc7a42c8ff"
     },
     "extensions/palettes/gold.css": {
-      "bytes": 1096,
-      "gzip": 438,
-      "sha256": "fb40859a4ae651d24aefb13520dd9d5d5cec6b55be6dbf333b5540c8b637ba1e"
+      "bytes": 1164,
+      "gzip": 455,
+      "sha256": "140d19002322db16aa0f3d940fc524f95c6af6264efd4bb95115bc484a802c20"
     },
     "extensions/palettes/gold.min.css": {
-      "bytes": 878,
-      "gzip": 401,
-      "sha256": "8e79434195448c5af2ceec5095327a6071456c92caa70222e747442c06d35e5e"
+      "bytes": 936,
+      "gzip": 417,
+      "sha256": "87685fef2a2be3db15da77a50a0bc5941d74a46914bdc9878cb1297a23b0c118"
     },
     "extensions/palettes/gold.scoped.css": {
-      "bytes": 1364,
-      "gzip": 479,
-      "sha256": "a30d9f7043054528ee3e80bc0fc51cebfe73a0bef1f7c193384121ff265a1e4a"
+      "bytes": 1436,
+      "gzip": 497,
+      "sha256": "76e863e18e43b3788e4dfe565d070cd335619c267d9b309792b056ffe5c40d52"
     },
     "extensions/palettes/gold.scoped.min.css": {
-      "bytes": 1048,
-      "gzip": 437,
-      "sha256": "80d0c53e935af6f8069a68b048907767c3f2334d1778e0b2334886bf7f18b89f"
+      "bytes": 1106,
+      "gzip": 455,
+      "sha256": "79685442221614372dca2a28dd0d90c3408645cc18ace9cf0dae1feaed6e44dd"
     },
     "extensions/palettes/forest.css": {
-      "bytes": 1100,
-      "gzip": 441,
-      "sha256": "16f51cfaa5ada3f566000397689cffc17f896897e4fadc727eb78a2df997a94d"
+      "bytes": 1168,
+      "gzip": 460,
+      "sha256": "91d4a91db6400f827f4e64fd5eae9c8683b7901dd95cbac189ddde74cb01d540"
     },
     "extensions/palettes/forest.min.css": {
-      "bytes": 882,
-      "gzip": 405,
-      "sha256": "a8183dffbb100a99739903b3ab1628be4671efb78fe8b09858b4fcb4eddb1888"
+      "bytes": 940,
+      "gzip": 422,
+      "sha256": "d907c48c0391e10d7781835943d367c0a5ae4dc48a5eda3c915ed15daf487c2f"
     },
     "extensions/palettes/forest.scoped.css": {
-      "bytes": 1368,
-      "gzip": 483,
-      "sha256": "731317c987a32a618a508d78fe4cb2bdba6454c537a45687353bf2b02ee9570d"
+      "bytes": 1440,
+      "gzip": 503,
+      "sha256": "407f44d381e341e473f8484ffe1c44eeee1e45f672cf063cfe8a3d8d49cd43de"
     },
     "extensions/palettes/forest.scoped.min.css": {
-      "bytes": 1052,
-      "gzip": 441,
-      "sha256": "e1a1df25e5590ac283d00c07adae8e4dc097b0cc1fcd05a8140b6fecc3dd9362"
+      "bytes": 1110,
+      "gzip": 459,
+      "sha256": "b9f3ee88573357e2e05055e9471debec6df1a50b4014790f9b8b05f29fb5ef5b"
     },
     "extensions/palettes/bordeaux.css": {
-      "bytes": 1104,
-      "gzip": 440,
-      "sha256": "f4beb44c7f5c3dce44d51c08f64511b6dd7c9562f710cee624b55938517a125b"
+      "bytes": 1172,
+      "gzip": 458,
+      "sha256": "19bfb02554c283ef64044c00e2df28d903a37c447222dd81f81cb68b1baa3642"
     },
     "extensions/palettes/bordeaux.min.css": {
-      "bytes": 886,
-      "gzip": 402,
-      "sha256": "8465e45eb1c8e8f85ade2afc1eeb4ef428c2eb475362813acf56b200c1dec703"
+      "bytes": 944,
+      "gzip": 420,
+      "sha256": "82f3095250ff79093154355630d1644a228ec0663d89b2db8164eeae110b07f1"
     },
     "extensions/palettes/bordeaux.scoped.css": {
-      "bytes": 1372,
-      "gzip": 481,
-      "sha256": "505df9cb112ed882ae4a8dae96a00bba63924db4397ce265343721c59f3dbe1b"
+      "bytes": 1444,
+      "gzip": 502,
+      "sha256": "da41f3d702f3ead759736e6c7250f2d34b72e4522fdfeac5a96bb96278ced241"
     },
     "extensions/palettes/bordeaux.scoped.min.css": {
-      "bytes": 1056,
-      "gzip": 439,
-      "sha256": "e89fdd135ae6e47a62ec43f11cf766d3d763973fc23ee5081b2232bcc3a36fd4"
+      "bytes": 1114,
+      "gzip": 458,
+      "sha256": "d43daf0143c761c9148911de162cee87a1a540729b688377a02573c74938e108"
     },
     "extensions/palettes/slate.css": {
-      "bytes": 1098,
-      "gzip": 438,
-      "sha256": "9c552fd296d41340946ddfe5a97bb6b443a2c5ec9a47ab9f6c05b16fcfce5892"
+      "bytes": 1166,
+      "gzip": 455,
+      "sha256": "5e9fe7fc2167d3f3f3e5ed399c7f82d79fc4a73ef60815a077037c8eb60b1d87"
     },
     "extensions/palettes/slate.min.css": {
-      "bytes": 880,
-      "gzip": 401,
-      "sha256": "50779d07dc722523d254b54649d43f7f723aa6fbd0db43399c0b79de1df42d43"
+      "bytes": 938,
+      "gzip": 418,
+      "sha256": "5d688e4c1ce1f44e9414d178c946439ab6718d0960554d535895212a36d95228"
     },
     "extensions/palettes/slate.scoped.css": {
-      "bytes": 1366,
-      "gzip": 480,
-      "sha256": "70d7ff7def9fe8a93a286d1962995bb1b3bd1d509b844b088523c3b883729fbb"
+      "bytes": 1438,
+      "gzip": 499,
+      "sha256": "9303faa76ac6f98cf3f33d0f5f6bbda8fe0007249c034e6e7ea7a25dfcf439e0"
     },
     "extensions/palettes/slate.scoped.min.css": {
-      "bytes": 1050,
-      "gzip": 438,
-      "sha256": "4fe9c72903ddbdbac7ff0c1c5b858bc09042a783dcb8e1b7cd626f61c48e424b"
+      "bytes": 1108,
+      "gzip": 455,
+      "sha256": "3f366fdd730e1023dc70705da960f9be2e5050d9721d33707e80fd36bfbdf96a"
     },
     "extensions/palettes/royal.css": {
-      "bytes": 1098,
-      "gzip": 442,
-      "sha256": "f4a26cff4a2fad3793c5cdf26b9cd1cd0f980d1dea7c47b02ced604b7ec50656"
+      "bytes": 1166,
+      "gzip": 459,
+      "sha256": "3fa85dc1e73d9865ffb936824da0bbbce4155a6039c117bddbc5764499eca72e"
     },
     "extensions/palettes/royal.min.css": {
-      "bytes": 880,
-      "gzip": 405,
-      "sha256": "b9f0bd98ced5d676c7b3c9d67c610c0f0db2a9aa85ef918c5f33a20152456fb1"
+      "bytes": 938,
+      "gzip": 422,
+      "sha256": "138895295387b0b22388f7f1314f01ac499956d2187d686c491756a3f106d136"
     },
     "extensions/palettes/royal.scoped.css": {
-      "bytes": 1366,
-      "gzip": 483,
-      "sha256": "5cefff784b43d44b37dafb66f80ba81d685b556ef42305bbb4537af9f3900b30"
+      "bytes": 1438,
+      "gzip": 503,
+      "sha256": "bbec3b83dd77f1fcd9f7b1d21f74c178d8c1cd3ed77a0a94c90b25b114348fd8"
     },
     "extensions/palettes/royal.scoped.min.css": {
-      "bytes": 1050,
-      "gzip": 442,
-      "sha256": "a2003b69bc43dbf9663c599548b0922269c250c5de4af7542d00d2d5d130f128"
+      "bytes": 1108,
+      "gzip": 459,
+      "sha256": "d1a4a6badfc268a9c37ec4405b52b640b9047fc9920f4048f10853a77180e075"
     },
     "extensions/palettes/terracotta.css": {
-      "bytes": 1108,
-      "gzip": 443,
-      "sha256": "6e2027a6075baf25f5f6f3351576801a1cb965ed32dab9885255d092fb5bd298"
+      "bytes": 1176,
+      "gzip": 461,
+      "sha256": "054679ebdf2f37b3630b11e9aef32d2962394cd27a55802f1f162487eb8ee02d"
     },
     "extensions/palettes/terracotta.min.css": {
-      "bytes": 890,
-      "gzip": 406,
-      "sha256": "999247f1b04e48a1a28aebdbcf5f8fef41fc226897f0652d356ae35bde6c179f"
+      "bytes": 948,
+      "gzip": 423,
+      "sha256": "0821a8975b8efe36138ffa20b11bd959de9ac2b17203dd0a305884788dd72e08"
     },
     "extensions/palettes/terracotta.scoped.css": {
-      "bytes": 1376,
-      "gzip": 485,
-      "sha256": "560f8e19545ded59d93ca2a7288831245b5ef3bbe96c8f864e0e139a3134f0e7"
+      "bytes": 1448,
+      "gzip": 505,
+      "sha256": "1d1da0230fef8b132b8ce3bbafdddc9d8ec3405e4a02ccfa0de9c8af9ccc7446"
     },
     "extensions/palettes/terracotta.scoped.min.css": {
-      "bytes": 1060,
-      "gzip": 442,
-      "sha256": "2de1dda2b77158c42fa4404e57faa342e8a72eeab4fa6f4fcb324238667e89ce"
+      "bytes": 1118,
+      "gzip": 461,
+      "sha256": "befa5512c086d28384c84f5db881e40e93aeec7f3f6833097664778d2e64649d"
     },
     "extensions/profiles/effects-minimal.css": {
       "bytes": 448,

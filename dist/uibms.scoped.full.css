@@ -22,7 +22,8 @@
             --color-text-muted: light-dark(#494b46, #c4c8c0);
             --color-accent: light-dark(#343b35, #d8dfd6);
             --color-on-accent: light-dark(#ffffff, #242522);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#dededb, #353935);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -98,7 +99,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#dededb, #353935);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -149,6 +151,36 @@
         }
         :where(:scope,:scope *):where([data-shape="organic"]) {
             --radius: 1rem;
+        }
+    }
+}
+@layer configuration {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        :where(:scope,:scope *):where(:scope,[data-border="default"]) {
+            --_border-strength: 40%;
+            --_border-decoration-strength: 15%;
+        }
+        :where(:scope,:scope *):where([data-border="subtle"]) {
+            --_border-strength: 0%;
+            --_border-decoration-strength: 0%;
+        }
+        :where(:scope,:scope *):where([data-border="strong"]) {
+            --_border-strength: 100%;
+            --_border-decoration-strength: 100%;
+        }
+        :where(:scope,:scope *):where(:scope,[data-palette],[data-border]) {
+            --color-border: color-mix(in srgb, var(--color-border-subtle), var(--color-border-strong) var(--_border-strength));
+            --color-border-decorative: color-mix(in srgb, var(--color-border-subtle), var(--color-border-strong) var(--_border-decoration-strength));
+        }
+    }
+}
+@layer preferences {
+    @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
+        @media (prefers-contrast: more) {
+            :where(:scope,:scope *):where(:scope,[data-border]) {
+                --_border-strength: 100%;
+                --_border-decoration-strength: 100%;
+            }
         }
     }
 }
@@ -247,7 +279,7 @@
         }
         :where(:scope,:scope *):where(hr) {
             border: 0;
-            border-block-start: var(--border-width) solid var(--color-border);
+            border-block-start: var(--border-width) solid var(--color-border-decorative);
             margin-block: var(--space);
         }
     }
@@ -291,7 +323,7 @@
             background-color: var(--color-surface-subtle);
             color: var(--color-text);
             text-decoration: underline;
-            text-decoration-color: var(--color-border);
+            text-decoration-color: var(--color-border-strong);
         }
         :where(:scope,:scope *):where(blockquote) {
             margin-inline: 0;
@@ -346,7 +378,7 @@
             :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):hover,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):hover),:where(:scope,:scope *) :where(input[type="file"]:not(:disabled):hover)::file-selector-button {
                 background-color: var(--color-surface-subtle);
                 color: var(--color-text);
-                border-color: var(--color-border);
+                border-color: var(--color-border-strong);
             }
         }
         :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):active,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):active) {
@@ -358,7 +390,7 @@
         :where(:scope,:scope *):where(button:is(:disabled,[aria-disabled="true"]),input:is([type="button"],[type="submit"],[type="reset"]):is(:disabled,[aria-disabled="true"])),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
             background-color: var(--color-surface-subtle);
             color: var(--color-text-muted);
-            border-color: var(--color-border);
+            border-color: var(--color-border-strong);
             cursor: not-allowed;
         }
     }
@@ -368,7 +400,7 @@
         :where(:scope,:scope *):where(input:not([type="hidden"],[type="button"],[type="submit"],[type="reset"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"]),select,textarea) {
             color: var(--color-text);
             background-color: var(--color-surface);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-strong);
             border-radius: var(--radius);
             padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
             min-block-size: var(--target-size);
@@ -391,7 +423,7 @@
         }
         :where(:scope,:scope *):where(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"],[type="button"],[type="submit"],[type="reset"]),select,textarea):where(:disabled,[aria-disabled="true"]) {
             background-color: var(--color-surface-subtle);
-            border-color: var(--color-border);
+            border-color: var(--color-border-strong);
         }
         :where(:scope,:scope *):where(input,select,textarea):where(:user-invalid) {
             border-color: var(--color-danger);
@@ -494,7 +526,7 @@
         }
         :where(:scope,:scope *):where(th,td) {
             padding: calc(var(--space) * 0.75);
-            border-block-end: var(--border-width) solid var(--color-border);
+            border-block-end: var(--border-width) solid var(--color-border-decorative);
             text-align: start;
             vertical-align: top;
             overflow-wrap: normal;
@@ -533,7 +565,7 @@
             }
         }
         :where(:scope,:scope *):where(details[open]>summary) {
-            border-block-end: var(--border-width) solid var(--color-border);
+            border-block-end: var(--border-width) solid var(--color-border-decorative);
             margin-block-end: calc(var(--space) * 0.75);
         }
     }
@@ -584,7 +616,7 @@
         :where(:scope,:scope *):where(pre) {
             background-color: var(--color-surface-subtle);
             color: var(--color-text);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-decorative);
             border-radius: var(--radius);
             padding: var(--space);
             margin-block: var(--space);
@@ -697,7 +729,7 @@
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
         :where(:scope,:scope *):where(.card:not(.panel),.panel:not(.card)) {
             color: var(--color-text);
-            border: var(--border-width) solid var(--color-border);
+            border: var(--border-width) solid var(--color-border-decorative);
             border-radius: calc(var(--radius) * 2);
             padding: var(--space);
         }
@@ -777,7 +809,7 @@
             &:where([data-effect~="glass"]:not([data-effect~="frosted"],[data-effect~="metallic"],[data-effect~="matte"])),&:where([data-effect~="frosted"]:not([data-effect~="glass"],[data-effect~="metallic"],[data-effect~="matte"])),&:where([data-effect~="metallic"]:not([data-effect~="glass"],[data-effect~="frosted"],[data-effect~="matte"])),&:where([data-effect~="matte"]:not([data-effect~="glass"],[data-effect~="frosted"],[data-effect~="metallic"])) {
                 color: var(--color-text);
                 background-color: var(--color-surface);
-                border: var(--border-width) solid var(--color-border);
+                border: var(--border-width) solid var(--color-border-decorative);
                 box-shadow: var(--_effect-depth);
                 &:where(:not(.card,.panel,dialog,[popover])) {
                     border-radius: calc(var(--radius) * 2);
@@ -881,7 +913,7 @@
             scroll-behavior: var(--signature-scroll, smooth);
         }
         :where(:scope,:scope *):where(:scope,[data-theme="light"],[data-theme="dark"],[data-theme="auto"],pre,dialog,[popover]) {
-            scrollbar-color: var(--color-border) transparent;
+            scrollbar-color: var(--color-border-strong) transparent;
         }
     }
 }
@@ -1030,7 +1062,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#d8e0e3, #313b41);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1057,7 +1090,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#e2ded3, #3d392f);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1084,7 +1118,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#d9e0d7, #313e33);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1111,7 +1146,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#e5ddde, #3f343a);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1138,7 +1174,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#dbdee1, #353a42);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1165,7 +1202,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#e1dde6, #3d3547);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
@@ -1192,7 +1230,8 @@
             --color-on-accent: light-dark(#ffffff, #242522);
             --color-text: light-dark(#242522, #f4f5f2);
             --color-text-muted: light-dark(#494b46, #c4c8c0);
-            --color-border: light-dark(#767871, #939a90);
+            --color-border-subtle: light-dark(#e5ded7, #40352e);
+            --color-border-strong: light-dark(#767871, #939a90);
             --color-focus: light-dark(#234f76, #b9d9f7);
             --color-success: light-dark(#205433, #b9e1c3);
             --color-warning: light-dark(#704500, #f5d59b);
