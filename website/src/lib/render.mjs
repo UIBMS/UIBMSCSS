@@ -5,7 +5,7 @@ import { codeBlock } from './code.mjs';
 
 const frameworkAsset=(base,name)=>asset(base,'framework/'+name)+'?v='+manifest.files[name].sha256;
 const siteAsset=(base,name)=>asset(base,'assets/'+name)+'?v='+encodeURIComponent(process.env.GITHUB_SHA||manifest.files['uibms.full.min.css'].sha256);
-const summary = {pages:pages.length,docs:docPages.length,classes:13,attributes:13,stylesheets:Object.keys(manifest.files).length};
+const summary = {pages:pages.length,docs:docPages.length,classes:13,attributes:14,stylesheets:Object.keys(manifest.files).length};
 export const slugify = s=>s.toLowerCase().replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
 const isCurrent=(slug,target)=>target==='docs/introduction'?slug.startsWith('docs/'):slug===target;
 const link=(base,slug,title,current=false)=>`<a href="${esc(href(base,slug))}"${current?' aria-current="page"':''}>${esc(title)}</a>`;
