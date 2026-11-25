@@ -19,7 +19,7 @@ The framework should be different because it makes development easier and produc
 
 The six initial implementation checkpoints have produced a development release candidate: foundational tokens, native HTML styling, 13 reusable classes, independent configuration profiles, signature effects and generated global/scoped distributions.
 
-Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). The standard minified file is 26,604 bytes (4,901 gzip bytes). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
+Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). Exact distribution sizes and hashes are recorded in [the generated manifest](dist/manifest.json). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
 
 The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation, licensing and version approval remain release gates. No public release or full WCAG certification is claimed.
 
