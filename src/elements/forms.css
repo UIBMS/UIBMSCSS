@@ -5,7 +5,7 @@
         select, textarea) {
         color: var(--color-text);
         background-color: var(--color-surface);
-        border: var(--border-width) solid var(--color-border);
+        border: var(--border-width) solid var(--color-border-strong);
         border-radius: var(--radius);
         padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
         min-block-size: var(--target-size);
@@ -34,7 +34,7 @@
     :where(input:not([type="hidden"], [type="checkbox"], [type="radio"], [type="range"], [type="color"], [type="file"], [type="image"],
         [type="button"], [type="submit"], [type="reset"]), select, textarea):where(:disabled, [aria-disabled="true"]) {
         background-color: var(--color-surface-subtle);
-        border-color: var(--color-border);
+        border-color: var(--color-border-strong);
     }
 
     :where(input, select, textarea):where(:user-invalid) {
