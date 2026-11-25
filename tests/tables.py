@@ -34,7 +34,7 @@ with sync_playwright() as p:
             for width in (320,375,390,768,1440):
                 page.set_viewport_size({'width':width,'height':900})
                 result = page.evaluate("""() => {
-                  const lineCount = e => {const r=document.createRange();r.selectNodeContents(e);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size;};
+                  const lineCount = e => {const r=document.createRange();r.selectNodeContents(e.querySelector('code:only-child')||e);return new Set([...r.getClientRects()].filter(x=>x.width>0).map(x=>Math.round(x.top))).size;};
                   const region = document.querySelector('#wide-region');
                   return {
                     semantics:[...document.querySelectorAll('table')].every(e=>getComputedStyle(e).display==='table'),
