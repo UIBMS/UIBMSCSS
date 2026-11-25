@@ -82,6 +82,14 @@ try:
     check('script init '+slug,not errors,errors[:]);
     for width in [1440,768,375,320]:
      page.set_viewport_size({'width':width,'height':900});page.wait_for_timeout(25);sizes=width_check();check(f'reflow {slug} {width}',sizes['scroll']<=width+1,sizes)
+     for region in page.locator('[data-site-reference-table]').all():
+      result=region.evaluate("""e=>({
+       region:e.getAttribute('role')==='region'&&e.tabIndex===0&&!!e.getAttribute('aria-label'),
+       natural:[...e.querySelectorAll('th,td')].every(c=>getComputedStyle(c).overflowWrap==='normal'&&getComputedStyle(c).wordBreak==='normal'),
+       identifiers:[...e.querySelectorAll('th code')].every(c=>getComputedStyle(c).whiteSpace==='nowrap'),
+       scroll:getComputedStyle(e).overflowX==='auto'&&e.clientWidth<=innerWidth
+      })""")
+      check(f'reference table {slug} {width}',all(result.values()),result)
    except Exception as exc:check('page '+slug,False,repr(exc))
   print('reflow complete',len(report),len(issues),flush=True)
   if args.phase=='reflow':

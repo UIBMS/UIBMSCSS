@@ -6,7 +6,7 @@ const snippet=(label,code,lang='html')=>({label,code,lang});
 const page=(slug,title,description,sections,extra={})=>({slug,title,description,sections,...extra});
 const doc=(slug,title,description,sections,extra={})=>page('docs/'+slug,title,description,sections,extra);
 const notice='This is a development release candidate. Browser support and full accessibility conformance have not been certified.';
-const table=(heads,rows)=>`<table><thead><tr>${heads.map(h=>`<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((cell,i)=>i===0?`<th scope="row">${cell}</th>`:`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+const table=(heads,rows)=>`<div data-site-table-scroll data-site-reference-table role="region" tabindex="0" aria-label="${heads.join(' / ')}"><table><thead><tr>${heads.map(h=>`<th scope="col">${h}</th>`).join('')}</tr></thead><tbody>${rows.map(row=>`<tr>${row.map((cell,i)=>i===0?`<th scope="row">${cell}</th>`:`<td>${cell}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 const mono=s=>`<code>${s}</code>`;
 const docs=[];
 const group=(title,pages)=>{docs.push({title,pages});return pages;};
