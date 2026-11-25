@@ -71,13 +71,8 @@
 [data-site-code] .token.attr-value,[data-site-code] .token.string,[data-site-code] .token.char,[data-site-code] .token.inserted { color:var(--color-success); }
 [data-site-code] .token.number,[data-site-code] .token.boolean,[data-site-code] .token.constant,[data-site-code] .token.variable { color:var(--color-warning); }
 [data-site-code] .token.punctuation,[data-site-code] .token.operator { color:var(--color-text); }
-/* Reference tables preserve natural column widths; only genuinely wide tables scroll. */
+/* Application-owned scroll region; all table styling comes from UIBMS CSS. */
 [data-site-table-scroll] { min-inline-size:0; max-inline-size:100%; overflow:auto; }
-[data-site-table-scroll] table { min-inline-size:min-content; }
-[data-site-table-scroll] :is(th,td) { overflow-wrap:normal; word-break:normal; }
-[data-site-table-scroll] :is(th,td) code { white-space:nowrap; }
-[data-site-table-scroll]:not([data-site-reference-table]) table { min-inline-size:24rem; }
-[data-site-table-scroll]:not([data-site-reference-table]) td { font-variant-numeric:tabular-nums; white-space:nowrap; }
 [data-site-swatches] { margin-block:var(--space); }
 [data-site-swatch] { display:block; block-size:4rem; border:var(--border-width) solid var(--color-border); border-radius:var(--radius); }
 [data-site-scope-frame] { display:block; inline-size:100%; block-size:24rem; border:var(--border-width) solid var(--color-border); border-radius:var(--radius); background:white; }

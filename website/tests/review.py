@@ -86,7 +86,8 @@ try:
       result=region.evaluate("""e=>({
        region:e.getAttribute('role')==='region'&&e.tabIndex===0&&!!e.getAttribute('aria-label'),
        natural:[...e.querySelectorAll('th,td')].every(c=>getComputedStyle(c).overflowWrap==='normal'&&getComputedStyle(c).wordBreak==='normal'),
-       identifiers:[...e.querySelectorAll('th code')].every(c=>getComputedStyle(c).whiteSpace==='nowrap'),
+       identifiers:[...e.querySelectorAll('th code:only-child')].every(c=>getComputedStyle(c).whiteSpace==='nowrap'&&c.getClientRects().length===1),
+       headerLines:[...e.querySelectorAll('thead th, tbody th')].every(c=>{const t=c.textContent.trim();if(/\\s/.test(t)||t.includes('-'))return true;const r=document.createRange();r.selectNodeContents(c);return new Set([...r.getClientRects()].map(x=>Math.round(x.top))).size<=1;}),
        scroll:getComputedStyle(e).overflowX==='auto'&&e.clientWidth<=innerWidth
       })""")
       check(f'reference table {slug} {width}',all(result.values()),result)

@@ -2,7 +2,7 @@
 
     :where(table) {
         inline-size: 100%;
-        max-inline-size: 100%;
+        min-inline-size: min-content;
         border-collapse: collapse;
         text-align: start;
     }
@@ -19,10 +19,16 @@
         border-block-end: var(--border-width) solid var(--color-border);
         text-align: start;
         vertical-align: top;
-        overflow-wrap: anywhere;
+        overflow-wrap: normal;
+        word-break: normal;
     }
 
     :where(th) { font-weight: 650; }
+
+    /* Preserve standalone identifiers without preventing prose from wrapping. */
+    :where(th > code:only-child, td > code:only-child) {
+        white-space: nowrap;
+    }
 
     :where(thead, tfoot) {
         background-color: var(--color-surface-subtle);
