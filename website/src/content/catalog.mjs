@@ -283,7 +283,7 @@ const downloads=page('downloads','Downloads','Choose an unchanged framework dist
 const home=page('','UIBMS CSS','Native CSS. Meaningful HTML. Living interfaces.',[
  section('Build with the platform','<p class="lead">A lightweight native CSS foundation for professional, responsive interfaces, built for humans and AI coding agents.</p><p>Start with semantic elements, then introduce only the patterns and contextual configuration you actually need. No mandatory runtime or component library.</p>',[example('Native by design',`<article class="card stack" data-effect="glass">\n  <h2>Everything starts with HTML.</h2>\n  <p>Choose your appearance from the header.\n     This example changes with the entire site.</p>\n  <div class="cluster">\n    <button type="button" data-hover="lift glow">Continue</button>\n    <a href="{{base}}docs/quick-start/">Quick start</a>\n  </div>\n</article>`)]),
  section('Explore the framework','<p>The framework combines native elements, 13 reusable classes, six contextual configuration attributes, seven individual effects attributes, and eight principal distributions. Open the documentation for the complete implemented reference.</p>'),
- section('A transparent development candidate',`<p>${notice} 556 targeted Chromium checks were recorded on the initial distributions. Licensing, formal versioning and cross-engine verification remain open.</p>`)
+ section('A transparent development candidate',`<p>${notice} 556 targeted Chromium checks were recorded on the initial distributions. The project is licensed under MIT. Formal versioning and cross-engine verification remain open.</p>`)
 ],{home:true});
 export const groups=docs;
 export const docPages=docs.flatMap(g=>g.pages.map(p=>({...p,group:g.title})));
