@@ -1,0 +1,14 @@
+{
+  "name": "uibmscss-documentation",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "node tools/stage-assets.mjs && astro dev",
+    "build": "node tools/stage-assets.mjs && astro build",
+    "preview": "astro preview",
+    "preview:offline": "node tools/preview.mjs",
+    "check:content": "node tests/content.mjs"
+  },
+  "dependencies": { "astro": "^5.0.0", "prismjs": "1.30.0" },
+  "engines": { "node": ">=22.12.0" }
+}

@@ -1,0 +1,10 @@
+---
+import { initialAttributes } from '../lib/config.mjs';
+import { renderHead, renderBody } from '../lib/render.mjs';
+const { page, base } = Astro.props;
+---
+<!doctype html>
+<html lang="en" {...initialAttributes}>
+  <head><Fragment set:html={renderHead(page,base)} /></head>
+  <body><Fragment set:html={renderBody(page,base)} /></body>
+</html>

@@ -1,0 +1,9 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { pages } from '../content/catalog.mjs';
+export function getStaticPaths() {
+  return pages.map(page => ({ params: { slug: page.slug || undefined }, props: { page } }));
+}
+const { page } = Astro.props;
+---
+<SiteLayout page={page} base={import.meta.env.BASE_URL} />
