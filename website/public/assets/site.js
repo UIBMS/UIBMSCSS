@@ -20,6 +20,28 @@ function setupAppearance(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&details.open){details.open=false;details.querySelector('summary').focus();}});
   window.addEventListener('storage',e=>{if(e.key===appearanceKey){const next=load(appearanceKey,{});for(const p of data.profiles)root.setAttribute('data-'+p.key,p.values.includes(next[p.key])?next[p.key]:p.default);sync();}});
 }
+function setupTopNavigation(){
+  const header=$('#site-header'), nav=$('#site-top'), toggle=$('#site-menu-toggle');
+  const narrow=matchMedia('(max-width:64rem)');
+  const isOpen=()=>header.hasAttribute('data-site-menu-open');
+  function close(restoreFocus=false){
+    header.removeAttribute('data-site-menu-open');toggle.setAttribute('aria-expanded','false');
+    if(restoreFocus&&narrow.matches)toggle.focus();
+  }
+  toggle.addEventListener('click',()=>{
+    if(isOpen()){close(true);return;}
+    if(!narrow.matches)return;
+    $('#site-appearance').open=false;
+    header.setAttribute('data-site-menu-open','');toggle.setAttribute('aria-expanded','true');
+    $('a',nav)?.focus();
+  });
+  function dismissOutside(e){if(isOpen()&&!nav.contains(e.target)&&!toggle.contains(e.target))close();}
+  document.addEventListener('pointerdown',dismissOutside);
+  document.addEventListener('focusin',dismissOutside);
+  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen()){e.preventDefault();close(true);}});
+  nav.addEventListener('click',e=>{if(e.target.closest('a'))close();});
+  narrow.addEventListener?.('change',()=>close());
+}
 function setupNavigation(){
   const sidebar=$('#site-sidebar'), toggle=$('#site-nav-toggle'), nav=$('#site-doc-nav');
   const saved=load(navKey,{});
@@ -72,7 +94,7 @@ function setupDemos(){
   wrapper.addEventListener('reset',()=>{$('[data-site-demo-status]',wrapper).textContent='';});
  }
 }
-setupAppearance();setupNavigation();setupSearch();setupCopy();setupDemos();
+setupAppearance();setupTopNavigation();setupNavigation();setupSearch();setupCopy();setupDemos();
 const header=$('#site-header');
 function resizeHeader(){root.style.setProperty('--site-header-size',header.getBoundingClientRect().height+'px');}
 resizeHeader();if('ResizeObserver' in window)new ResizeObserver(resizeHeader).observe(header);else window.addEventListener('resize',resizeHeader);

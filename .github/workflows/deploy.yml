@@ -2,6 +2,11 @@ name: Deploy UIBMS CSS Website
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'website/**'
+      - '.github/workflows/deploy.yml'
 
 permissions:
   contents: read
