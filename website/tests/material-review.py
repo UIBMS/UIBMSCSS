@@ -86,7 +86,7 @@ try:
         # Every palette in both explicit schemes; the background role and foreground
         # of a primary button must remain different from the passive surface.
         for theme in ["light","dark"]:
-            for palette in ["natural","ocean","gold","forest","bordeaux","slate","royal","terracotta"]:
+            for palette in ["natural","ocean","gold","forest","bordeaux","slate","royal","terracotta","cobalt-archive","glacier-ember","peach-reactor","midnight-marigold","graphite-punch"]:
                 set_profile(page,material="default",theme=theme,palette=palette,shape="default",border="subtle",effects="none")
                 page.wait_for_function("sel=>!document.querySelector(sel).hasAttribute('data-uibms-material-host')",arg=primary)
                 before={s:surface(page,s) for s in [primary,card]}
@@ -185,6 +185,30 @@ try:
         iframe=page.frame_locator("[data-site-scope-frame]")
         iframe.locator('[data-uibms][data-palette="bordeaux"][data-theme="dark"][data-shape="sharp"]').wait_for()
         check(iframe.locator("body > button").evaluate("e=>getComputedStyle(e).borderRadius")=="0px","scoped host remains unstyled")
+        # Experimental palette CSS is also available in the isolated scoped example.
+        set_profile(page,palette="cobalt-archive",theme="dark",material="default")
+        iframe.locator('[data-uibms][data-palette="cobalt-archive"]').wait_for()
+        check(iframe.locator('[data-uibms]').evaluate("e=>getComputedStyle(e).getPropertyValue('--color-main').includes('oklch')"),"expressive scoped palette resolved")
+        check(iframe.locator("body > button").evaluate("e=>getComputedStyle(e).borderRadius")=="0px","expressive scope does not affect host")
+        page.goto(url+"docs/palette/",wait_until="load")
+        page.wait_for_selector("html[data-site-ready]",state="attached")
+        set_profile(page,material="default",effects="none",theme="light")
+        for palette in ["cobalt-archive","glacier-ember","peach-reactor","midnight-marigold","graphite-punch"]:
+            check(page.locator("#appearance-palette option[value="+palette+"]").count()==1,"appearance option "+palette)
+            set_profile(page,palette=palette)
+            sample=page.locator('[data-site-demo-content] > section[data-palette="'+palette+'"][data-theme]').first
+            button=sample.locator("button").first
+            button.scroll_into_view_if_needed()
+            page.mouse.move(0,0)
+            rest=button.evaluate("e=>getComputedStyle(e).backgroundColor")
+            button.hover()
+            hover=button.evaluate("e=>getComputedStyle(e).backgroundColor")
+            check(rest!=hover,"subtle hover "+palette,[rest,hover])
+            page.mouse.down()
+            active=button.evaluate("e=>getComputedStyle(e).backgroundColor")
+            check(active!=hover and active!=rest,"loud pressed colour "+palette,[rest,hover,active])
+            page.mouse.up()
+            check_width(page,"expressive "+palette)
         # Discover every page from the generated navigation/search catalog rather
         # than a fixed count. Exercise the real HTTP site with both material modes.
         page.goto(url,wait_until="load")

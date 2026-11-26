@@ -71,7 +71,7 @@ def make_inline(f,settings):
   if path.exists():
    mime={'.svg':'image/svg+xml','.mp4':'video/mp4','.mp3':'audio/mpeg','.vtt':'text/vtt'}.get(path.suffix,'application/octet-stream');tag['src']='data:'+mime+';base64,'+base64.b64encode(path.read_bytes()).decode()
  for iframe in soup.select('iframe[data-site-scope-frame]'):
-  frame=(site/'assets/scoped-demo.html').read_text();frame=re.sub(r'<link rel="stylesheet"[^>]+>',lambda m:'<style>'+scoped+'</style>',frame);iframe.attrs.pop('src');iframe['srcdoc']=frame
+  frame=(site/'assets/scoped-demo.html').read_text();frame=re.sub(r'<link rel="stylesheet"[^>]+>',lambda m:'<style>'+((site/'assets/expressive-palettes.scoped.css').read_text() if 'expressive-palettes.scoped.css' in m.group(0) else scoped)+'</style>',frame);iframe.attrs.pop('src');iframe['srcdoc']=frame
  return str(soup)
 try:
  with sync_playwright() as p:

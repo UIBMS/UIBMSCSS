@@ -1,7 +1,8 @@
-import {cp, mkdir, readFile, rm, stat} from 'node:fs/promises';
+import {cp, mkdir, readFile, rm, stat, writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
+import {expressiveStyles} from '../src/lib/expressive-palettes.mjs';
 const root = fileURLToPath(new URL('../', import.meta.url));
 export async function stageAssets(){
   const source=path.resolve(root,'../dist');
@@ -21,6 +22,10 @@ export async function stageAssets(){
   const engines=path.join(root,'public/engines');
   await rm(engines,{recursive:true,force:true});
   await cp(path.resolve(root,'../extensions/engines'),engines,{recursive:true});
+  const siteAssets=path.join(root,'public/assets');
+  await mkdir(siteAssets,{recursive:true});
+  await writeFile(path.join(siteAssets,'expressive-palettes.css'),expressiveStyles());
+  await writeFile(path.join(siteAssets,'expressive-palettes.scoped.css'),expressiveStyles(true));
   return manifest;
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) await stageAssets();

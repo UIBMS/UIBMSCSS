@@ -1,5 +1,6 @@
 import {profiles,configDetails,titleCase} from '../lib/config.mjs';
 import {framework} from '../lib/contract.mjs';
+import {expressivePalettes,oklch,paletteRoles} from '../lib/expressive-palettes.mjs';
 // A single authoritative navigation/content catalog. Trusted authored HTML only.
 const section=(title,body,examples=[],extra={})=>({title,body,examples,...extra});
 const example=(label,html,extra={})=>({label,html,code:html,lang:'html',...extra});
@@ -60,9 +61,37 @@ group('Configuration',[
  ...profiles.map(p=>{const d=configDetails[p.key];const values=d.values;return doc(p.key,p.label,d.description,[
   section('Supported values',table(['Value','Behavior'],values.map(([v,desc])=>[mono(v),desc]))),
   section('Live examples','<p>The first example inherits every sitewide setting. Each subsequent comparison overrides only the attribute being explained. Other settings still inherit from the page.</p>',[example('Current site appearance',`<section class="card stack">\n  <h3>Inherited appearance</h3>\n  <p>Changes with the website Appearance menu.</p>\n  <button type="button">Try button</button>\n</section>`),...values.map(([v])=>example(titleValue(v),`<section class="card stack" data-${p.key}="${v}">\n  <h3>${titleValue(v)} ${p.label.toLowerCase()}</h3>\n  <p>Context-aware native content.</p>\n  <button type="button">Continue</button>\n</section>`))]),
+  ...(p.key==='palette'?[section('Expressive OKLCH collection','<p>Five new palette experiments: 60% dominant, 30% secondary and 10% loud accent. Select a palette in Appearance to explore it across the site. These local previews use the original proposed colour triplets in their intended scheme; the alternate theme exchanges the main and secondary roles. The examples retain a subtle tonal hover and use the loud accent on press. The optional stylesheet is separate from the released core and full bundles.</p>',expressivePalettes.map(p=>expressiveExample(p)))]:[]),
   section('Inheritance and limits',`<p>${d.note}</p>`)
  ]);})
 ]);
+function expressiveExample(p){
+  const colors=p.colors.map(oklch);
+  return example(p.name+' / original '+p.scheme+' scheme',`<section class="stack" data-palette="${p.id}" data-theme="${p.scheme}" style="padding:var(--space);border-radius:var(--radius)">
+  <h3>${p.name}</h3>
+  <p>${p.description}</p>
+  <div style="display:grid;grid-template-columns:6fr 3fr 1fr;min-block-size:3rem;border:var(--border-width) solid var(--color-border);border-radius:var(--radius);overflow:hidden">
+    <div style="background:var(--color-main);color:var(--color-on-main);display:grid;place-items:center;font-size:.75em">60%</div>
+    <div style="background:var(--color-secondary);color:var(--color-on-secondary);display:grid;place-items:center;font-size:.75em">30%</div>
+    <div style="background:var(--color-loud);color:var(--color-on-loud);display:grid;place-items:center;font-size:.75em">10%</div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10rem),1fr));gap:calc(var(--space)*.75)">
+    <div class="stack" style="background:var(--color-secondary);color:var(--color-on-secondary);padding:var(--space);border-radius:var(--radius)">
+      <small>Workspace</small>
+      <strong style="font-size:1.5em">84%</strong>
+      <div style="background:var(--color-loud);color:var(--color-on-loud);padding:.4em;border-radius:var(--radius)">Performance</div>
+    </div>
+    <div class="panel stack">
+      <strong>Make it happen.</strong>
+      <p>Try the button: subtle hover, loud press.</p>
+      <button type="button">Continue</button>
+    </div>
+  </div>
+  <small>Dominant: ${colors[0]}</small>
+  <small>Secondary: ${colors[1]}</small>
+  <small>Loud: ${colors[2]}</small>
+</section>`);
+}
 function titleValue(v){return titleCase(v);}
 group('Native elements',[
  doc('elements','Native HTML overview','Use HTML semantics before choosing classes or effects.',[

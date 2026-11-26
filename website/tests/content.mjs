@@ -3,11 +3,14 @@ import {readFile} from 'node:fs/promises';
 import {pages,docPages,groups} from '../src/content/catalog.mjs';
 import {profiles,basePath,configDetails} from '../src/lib/config.mjs';
 import {framework} from '../src/lib/contract.mjs';
+import {expressivePalettes,expressiveStyles,paletteRoles,oklch} from '../src/lib/expressive-palettes.mjs';
 import {renderHtml,slugify} from '../src/lib/render.mjs';
 import {codeBlock} from '../src/lib/code.mjs';
 const allowedClasses=new Set(framework.classes);
 const attrs=new Set([...profiles.map(p=>'data-'+p.key),'data-uibms',...framework.effectAttributes]);
-const css=await readFile(new URL('../../dist/uibms.full.css',import.meta.url),'utf8');
+const css=await readFile(new URL('../../dist/uibms.full.css',import.meta.url),'utf8')+'\n'+expressiveStyles();
+assert.equal(expressivePalettes.length,5);
+for(const p of expressivePalettes){assert.deepEqual(paletteRoles(p,p.scheme),p.colors);assert.deepEqual(paletteRoles(p,p.scheme==='light'?'dark':'light'),[p.colors[1],p.colors[0],p.colors[2]]);for(const color of p.colors)assert(expressiveStyles().includes(oklch(color)));assert(expressiveStyles(true).includes('[data-palette="'+p.id+'"]'));}
 for(const p of profiles){assert(p.values.includes(p.default),p.key);assert.deepEqual(p.values,configDetails[p.key].values.map(([v])=>v));if(p.key!=='material')for(const v of p.values)assert(css.includes('[data-'+p.key+'="'+v+'"]'),`Missing supported profile ${p.key}/${v}`);}
 const slugs=new Set(pages.map(p=>p.slug));assert.equal(slugs.size,pages.length);
 for(const cls of allowedClasses)assert(slugs.has('docs/'+cls),`Missing class ${cls}`);
