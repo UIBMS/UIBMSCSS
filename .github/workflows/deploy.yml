@@ -6,6 +6,8 @@ on:
     branches: [main]
     paths:
       - 'website/**'
+      - 'extensions/engines/**'
+      - 'tests/engines.mjs'
       - '.github/workflows/deploy.yml'
 
 permissions:
@@ -38,6 +40,8 @@ jobs:
           else
             npm install --no-audit --no-fund
           fi
+      - name: Verify optional engine primitives
+        run: node tests/engines.mjs
       - name: Verify content and framework integrity
         working-directory: website
         run: npm run check:content

@@ -26,3 +26,7 @@ The release-candidate suite passed 556 targeted Chromium checks on the generated
 Explore the [native HTML](examples/native-html.html), [reusable classes](examples/classes.html), [configuration](examples/profiles.html), [signature experience](examples/effects.html) and [scoped adoption](examples/scoped.html) showcases from a local checkout.
 
 See [Architecture and foundational principles](docs/ARCHITECTURE.md).
+
+## Optional physical interfaces
+
+[Liquid Silicone Material Engine and Form Engine](extensions/engines/README.md) are opt-in, unbundled development candidates. The core CSS distributions remain unchanged. Native controls stay authoritative; optional pickers and elastic contour rendering are separate. Full browser and accessibility verification is pending.

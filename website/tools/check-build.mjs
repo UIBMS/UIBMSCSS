@@ -13,6 +13,7 @@ for(const [name,v] of Object.entries(manifest.files)){
  assert.equal(b.length,v.bytes,name);assert.equal(createHash('sha256').update(b).digest('hex'),v.sha256,name);
 }
 await stat(path.join(root,'framework/LICENSE'));
+for(const file of ['material.mjs','forms.mjs','liquid-silicone.css','forms.css'])await stat(path.join(root,'engines',file));
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
  assert(html.includes('id="site-appearance"'),p.slug);

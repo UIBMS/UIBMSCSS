@@ -5,7 +5,8 @@ export const profiles = [
   { key:'shape', label:'Shape', default:'default', values:['default','sharp','soft','rounded','organic'] },
   { key:'border', label:'Border intensity', default:'default', values:['default','subtle','strong'] },
   { key:'typography', label:'Typography', default:'default', values:['default','editorial','technical','expressive'] },
-  { key:'effects', label:'Effects', default:'default', values:['default','none','minimal','fluid','dynamic'] }
+  { key:'effects', label:'Effects', default:'default', values:['default','none','minimal','fluid','dynamic'] },
+  { key:'material', label:'Material (experimental)', default:'default', values:['default','liquid-silicone'] }
 ];
 export const basePath = (base='/') => '/' + base.split('/').filter(Boolean).join('/') + (base.split('/').filter(Boolean).length ? '/' : '');
 export const href = (base,slug='') => basePath(base) + (slug ? slug.replace(/^\/+|\/+$/g,'')+'/' : '');

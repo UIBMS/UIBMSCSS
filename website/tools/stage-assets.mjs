@@ -18,6 +18,9 @@ export async function stageAssets(){
     const dest=path.join(target,name); await mkdir(path.dirname(dest),{recursive:true}); await cp(path.join(source,name),dest);
   }
   await cp(path.resolve(root,'../LICENSE'),path.join(target,'LICENSE'));
+  const engines=path.join(root,'public/engines');
+  await rm(engines,{recursive:true,force:true});
+  await cp(path.resolve(root,'../extensions/engines'),engines,{recursive:true});
   return manifest;
 }
 if(process.argv[1] && path.resolve(process.argv[1])===fileURLToPath(import.meta.url)) await stageAssets();

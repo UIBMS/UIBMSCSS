@@ -1,0 +1,73 @@
+/* UIBMS optional liquid silicone extension. Core distributions remain unchanged. */
+:where([data-material="liquid-silicone"]) {
+  --uibms-material-opacity: 18%;
+  --uibms-material-tint: var(--color-surface, #dceaff);
+  --uibms-material-blur: 3px;
+  --uibms-material-border: color-mix(in srgb, var(--color-text, #fff) 35%, transparent);
+}
+:where([data-uibms-material-position]) { position: relative; }
+:where([data-uibms-material-host], [data-uibms-selection-host]) { isolation:isolate; }
+:where([data-uibms-material-host]) {
+  background-color:transparent;
+  border-color:transparent;
+  box-shadow:none;
+  translate:none;
+}
+:where(button[data-uibms-material-host], summary[data-uibms-material-host]) { color:var(--color-text); }
+:where([data-uibms-material-layer], [data-uibms-selection-layer]) {
+  position:absolute;
+  display:block;
+  pointer-events:none;
+  z-index:-1;
+  margin:0;
+  padding:0;
+  border:0;
+  overflow:visible;
+  line-height:0;
+}
+:where([data-uibms-material-layer]) { inset:-36px; }
+:where([data-uibms-material-fill]) {
+  position:absolute;
+  display:block;
+  inset:0;
+  background:
+    radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.16))),rgb(0 0 0 / max(0,calc(-1*var(--_uibms-material-force,0)*.12))) 28%,transparent 46%),
+    linear-gradient(160deg,rgb(255 255 255 /.17),transparent 40%,rgb(255 255 255 /.09)),
+    color-mix(in srgb,var(--uibms-material-tint,#dceaff) var(--uibms-material-opacity,18%),transparent);
+  backdrop-filter:blur(var(--uibms-material-blur,3px)) saturate(132%);
+  -webkit-backdrop-filter:blur(var(--uibms-material-blur,3px)) saturate(132%);
+}
+:where([data-uibms-material-layer], [data-uibms-selection-layer]) > svg {
+  position:absolute;inset:0;width:100%;height:100%;overflow:visible;filter:drop-shadow(0 5px 7px rgb(0 0 0 /.22));
+}
+:where([data-uibms-material-layer], [data-uibms-selection-layer]) > svg > path {
+  stroke:var(--uibms-material-border,rgb(255 255 255 /.5));stroke-width:1.35;vector-effect:non-scaling-stroke;
+}
+:where([data-uibms-selection-layer]) { --uibms-material-opacity:36%; }
+:where([data-uibms-selection-layer][hidden]) { display:none; }
+:where([data-uibms-selection-host]) :where(a[href],button,[role=tab]) {
+  background:transparent;box-shadow:none;translate:none;color:inherit;
+}
+:where([data-uibms-selection-host]) :where([aria-current]:not([aria-current=false]),[aria-selected=true],[aria-pressed=true]) { font-weight:700; }
+:where([data-uibms-material-native]:not([type=checkbox],[type=radio],[type=range],[type=file],[type=color],[type=image],progress,meter,img,video,audio,iframe,canvas,svg,hr,table,thead,tbody,tfoot,tr,td,th)) {
+  color:var(--color-text);
+  background-color:color-mix(in srgb,var(--uibms-material-tint,#dceaff) 42%,transparent);
+  background-image:radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),rgb(255 255 255 /.14),transparent 65%);
+  border-radius:var(--_uibms-material-radius,var(--radius,8px));
+  backdrop-filter:blur(var(--uibms-material-blur,3px)) saturate(125%);
+  translate:none;
+}
+:where(input[data-uibms-material-native]:is([type=checkbox],[type=radio],[type=range],[type=color])) { accent-color:var(--color-accent); }
+:where(input[data-uibms-material-native][type=range])::-webkit-slider-thumb { scale:var(--_uibms-thumb-scale,1); }
+:where(input[data-uibms-material-native][type=range])::-moz-range-thumb { scale:var(--_uibms-thumb-scale,1); }
+:where([data-uibms-material-native]:is(:disabled,[readonly]),[data-uibms-material-host]:is(:disabled,[aria-disabled=true])) { cursor:not-allowed; }
+@supports not (backdrop-filter:blur(1px)) {
+  :where([data-uibms-material-fill]) { background:var(--color-surface,#f4f6fa); }
+}
+@media (forced-colors:active), (prefers-contrast:more), (prefers-reduced-transparency:reduce) {
+  :where([data-uibms-material-layer]) { display:none; }
+  :where([data-uibms-material-host],[data-uibms-material-native]) { background:var(--color-surface,Canvas);color:var(--color-text,CanvasText);border-color:var(--color-border-strong,CanvasText);backdrop-filter:none; }
+  :where([data-uibms-selection-layer]) { display:none; }
+  :where([data-uibms-selection-host]) :where([aria-current]:not([aria-current=false]),[aria-selected=true],[aria-pressed=true]) { outline:2px solid currentColor;outline-offset:-2px; }
+}
+@media (prefers-reduced-motion:reduce) { :where([data-uibms-material-host],[data-uibms-material-native]) { transition:none;translate:none; } }

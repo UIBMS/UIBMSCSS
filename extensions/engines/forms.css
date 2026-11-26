@@ -1,0 +1,19 @@
+/* UIBMS optional Form Engine. Internal selectors are not public layout classes. */
+:where([data-uibms-form-trigger]) { margin-inline-start:.3rem;min-inline-size:2.75rem;padding:.25rem .65rem;vertical-align:middle; }
+:where([data-uibms-form-popup]) { position:fixed; z-index:2147483000; padding:1rem; max-height:calc(100vh - 20px); overflow:auto; border:1px solid var(--color-border-strong,#8095ab); border-radius:1.25rem; background:var(--color-surface,#eef4fa);color:var(--color-text,#152336);box-shadow:0 12px 36px #101d3040; }
+:where([data-uibms-form-popup][data-uibms-material-host]) { overflow:visible;max-height:none; }
+:where([data-uibms-form-toolbar]) { display:flex;align-items:center;justify-content:space-between;gap:.6rem;margin-block-end:.6rem; }
+:where([data-uibms-form-popup] strong) { font-size:.9rem; }
+:where([data-uibms-form-popup] button) { font:inherit;cursor:pointer;min-block-size:2.75rem;min-inline-size:0;padding:.3rem .55rem;border:1px solid transparent;border-radius:.65rem; }
+:where([data-uibms-form-options]) { display:grid;grid-template-columns:repeat(var(--_uibms-picker-columns,1),minmax(0,1fr));gap:.18rem;margin-block:.5rem;position:relative;isolation:isolate; }
+:where([data-uibms-form-options] button) { background:transparent;color:inherit;box-shadow:none;translate:none; }
+:where([data-uibms-form-options] button[aria-pressed=true]) { font-weight:700; }
+:where([data-uibms-form-options]:not([data-uibms-selection-host]) button[aria-pressed=true]) { background:var(--color-accent,#45658c);color:var(--color-on-accent,#fff); }
+:where([data-uibms-form-options] button:disabled) { opacity:.42;cursor:not-allowed; }
+:where([data-uibms-form-weekdays],[data-uibms-form-week]) { display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:.15rem;text-align:center; }
+:where([data-uibms-form-weekdays]) { font-size:.75rem; }
+:where([data-uibms-form-adjacent]) { opacity:.62; }
+:where([data-uibms-form-popup] input) { display:block;width:100%;margin-block:.6rem; }
+:where([data-uibms-form-readout]) { display:block;margin-block-start:.75rem;overflow-wrap:anywhere;font-size:.85rem; }
+:where([data-uibms-form-swatch]) { display:block;margin:auto auto .25rem;width:1.8rem;height:1.15rem;border:1px solid currentColor;border-radius:.3rem; }
+@media(max-height:650px) { :where([data-uibms-form-popup][data-uibms-material-host]) { overflow:auto;max-height:calc(100vh - 20px); } }
