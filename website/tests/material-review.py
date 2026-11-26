@@ -220,21 +220,25 @@ try:
         phone.wait_for_function("()=>document.querySelector('[data-site-demo-content] button[type=button]')?.matches('[data-uibms-material-host],[data-uibms-material-native]')")
         def monitor(locator):
             locator.evaluate("""el=>{
-                window.__touchSample={min:0,max:0,last:0,frames:0};
+                window.__touchSample={min:0,max:0,last:0,frames:0,restFrames:0};
                 const sample=window.__touchSample;
                 const loop=()=>{
                     if(window.__touchSample!==sample)return;
                     const layer=el.querySelector(':scope > [data-uibms-material-layer]');
                     const f=Number((layer?.style.getPropertyValue('--_uibms-material-force')||el.style.getPropertyValue('--_uibms-material-force')||'0').trim());
                     sample.min=Math.min(sample.min,f);sample.max=Math.max(sample.max,f);
-                    sample.last=f;sample.frames++;requestAnimationFrame(loop);
+                    sample.last=f;sample.frames++;
+                    // An underdamped spring crosses zero before settling.
+                    // Require sustained exact rest and cleared live DOM contact state.
+                    sample.restFrames=f===0&&!el.hasAttribute('data-uibms-material-contact')?sample.restFrames+1:0;
+                    requestAnimationFrame(loop);
                 };
                 requestAnimationFrame(loop);
             }""")
         monitor(button)
         button.tap()
         phone.wait_for_function("()=>window.__touchSample.max>.04&&window.__touchSample.min<-.04")
-        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
         check(True,"real mobile tap attracts, compresses and releases")
         check(button.evaluate("e=>getComputedStyle(e).outlineStyle==='none'||!e.matches(':focus')"),"touch leaves no focused ghost outline")
         # Test repeated activation and keyboard focus without removing the native focus.
@@ -242,7 +246,7 @@ try:
         button.tap()
         button.tap()
         phone.wait_for_function("()=>window.__touchSample.min<-.04")
-        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
         phone.keyboard.press("Tab")
         check(button.get_attribute("data-uibms-touch-focus") is None,"keyboard clears touch-only focus marker")
         check(phone.evaluate("()=>document.activeElement.matches(':focus-visible')&&getComputedStyle(document.activeElement).outlineStyle!=='none'"),"keyboard focus indicator retained")
@@ -255,7 +259,7 @@ try:
         monitor(cell)
         cell.tap()
         phone.wait_for_function("()=>window.__touchSample.max>.04")
-        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
         check(cell.evaluate("e=>!e.hasAttribute('data-uibms-material-contact')"),"table contact clears")
         after=cell.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,display:getComputedStyle(e).display,border:getComputedStyle(e).borderBottomWidth,collapse:getComputedStyle(e.closest('table')).borderCollapse})")
         check(before==after,"native table layout and borders preserved",[before,after])
@@ -270,7 +274,7 @@ try:
             session.send("Input.dispatchTouchEvent",{"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
             phone.wait_for_function("()=>window.__touchSample.max>.04")
             session.send("Input.dispatchTouchEvent",{"type":"touchCancel","touchPoints":[]})
-            phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+            phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
             check(cell.evaluate("e=>!e.hasAttribute('data-uibms-material-contact')"),"pointer cancellation clears table feedback")
         set_profile(phone,material="default")
         phone.wait_for_function("()=>!document.querySelector('[data-site-demo-content] tbody td').hasAttribute('data-uibms-material-table')")
