@@ -52,7 +52,7 @@
   background-color:color-mix(in srgb,var(--uibms-material-tint,var(--_uibms-material-base-color,transparent)) var(--uibms-material-opacity,92%),transparent) !important;
 }
 /* Preserve the independent scroll progress layer and its native animated size. */
-[data-uibms-material-native][data-uibms-material-surface]:not([data-scroll~="progress"],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
+[data-uibms-material-native][data-uibms-material-surface]:not([data-uibms-material-overlay],[data-scroll~="progress"],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
   background-image:radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
     rgb(255 255 255 / max(.025,calc(var(--_uibms-material-force,0)*.18))),
     rgb(0 0 0 / max(0,calc(-1*var(--_uibms-material-force,0)*.13))) 28%,transparent 70%),
@@ -96,10 +96,9 @@
     -webkit-tap-highlight-color:transparent;
   }
 }
-/* A native table is one magnetic surface, never a collection of elastic cells.
-   The optical glow supplements the original box shadow and background image;
-   table layout, collapsed borders, cell dimensions and semantics stay native. */
-[data-uibms-material-table][data-uibms-material-contact] {
+/* Tables and overlays own a single magnetic surface. Their native geometry,
+   scrolling, top-layer positioning and semantics remain unchanged. */
+:is([data-uibms-material-table],[data-uibms-material-overlay])[data-uibms-material-contact] {
   background-image:
     radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
       rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.18))),
@@ -109,15 +108,16 @@
   box-shadow:
     0 0 calc(max(0,var(--_uibms-material-force,0))*12px)
       color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*22%),transparent),
-    var(--_uibms-material-table-shadow,0 0 0 0 transparent) !important;
+    var(--_uibms-material-outer-shadow,0 0 0 0 transparent) !important;
 }
 /* Flat lighting only. No geometry, per-cell spring, pressure or hover persistence.
    A delegated contact marker avoids sticky :hover on touchscreens and preserves
    existing author background images. Rows receive a gentler light than cells. */
 [data-uibms-table-light="row"] { --_uibms-table-light-strength:4%; }
 [data-uibms-table-light="cell"] { --_uibms-table-light-strength:8%; }
-[data-uibms-table-light] {
+[data-uibms-overlay-light] { --_uibms-table-light-strength:4%; }
+:is([data-uibms-table-light],[data-uibms-overlay-light]) {
   --_uibms-table-light-color:color-mix(in srgb,var(--color-accent,currentColor) var(--_uibms-table-light-strength),transparent);
   background-image:linear-gradient(var(--_uibms-table-light-color),var(--_uibms-table-light-color)),
-    var(--_uibms-table-light-image,none) !important;
+    var(--_uibms-flat-light-image,none) !important;
 }

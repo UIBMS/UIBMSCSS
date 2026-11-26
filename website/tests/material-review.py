@@ -124,6 +124,7 @@ try:
             page.keyboard.press("Escape")
         page.locator("#site-search-open").click()
         page.wait_for_selector("#site-search[open]")
+        page.wait_for_selector("#site-search[data-uibms-material-overlay]",state="attached")
         check(page.locator("#site-search[data-uibms-material-native]").count()==1,"search inherits material")
         page.keyboard.press("Escape")
         # The data-effect demonstrations remain their own explicit legacy materials.
@@ -308,6 +309,61 @@ try:
         desktop_page.wait_for_function("()=>!document.querySelector('[data-site-demo-content] table').hasAttribute('data-uibms-material-contact')")
         check(dtable.locator('[data-uibms-table-light]').count()==0,"mouse leave clears flat lighting")
         desktop.close()
+        # Both native overlays share a passive spring and preserve their browser lifecycle.
+        for slug,trigger,selector in [
+            ("dialogs","#open-native-dialog","#native-dialog"),
+            ("popovers",'button[popovertarget="native-popover-demo"]:not([popovertargetaction])',"#native-popover-demo")
+        ]:
+            phone.goto(url+"docs/"+slug+"/",wait_until="load")
+            phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
+            set_profile(phone,material="liquid-silicone",effects="default")
+            overlay=phone.locator(selector)
+            check(overlay.get_attribute("data-uibms-material-overlay") is None,slug+" closed overlay is not a physical surface")
+            phone.locator(trigger).tap()
+            overlay.wait_for(state="visible")
+            phone.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
+            # A styled passive child must remain flat, while a real control stays pressable.
+            overlay.evaluate("""el=>{
+              const panel=document.createElement('div');panel.className='panel';
+              panel.textContent='Passive content';panel.setAttribute('data-test-overlay-panel','');
+              const action=document.createElement('button');action.type='button';action.textContent='Test action';action.setAttribute('data-test-overlay-action','');
+              el.append(panel,action);
+            }""")
+            passive=overlay.locator("[data-test-overlay-panel]")
+            action=overlay.locator("[data-test-overlay-action]")
+            phone.wait_for_function("sel=>document.querySelector(sel+' [data-test-overlay-action]')?.hasAttribute('data-uibms-material-host')||document.querySelector(sel+' [data-test-overlay-action]')?.hasAttribute('data-uibms-material-native')",arg=selector)
+            check(passive.get_attribute("data-uibms-material-host") is None and passive.get_attribute("data-uibms-material-native") is None,slug+" passive panel has no spring")
+            before=overlay.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,radius:getComputedStyle(e).borderRadius,overflow:getComputedStyle(e).overflow})")
+            monitor(overlay)
+            passive.tap()
+            phone.wait_for_function("()=>window.__touchSample.max>.04")
+            phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
+            check(phone.evaluate("()=>window.__touchSample.min>=0"),slug+" passive surface never compresses")
+            check(passive.get_attribute("data-uibms-overlay-light") is None,slug+" contact light clears")
+            after=overlay.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,radius:getComputedStyle(e).borderRadius,overflow:getComputedStyle(e).overflow})")
+            check(before==after,slug+" native overlay geometry preserved")
+            monitor(action)
+            action.tap()
+            phone.wait_for_function("()=>window.__touchSample.max>.04&&window.__touchSample.min<-.04")
+            phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
+            check(True,slug+" nested button independently attracts and compresses")
+            # Desktop-style keyboard dismissal still works in a touch-capable context.
+            phone.keyboard.press("Escape")
+            overlay.wait_for(state="hidden")
+            phone.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
+            check(overlay.locator("[data-uibms-overlay-light],[data-uibms-material-contact]").count()==0,slug+" closed overlay clears state")
+            phone.locator(trigger).tap()
+            overlay.wait_for(state="visible")
+            phone.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
+            check(overlay.evaluate("e=>Number(e.style.getPropertyValue('--_uibms-material-force')||0)===0"),slug+" reopens at rest")
+            if slug=="popovers":
+                # Native light dismissal, not a synthetic close handler.
+                phone.touchscreen.tap(2,2)
+                overlay.wait_for(state="hidden")
+            else:
+                overlay.get_by_role("button",name="Close",exact=True).tap()
+                overlay.wait_for(state="hidden")
+            phone.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
         check(not touch_errors,"no mobile runtime errors",touch_errors)
         mobile.close()
         browser.close()

@@ -4,6 +4,23 @@ const engine = (function materialEngine() {
   const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,hr,.card,.panel,[data-material="liquid-silicone"]';
   const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,caption,thead,tbody,tfoot,tr,td,th,option,optgroup';
   const tableParts='caption,thead,tbody,tfoot,tr,th,td';
+  const overlays='dialog,[popover],[data-uibms-form-popup]';
+  const overlayContent='p,h1,h2,h3,h4,h5,h6,li,dt,dd,blockquote,pre,figure,section,article,div,header,footer,aside,fieldset,form';
+  const overlayOwner=el=>el?.closest(overlays)||null;
+  function overlayOpen(el){
+    if(!el||!el.isConnected)return false;
+    if(el.matches('dialog')&&!el.open)return false;
+    if(el.hasAttribute('popover')){try{return el.matches(':popover-open');}catch{return false;}}
+    return true;
+  }
+  function inOpenOverlays(el){
+    for(let p=overlayOwner(el);p;p=overlayOwner(p.parentElement))if(!overlayOpen(p))return false;
+    return true;
+  }
+  function outsideOverlay(target,x,y){
+    const owner=overlayOwner(target);if(!owner)return false;
+    const r=owner.getBoundingClientRect();return !overlayOpen(owner)||x<r.left||x>r.right||y<r.top||y>r.bottom;
+  }
   const groups='nav,[role=tablist],[role=radiogroup],[data-uibms-form-options]';
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
   const SVG='http://www.w3.org/2000/svg';
@@ -48,7 +65,7 @@ const engine = (function materialEngine() {
   const enabled=el=>el.closest('[data-material="default"],[data-material="liquid-silicone"]')?.getAttribute('data-material')==='liquid-silicone';
   const legacyMaterial=el=>(el.getAttribute('data-effect')||'').split(/\s+/).some(v=>['glass','frosted','metallic','matte'].includes(v));
   const profileKeys=['theme','palette','shape','border','density','typography','effects','material'];
-  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius','data-uibms-material-table','data-uibms-material-contact'];
+  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius','data-uibms-material-table','data-uibms-material-overlay','data-uibms-material-contact'];
   const sides=['Top','Right','Bottom','Left'];
   const corners=['TopLeft','TopRight','BottomRight','BottomLeft'];
   function visibleColor(c){
@@ -83,13 +100,13 @@ const engine = (function materialEngine() {
     const sameBorder=borders.every(b=>b.width===borders[0].width&&b.color===borders[0].color&&b.style===borders[0].style);
     const uniformRadius=radii.every(r=>r===radii[0])&&!radii[0].includes(' ');
     const surface=visibleColor(background)||image!=='none'||shadow!=='none'||borders.some(b=>b.width>0&&b.style!=='none'&&b.style!=='hidden'&&visibleColor(b.color));
-    const complex=!CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")')||el.matches(replaced)||el.matches('pre,details,summary,dialog,[popover]')||['inline','contents','none','list-item'].includes(cs.display)||['sticky','fixed'].includes(cs.position)||cs.overflowX!=='visible'||cs.overflowY!=='visible'||!sameBorder||!uniformRadius||image!=='none'||!['solid','none','hidden','dashed','dotted'].includes(borders[0].style);
-    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table')};
+    const complex=!CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")')||el.matches(replaced)||el.matches('pre,details,summary,'+overlays)||['inline','contents','none','list-item'].includes(cs.display)||['sticky','fixed'].includes(cs.position)||cs.overflowX!=='visible'||cs.overflowY!=='visible'||!sameBorder||!uniformRadius||image!=='none'||!['solid','none','hidden','dashed','dotted'].includes(borders[0].style);
+    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table'),overlay:el.matches(overlays)};
     for(const k of restore)el.setAttribute(k,'');
     return result;
   }
   const disabled=el=>el.matches(':disabled,[readonly]')||!!el.closest('[inert],[aria-disabled=true]');
-  const interactive=el=>!disabled(el)&&!el.matches('table,'+tableParts)&&el.matches(activeSelector);
+  const interactive=el=>!disabled(el)&&!el.matches('table,'+tableParts+','+overlays)&&el.matches(activeSelector);
   const visible=el=>el.isConnected&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden';
   const muted=(el,channel)=>el.closest('[data-effects="default"],[data-effects="none"],[data-effects="minimal"],[data-effects="fluid"],[data-effects="dynamic"]')?.getAttribute('data-effects')==='none'||el.getAttribute('data-'+channel)?.split(/\s+/).includes('none');
   function decoration(kind){
@@ -112,7 +129,7 @@ const engine = (function materialEngine() {
     s.layer?.remove();
     for(const k of [...paintFlags,'data-uibms-material-surface'])s.el.removeAttribute(k);
     if(!s.el.hasAttribute('data-uibms-selection-host'))s.el.removeAttribute('data-uibms-material-position');
-    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-table-shadow'])s.el.style.removeProperty(k);
+    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-outer-shadow'])s.el.style.removeProperty(k);
   }
   function radius(el,w,h,value){
     const raw=value||getComputedStyle(el).borderTopLeftRadius,parts=raw.split(/\s+/);
@@ -190,17 +207,18 @@ const engine = (function materialEngine() {
       if(s.layer&&!s.layer.hidden)s.layer.hidden=true;
       el.setAttribute('data-uibms-material-native','');
       el.toggleAttribute('data-uibms-material-surface',d.surface);
-      // The entire table owns one passive spring. Rows and cells are not physical surfaces.
+      // Shared passive surfaces preserve native geometry and use one optical spring.
       el.toggleAttribute('data-uibms-material-table',d.table);
-      el.toggleAttribute('data-uibms-material-contact',d.table&&s.f>.001);
-      if(d.table)el.style.setProperty('--_uibms-material-table-shadow',d.shadow==='none'?'0 0 0 0 transparent':d.shadow);
+      el.toggleAttribute('data-uibms-material-overlay',d.overlay);
+      el.toggleAttribute('data-uibms-material-contact',(d.table||d.overlay)&&s.f>.001);
+      if(d.table||d.overlay)el.style.setProperty('--_uibms-material-outer-shadow',d.shadow==='none'?'0 0 0 0 transparent':d.shadow);
       el.style.setProperty('--_uibms-material-base-image',d.image||'none');
       el.style.setProperty('--_uibms-material-base-color',d.background);
       el.style.setProperty('--_uibms-material-force',String(s.f));
       el.style.setProperty('--_uibms-material-x',clamp(s.x/s.w*100,0,100)+'%');
       el.style.setProperty('--_uibms-material-y',clamp(s.y/s.h*100,0,100)+'%');
-      el.toggleAttribute('data-uibms-material-radius',!d.table&&d.uniformRadius&&Math.abs(s.f)>.001);
-      if(!d.table&&d.uniformRadius&&Math.abs(s.f)>.001){
+      el.toggleAttribute('data-uibms-material-radius',!d.table&&!d.overlay&&d.uniformRadius&&Math.abs(s.f)>.001);
+      if(!d.table&&!d.overlay&&d.uniformRadius&&Math.abs(s.f)>.001){
         const variation=s.f*clamp(Math.min(s.w,s.h)*.13,2,12);
         const corner=(x,y)=>Math.max(0,s.r+variation*Math.exp(-Math.hypot(x-s.x,y-s.y)/42)).toFixed(2)+'px';
         el.style.setProperty('--_uibms-material-radius',[corner(0,0),corner(s.w,0),corner(s.w,s.h),corner(0,s.h)].join(' '));
@@ -209,7 +227,7 @@ const engine = (function materialEngine() {
       if(el.matches('input[type=range]')){const min=Number(el.min||0),max=Number(el.max||100);el.style.setProperty('--_uibms-range-progress',clamp((Number(el.value)-min)/Math.max(.0001,max-min)*100,0,100)+'%');}
       return;
     }
-    el.removeAttribute('data-uibms-material-native');el.removeAttribute('data-uibms-material-surface');el.removeAttribute('data-uibms-material-radius');el.removeAttribute('data-uibms-material-table');el.removeAttribute('data-uibms-material-contact');
+    el.removeAttribute('data-uibms-material-native');el.removeAttribute('data-uibms-material-surface');el.removeAttribute('data-uibms-material-radius');el.removeAttribute('data-uibms-material-table');el.removeAttribute('data-uibms-material-overlay');el.removeAttribute('data-uibms-material-contact');
     if(s.layer.hidden)s.layer.hidden=false;
     const cs=getComputedStyle(el),left=parseFloat(cs.borderLeftWidth)||0,top=parseFloat(cs.borderTopWidth)||0;
     Object.assign(s.layer.style,{left:(-36-left+el.scrollLeft)+'px',top:(-36-top+el.scrollTop)+'px',right:'auto',bottom:'auto',width:(s.w+72)+'px',height:(s.h+72)+'px'});
@@ -288,28 +306,36 @@ const engine = (function materialEngine() {
     const findBackdrop=el=>{for(let p=el;p;p=p.parentElement){if(backdrops.has(p))return backdrops.get(p);}return null;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)'),forced=matchMedia('(forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce)'),scheme=matchMedia('(prefers-color-scheme: dark)');
     let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,touch=null,touchFocus=null,disposed=false,refreshPending=false;
-    // Only the row and cell under the pointer are lit. These decorations have no
-    // spring, force, contour, or ResizeObserver of their own.
-    let lightTarget=null;const tableLights=new Map();
-    function clearTableLights(){
-      for(const el of tableLights.keys()){el.removeAttribute('data-uibms-table-light');el.style.removeProperty('--_uibms-table-light-image');}
-      tableLights.clear();lightTarget=null;
+    // Delegated, non-physical lighting. Only the table row/cell or a passive
+    // content block in an overlay is lit; neither receives a separate spring.
+    let lightTarget=null;const flatLights=new Map();
+    function clearFlatLights(){
+      for(const el of flatLights.keys()){el.removeAttribute('data-uibms-table-light');el.removeAttribute('data-uibms-overlay-light');el.style.removeProperty('--_uibms-flat-light-image');}
+      flatLights.clear();lightTarget=null;
     }
-    function setTableLights(target,refreshing=false){
-      const cell=target?.closest('th,td'),row=cell?.closest('tr'),table=cell?.closest('table');
+    function setFlatLights(target,refreshing=false){
+      const owner=target?.closest('table,'+overlays);
       const canLight=el=>el&&el.isConnected&&enabled(el)&&!legacyMaterial(el)&&!disabled(el)&&!muted(el,'hover');
       const next=new Map();
-      if(!forced.matches&&table&&root.contains(table)&&surfaces.has(table)&&canLight(table)){
-        if(row&&row.closest('table')===table&&canLight(row))next.set(row,'row');
-        if(canLight(cell))next.set(cell,'cell');
+      if(!forced.matches&&owner&&root.contains(owner)&&surfaces.has(owner)&&canLight(owner)&&inOpenOverlays(owner)){
+        if(owner.matches('table')){
+          const cell=target.closest('th,td'),row=cell?.closest('tr');
+          if(row&&row.closest('table')===owner&&canLight(row))next.set(row,'row');
+          if(cell&&cell.closest('table')===owner&&canLight(cell))next.set(cell,'cell');
+        }else if(!target.closest(activeSelector+',input,textarea,select,progress,meter,output')&&hitSurface(target)?.el===owner){
+          const block=target.closest(overlayContent);
+          if(block&&block!==owner&&owner.contains(block)&&canLight(block))next.set(block,'overlay');
+        }
       }
-      for(const el of tableLights.keys())if(!next.has(el)||refreshing){el.removeAttribute('data-uibms-table-light');el.style.removeProperty('--_uibms-table-light-image');tableLights.delete(el);}
-      for(const [el,kind] of next)if(!tableLights.has(el)){
-        const image=getComputedStyle(el).backgroundImage;
-        el.style.setProperty('--_uibms-table-light-image',image||'none');
-        el.setAttribute('data-uibms-table-light',kind);tableLights.set(el,kind);
+      for(const el of flatLights.keys())if(!next.has(el)||refreshing){
+        el.removeAttribute('data-uibms-table-light');el.removeAttribute('data-uibms-overlay-light');el.style.removeProperty('--_uibms-flat-light-image');flatLights.delete(el);
       }
-      lightTarget=next.size?cell:null;
+      for(const [el,kind] of next)if(!flatLights.has(el)){
+        el.style.setProperty('--_uibms-flat-light-image',getComputedStyle(el).backgroundImage||'none');
+        if(kind==='overlay')el.setAttribute('data-uibms-overlay-light','');else el.setAttribute('data-uibms-table-light',kind);
+        flatLights.set(el,kind);
+      }
+      lightTarget=next.size?target:null;
     }
     const clearTouchFocus=()=>{if(touchFocus){touchFocus.removeAttribute('data-uibms-touch-focus');touchFocus=null;}};
     const setTouchFocus=el=>{
@@ -321,20 +347,24 @@ const engine = (function materialEngine() {
     };
     function releaseTouch(){
       if(touch?.surface)animating.add(touch.surface);
-      if(touch)clearTableLights();
+      if(touch)clearFlatLights();
       touch=null;
     }
     const cancel=()=>{
       if(pressed)animating.add(pressed);
       releaseTouch();pressed=null;pointer=null;pressTarget=null;keyPress=false;point=null;
-      targetHover(null);clearTableLights();clearTouchFocus();request();
+      targetHover(null);clearFlatLights();clearTouchFocus();request();
     };
     function request(){if(!frame&&!disposed)frame=requestAnimationFrame(tick);}
     function queueRefresh(){if(refreshPending||disposed)return;refreshPending=true;queueMicrotask(()=>{refreshPending=false;if(!disposed)refresh();});}
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts))return false;
+      if(el.matches(tableParts)||!inOpenOverlays(el))return false;
+      const overlay=overlayOwner(el);
+      // Ordinary nested content is flat by default. Actual controls, nested
+      // overlays/tables and an explicit local material opt-in remain independent.
+      if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter')&&el.getAttribute('data-material')!=='liquid-silicone')return false;
       if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot,input[type=hidden]'))return false;
       const group=el.closest(groups);
@@ -344,7 +374,7 @@ const engine = (function materialEngine() {
     }
     function refresh(){
       const groupTargets=new Map();
-      if(!forced.matches&&CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")'))for(const el of root.querySelectorAll(groups))if(enabled(el)&&!legacyMaterial(el)){const a=selected(el);if(a)groupTargets.set(el,a);}
+      if(!forced.matches&&CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")'))for(const el of root.querySelectorAll(groups))if(enabled(el)&&!legacyMaterial(el)&&inOpenOverlays(el)){const a=selected(el);if(a)groupTargets.set(el,a);}
       for(const [el,s] of selections)if(!groupTargets.has(el)){s.destroy();selections.delete(el);}
       const candidates=[...(root.nodeType===1&&root.matches(selector)?[root]:[]),...root.querySelectorAll(selector)],keep=new Set();
       for(const el of candidates){
@@ -359,9 +389,13 @@ const engine = (function materialEngine() {
         s.design=d;s.motion=motion(el);dirty.add(s);
         if(s.f!==0||s===hover||s===pressed)animating.add(s);
       }
-      for(const [el,s] of surfaces)if(!keep.has(el)){ro?.unobserve(el);removeSurface(s);surfaces.delete(el);animating.delete(s);dirty.delete(s);if(hover===s)hover=null;if(pressed===s)pressed=null;}
+      for(const [el,s] of surfaces)if(!keep.has(el)){
+        if(touch?.surface===s||pressTarget===el||pressed===s)cancel();
+        if(touchFocus===el)clearTouchFocus();
+        ro?.unobserve(el);removeSurface(s);surfaces.delete(el);animating.delete(s);dirty.delete(s);if(hover===s)hover=null;if(pressed===s)pressed=null;
+      }
       for(const [el,a] of groupTargets){let s=selections.get(el);if(!s){s=selection(el,config,findBackdrop);selections.set(el,s);}s.set(a);}
-      if(lightTarget)setTableLights(lightTarget,true);
+      if(lightTarget)setFlatLights(lightTarget,true);
       request();
     }
     function targetHover(s){
@@ -369,7 +403,7 @@ const engine = (function materialEngine() {
       hover=s;if(s)animating.add(s);
     }
     function hitSurface(target){
-      for(let el=target;el;el=el.parentElement)if(surfaces.has(el))return surfaces.get(el);
+      for(let el=target;el;el=el.parentElement){if(surfaces.has(el))return surfaces.get(el);if(el.matches(overlays))break;}
       return null;
     }
     function hitControl(target){
@@ -390,13 +424,16 @@ const engine = (function materialEngine() {
       }
       if(touch)return;
       const target=e.target instanceof Element?e.target:null;
-      setTableLights(target);
+      // Modal backdrop events can be retargeted to the dialog itself. They
+      // must not pull on the dialog or surfaces behind the modal.
+      if(target&&outsideOverlay(target,e.clientX,e.clientY)){clearFlatLights();targetHover(null);point=null;request();return;}
+      setFlatLights(target);
       point={x:e.clientX,y:e.clientY,el:hitControl(target)};
       if(pressed){setPoint(pressed,e.clientX,e.clientY);animating.add(pressed);}
       let best=null,bestDistance=config.range;
       if(target&&root.contains(target)){
         best=hitSurface(target);if(best)bestDistance=0;
-        if(!best)for(const s of surfaces.values()){
+        if(!best&&!overlayOwner(target))for(const s of surfaces.values()){
           if(!visible(s.el))continue;
           const r=s.el.getBoundingClientRect(),d=Math.hypot(Math.max(r.left-e.clientX,0,e.clientX-r.right),Math.max(r.top-e.clientY,0,e.clientY-r.bottom));
           if(d<bestDistance){best=s;bestDistance=d;}
@@ -412,13 +449,14 @@ const engine = (function materialEngine() {
       if(pointer!==null||touch)cancel();
       pointer=e.pointerId;keyPress=false;
       const target=e.target instanceof Element?e.target:null,el=hitControl(target);
+      if(target&&outsideOverlay(target,e.clientX,e.clientY)){cancel();return;}
       if(e.pointerType==='touch'){
-        targetHover(null);point=null;setTouchFocus(el);setTableLights(target);
+        targetHover(null);point=null;setTouchFocus(el);setFlatLights(target);
         const group=el?.closest(groups);
         // Navigation/choice groups own a single shared selection surface.
         const surface=surfaces.get(el)||(!(group&&selections.has(group))?hitSurface(target):null);
         const own=!!el&&(surface?.el===el||!!(group&&selections.has(group)));
-        if(!surface&&!own){pointer=null;clearTableLights();return;}
+        if(!surface&&!own){pointer=null;clearFlatLights();return;}
         const canPress=own&&interactive(el)&&!muted(el,'active');
         // Advance the visual impulse on rendered frames. A delayed first frame must
         // not skip the attraction phase of a short, otherwise ordinary native tap.
@@ -453,6 +491,16 @@ const engine = (function materialEngine() {
     function focusout(e){if(e.target===touchFocus)clearTouchFocus();keyup();const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}
     function leave(e){if(e.pointerType!=='touch'&&!e.relatedTarget)cancel();}
     function visibility(){if(document.hidden)cancel();}
+    function overlayChanged(e){
+      const el=e.target;if(!(el instanceof Element)||!el.matches(overlays))return;
+      // A close or light-dismiss must not retain a pointer, focus marker or
+      // impulse from the previous opening. Let the browser own the lifecycle.
+      if(!overlayOpen(el)){
+        if([hover?.el,pressed?.el,pressTarget,touch?.surface?.el,touch?.el,touchFocus,lightTarget,point?.el].some(n=>n&&el.contains(n)))cancel();
+        for(const s of surfaces.values())if(el.contains(s.el)){s.f=s.v=s.target=0;animating.delete(s);dirty.add(s);}
+      }
+      queueRefresh();
+    }
     function tick(now){
       frame=0;const dt=last?Math.min(.05,(now-last)/1000):1/60;last=now;
       for(const s of dirty){if(visible(s.el)){measure(s);paint(s,config,forced.matches?null:findBackdrop(s.el));}}dirty.clear();
@@ -473,7 +521,7 @@ const engine = (function materialEngine() {
         const pull=!disabled(s.el)&&!muted(s.el,'hover'),push=interactive(s.el)&&!muted(s.el,'active');
         const desired=stopped?0:touching?(phase==='press'&&push&&touch.canPress?-config.pressure*profile.press:phase==='attract'&&pull?config.attraction*profile.hover:0):pressed===s&&push?-config.pressure*profile.press:hover===s&&pull?s.target*profile.hover:0;
         if(stopped){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
-        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if(s.design.table&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
+        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if((s.design.table||s.design.overlay)&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
         paint(s,config,forced.matches?null:findBackdrop(s.el));
         if(s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
       }
@@ -485,12 +533,12 @@ const engine = (function materialEngine() {
       if(animating.size||moving||touch)request();else last=0;
     }
     const eventRoot=root.nodeType===9?root:root;
-    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
+    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'toggle',overlayChanged,true],[eventRoot,'close',overlayChanged,true],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
     listeners.forEach(([o,k,f,c])=>o.addEventListener(k,f,c||false));
     const observer=new MutationObserver(records=>{
       if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')))))queueRefresh();
     });
-    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','inert','class']});
+    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','popover','inert','class']});
     const preference=()=>{if(reduced.matches||forced.matches)cancel();refresh();for(const s of surfaces.values())animating.add(s);request();};
     reduced.addEventListener?.('change',preference);forced.addEventListener?.('change',preference);scheme.addEventListener?.('change',preference);
     function unregisterBackdrop(el){const b=backdrops.get(el);if(!b)return;b.cancelled=true;el.style.backgroundImage=b.oldImage;el.style.backgroundSize=b.oldSize;el.style.backgroundPosition=b.oldPosition;el.style.backgroundRepeat=b.oldRepeat;backdrops.delete(el);for(const s of surfaces.values())dirty.add(s);refresh();}
@@ -501,7 +549,7 @@ const engine = (function materialEngine() {
       const image=new Image();if(url.origin!==location.origin&&url.protocol.startsWith('http'))image.crossOrigin='anonymous';image.src=url.href;
       try{await image.decode();if(b.cancelled||disposed)return false;b.image=image;el.style.backgroundImage='url('+JSON.stringify(url.href)+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';if(!imagePixels(b))throw Error('Image pixels unavailable');for(const s of surfaces.values())dirty.add(s);refresh();return true;}catch{unregisterBackdrop(el);return false;}
     }
-    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearTableLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
+    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearFlatLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
   return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase};
