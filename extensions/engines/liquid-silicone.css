@@ -96,14 +96,28 @@
     -webkit-tap-highlight-color:transparent;
   }
 }
-/* Native table parts share the same force/point as other silicone surfaces.
-   Paint only a local optical response: never change border-collapse, display,
-   widths, padding or the native table's header/cell semantics. */
+/* A native table is one magnetic surface, never a collection of elastic cells.
+   The optical glow supplements the original box shadow and background image;
+   table layout, collapsed borders, cell dimensions and semantics stay native. */
 [data-uibms-material-table][data-uibms-material-contact] {
   background-image:
     radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
-      rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.28))),
-      color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*16%),transparent) 34%,
+      rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.18))),
+      color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*12%),transparent) 34%,
       transparent 75%),
     var(--_uibms-material-base-image,none) !important;
+  box-shadow:
+    0 0 calc(max(0,var(--_uibms-material-force,0))*12px)
+      color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*22%),transparent),
+    var(--_uibms-material-table-shadow,0 0 0 0 transparent) !important;
+}
+/* Flat lighting only. No geometry, per-cell spring, pressure or hover persistence.
+   A delegated contact marker avoids sticky :hover on touchscreens and preserves
+   existing author background images. Rows receive a gentler light than cells. */
+[data-uibms-table-light="row"] { --_uibms-table-light-strength:4%; }
+[data-uibms-table-light="cell"] { --_uibms-table-light-strength:8%; }
+[data-uibms-table-light] {
+  --_uibms-table-light-color:color-mix(in srgb,var(--color-accent,currentColor) var(--_uibms-table-light-strength),transparent);
+  background-image:linear-gradient(var(--_uibms-table-light-color),var(--_uibms-table-light-color)),
+    var(--_uibms-table-light-image,none) !important;
 }

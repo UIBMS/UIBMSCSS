@@ -1,9 +1,9 @@
 // UIBMS Material Engine - optional development candidate. MIT.
 const engine = (function materialEngine() {
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,.card,.panel,[data-material="liquid-silicone"]';
+  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,hr,.card,.panel,[data-material="liquid-silicone"]';
   const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,caption,thead,tbody,tfoot,tr,td,th,option,optgroup';
-  const tableParts='table,caption,thead,tbody,tfoot,tr,th,td';
+  const tableParts='caption,thead,tbody,tfoot,tr,th,td';
   const groups='nav,[role=tablist],[role=radiogroup],[data-uibms-form-options]';
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
   const SVG='http://www.w3.org/2000/svg';
@@ -84,12 +84,12 @@ const engine = (function materialEngine() {
     const uniformRadius=radii.every(r=>r===radii[0])&&!radii[0].includes(' ');
     const surface=visibleColor(background)||image!=='none'||shadow!=='none'||borders.some(b=>b.width>0&&b.style!=='none'&&b.style!=='hidden'&&visibleColor(b.color));
     const complex=!CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")')||el.matches(replaced)||el.matches('pre,details,summary,dialog,[popover]')||['inline','contents','none','list-item'].includes(cs.display)||['sticky','fixed'].includes(cs.position)||cs.overflowX!=='visible'||cs.overflowY!=='visible'||!sameBorder||!uniformRadius||image!=='none'||!['solid','none','hidden','dashed','dotted'].includes(borders[0].style);
-    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex,table:el.matches(tableParts)};
+    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table')};
     for(const k of restore)el.setAttribute(k,'');
     return result;
   }
   const disabled=el=>el.matches(':disabled,[readonly]')||!!el.closest('[inert],[aria-disabled=true]');
-  const interactive=el=>!disabled(el)&&el.matches(activeSelector);
+  const interactive=el=>!disabled(el)&&!el.matches('table,'+tableParts)&&el.matches(activeSelector);
   const visible=el=>el.isConnected&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden';
   const muted=(el,channel)=>el.closest('[data-effects="default"],[data-effects="none"],[data-effects="minimal"],[data-effects="fluid"],[data-effects="dynamic"]')?.getAttribute('data-effects')==='none'||el.getAttribute('data-'+channel)?.split(/\s+/).includes('none');
   function decoration(kind){
@@ -112,7 +112,7 @@ const engine = (function materialEngine() {
     s.layer?.remove();
     for(const k of [...paintFlags,'data-uibms-material-surface'])s.el.removeAttribute(k);
     if(!s.el.hasAttribute('data-uibms-selection-host'))s.el.removeAttribute('data-uibms-material-position');
-    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color'])s.el.style.removeProperty(k);
+    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-table-shadow'])s.el.style.removeProperty(k);
   }
   function radius(el,w,h,value){
     const raw=value||getComputedStyle(el).borderTopLeftRadius,parts=raw.split(/\s+/);
@@ -190,16 +190,17 @@ const engine = (function materialEngine() {
       if(s.layer&&!s.layer.hidden)s.layer.hidden=true;
       el.setAttribute('data-uibms-material-native','');
       el.toggleAttribute('data-uibms-material-surface',d.surface);
-      // Never add non-table children or alter native table layout. Only paint the existing part.
+      // The entire table owns one passive spring. Rows and cells are not physical surfaces.
       el.toggleAttribute('data-uibms-material-table',d.table);
-      el.toggleAttribute('data-uibms-material-contact',d.table&&Math.abs(s.f)>.001);
+      el.toggleAttribute('data-uibms-material-contact',d.table&&s.f>.001);
+      if(d.table)el.style.setProperty('--_uibms-material-table-shadow',d.shadow==='none'?'0 0 0 0 transparent':d.shadow);
       el.style.setProperty('--_uibms-material-base-image',d.image||'none');
       el.style.setProperty('--_uibms-material-base-color',d.background);
       el.style.setProperty('--_uibms-material-force',String(s.f));
       el.style.setProperty('--_uibms-material-x',clamp(s.x/s.w*100,0,100)+'%');
       el.style.setProperty('--_uibms-material-y',clamp(s.y/s.h*100,0,100)+'%');
-      el.toggleAttribute('data-uibms-material-radius',d.uniformRadius&&Math.abs(s.f)>.001);
-      if(d.uniformRadius&&Math.abs(s.f)>.001){
+      el.toggleAttribute('data-uibms-material-radius',!d.table&&d.uniformRadius&&Math.abs(s.f)>.001);
+      if(!d.table&&d.uniformRadius&&Math.abs(s.f)>.001){
         const variation=s.f*clamp(Math.min(s.w,s.h)*.13,2,12);
         const corner=(x,y)=>Math.max(0,s.r+variation*Math.exp(-Math.hypot(x-s.x,y-s.y)/42)).toFixed(2)+'px';
         el.style.setProperty('--_uibms-material-radius',[corner(0,0),corner(s.w,0),corner(s.w,s.h),corner(0,s.h)].join(' '));
@@ -287,6 +288,29 @@ const engine = (function materialEngine() {
     const findBackdrop=el=>{for(let p=el;p;p=p.parentElement){if(backdrops.has(p))return backdrops.get(p);}return null;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)'),forced=matchMedia('(forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce)'),scheme=matchMedia('(prefers-color-scheme: dark)');
     let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,touch=null,touchFocus=null,disposed=false,refreshPending=false;
+    // Only the row and cell under the pointer are lit. These decorations have no
+    // spring, force, contour, or ResizeObserver of their own.
+    let lightTarget=null;const tableLights=new Map();
+    function clearTableLights(){
+      for(const el of tableLights.keys()){el.removeAttribute('data-uibms-table-light');el.style.removeProperty('--_uibms-table-light-image');}
+      tableLights.clear();lightTarget=null;
+    }
+    function setTableLights(target,refreshing=false){
+      const cell=target?.closest('th,td'),row=cell?.closest('tr'),table=cell?.closest('table');
+      const canLight=el=>el&&el.isConnected&&enabled(el)&&!legacyMaterial(el)&&!disabled(el)&&!muted(el,'hover');
+      const next=new Map();
+      if(!forced.matches&&table&&root.contains(table)&&surfaces.has(table)&&canLight(table)){
+        if(row&&row.closest('table')===table&&canLight(row))next.set(row,'row');
+        if(canLight(cell))next.set(cell,'cell');
+      }
+      for(const el of tableLights.keys())if(!next.has(el)||refreshing){el.removeAttribute('data-uibms-table-light');el.style.removeProperty('--_uibms-table-light-image');tableLights.delete(el);}
+      for(const [el,kind] of next)if(!tableLights.has(el)){
+        const image=getComputedStyle(el).backgroundImage;
+        el.style.setProperty('--_uibms-table-light-image',image||'none');
+        el.setAttribute('data-uibms-table-light',kind);tableLights.set(el,kind);
+      }
+      lightTarget=next.size?cell:null;
+    }
     const clearTouchFocus=()=>{if(touchFocus){touchFocus.removeAttribute('data-uibms-touch-focus');touchFocus=null;}};
     const setTouchFocus=el=>{
       clearTouchFocus();
@@ -297,17 +321,20 @@ const engine = (function materialEngine() {
     };
     function releaseTouch(){
       if(touch?.surface)animating.add(touch.surface);
+      if(touch)clearTableLights();
       touch=null;
     }
     const cancel=()=>{
       if(pressed)animating.add(pressed);
       releaseTouch();pressed=null;pointer=null;pressTarget=null;keyPress=false;point=null;
-      targetHover(null);clearTouchFocus();request();
+      targetHover(null);clearTableLights();clearTouchFocus();request();
     };
     function request(){if(!frame&&!disposed)frame=requestAnimationFrame(tick);}
     function queueRefresh(){if(refreshPending||disposed)return;refreshPending=true;queueMicrotask(()=>{refreshPending=false;if(!disposed)refresh();});}
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
+      // Internal table structure remains flat, even if material is explicitly specified on a cell.
+      if(el.matches(tableParts))return false;
       if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot,input[type=hidden]'))return false;
       const group=el.closest(groups);
@@ -334,6 +361,7 @@ const engine = (function materialEngine() {
       }
       for(const [el,s] of surfaces)if(!keep.has(el)){ro?.unobserve(el);removeSurface(s);surfaces.delete(el);animating.delete(s);dirty.delete(s);if(hover===s)hover=null;if(pressed===s)pressed=null;}
       for(const [el,a] of groupTargets){let s=selections.get(el);if(!s){s=selection(el,config,findBackdrop);selections.set(el,s);}s.set(a);}
+      if(lightTarget)setTableLights(lightTarget,true);
       request();
     }
     function targetHover(s){
@@ -362,6 +390,7 @@ const engine = (function materialEngine() {
       }
       if(touch)return;
       const target=e.target instanceof Element?e.target:null;
+      setTableLights(target);
       point={x:e.clientX,y:e.clientY,el:hitControl(target)};
       if(pressed){setPoint(pressed,e.clientX,e.clientY);animating.add(pressed);}
       let best=null,bestDistance=config.range;
@@ -384,12 +413,12 @@ const engine = (function materialEngine() {
       pointer=e.pointerId;keyPress=false;
       const target=e.target instanceof Element?e.target:null,el=hitControl(target);
       if(e.pointerType==='touch'){
-        targetHover(null);point=null;setTouchFocus(el);
+        targetHover(null);point=null;setTouchFocus(el);setTableLights(target);
         const group=el?.closest(groups);
         // Navigation/choice groups own a single shared selection surface.
         const surface=surfaces.get(el)||(!(group&&selections.has(group))?hitSurface(target):null);
         const own=!!el&&(surface?.el===el||!!(group&&selections.has(group)));
-        if(!surface&&!own){pointer=null;return;}
+        if(!surface&&!own){pointer=null;clearTableLights();return;}
         const canPress=own&&interactive(el)&&!muted(el,'active');
         // Advance the visual impulse on rendered frames. A delayed first frame must
         // not skip the attraction phase of a short, otherwise ordinary native tap.
@@ -444,7 +473,7 @@ const engine = (function materialEngine() {
         const pull=!disabled(s.el)&&!muted(s.el,'hover'),push=interactive(s.el)&&!muted(s.el,'active');
         const desired=stopped?0:touching?(phase==='press'&&push&&touch.canPress?-config.pressure*profile.press:phase==='attract'&&pull?config.attraction*profile.hover:0):pressed===s&&push?-config.pressure*profile.press:hover===s&&pull?s.target*profile.hover:0;
         if(stopped){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
-        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
+        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if(s.design.table&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
         paint(s,config,forced.matches?null:findBackdrop(s.el));
         if(s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
       }
@@ -472,7 +501,7 @@ const engine = (function materialEngine() {
       const image=new Image();if(url.origin!==location.origin&&url.protocol.startsWith('http'))image.crossOrigin='anonymous';image.src=url.href;
       try{await image.decode();if(b.cancelled||disposed)return false;b.image=image;el.style.backgroundImage='url('+JSON.stringify(url.href)+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';if(!imagePixels(b))throw Error('Image pixels unavailable');for(const s of surfaces.values())dirty.add(s);refresh();return true;}catch{unregisterBackdrop(el);return false;}
     }
-    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
+    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearTableLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
   return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase};
