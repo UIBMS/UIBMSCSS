@@ -207,7 +207,17 @@ const engine = (function formEngine(){
     }
     const syncInput=e=>{if(adapters.has(e.target)&&valueType(e.target)==='color')syncColor(e.target);};
     const change=e=>{syncInput(e);if(current&&e.target===current.el&&current.value!==current.el.value){current.value=current.el.value;render();position();}};
-    const reset=()=>queueMicrotask(()=>{if(disposed)return;for(const el of adapters.keys())if(valueType(el)==='color')syncColor(el);if(current){current.value=current.el.value;render();position();}});
+    // A trusted reset event precedes the native reset default action. A
+    // microtask may run between event listeners, before values are restored.
+    // Read the actual reset values in a subsequent task instead.
+    const reset=e=>{
+      const form=e.target;
+      doc.defaultView.setTimeout(()=>{
+        if(disposed||e.defaultPrevented)return;
+        for(const el of adapters.keys())if(el.form===form&&valueType(el)==='color')syncColor(el);
+        if(current?.el.form===form){current.value=current.el.value;render();position();}
+      },0);
+    };
     doc.addEventListener('pointerdown',outside);doc.addEventListener('keydown',keys);doc.addEventListener('input',syncInput);doc.addEventListener('change',change);doc.addEventListener('reset',reset);
     window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
     const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches('input,select,option,fieldset,form,[data-material]')||n.querySelector('input,select')))))requestRefresh();});

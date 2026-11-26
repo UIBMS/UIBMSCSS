@@ -630,6 +630,13 @@ try:
         form.get_by_role("button",name="Reset",exact=True).tap()
         phone.wait_for_function("()=>document.querySelector('[data-site-demo-run=form-engine] [data-uibms-form-color-text]').textContent==='#80BCEB'")
         check(color.input_value().lower()=="#80bceb","native reset restores colour and swatch")
+        # A canceled reset must preserve the selected native value and face.
+        color.evaluate("""e=>{e.value='#654321';e.dispatchEvent(new Event('input',{bubbles:true}));e.form.addEventListener('reset',event=>event.preventDefault(),{once:true});}""")
+        form.get_by_role("button",name="Reset",exact=True).tap()
+        frame(phone)
+        check(color.input_value().lower()=="#654321" and value.inner_text()=="#654321","canceled native reset preserves colour")
+        form.get_by_role("button",name="Reset",exact=True).tap()
+        phone.wait_for_function("()=>document.querySelector('[data-site-demo-run=form-engine] [data-uibms-form-color-text]').textContent==='#80BCEB'")
         phone.set_viewport_size({"width":390,"height":844})
         phone.goto(url+"docs/buttons/",wait_until="load")
         phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
