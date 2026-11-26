@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import {tabDestination} from '../extensions/engines/components/tabs.mjs';
 import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
 import {meshPoint,objectRectangle} from '../extensions/engines/media-deformation.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
@@ -79,3 +80,14 @@ assert.deepEqual(objectRectangle(100,100,200,100,'contain','50% 50%'),{x:0,y:25,
 assert.deepEqual(objectRectangle(100,100,50,50,'scale-down','right bottom'),{x:50,y:50,w:50,h:50});
 assert.equal(objectRectangle(100,100,50,50,'contain','right 10px bottom 20px'),null);
 console.log('Shared media mesh and object-fit calculations passed.');
+
+assert.equal(tabDestination(0,3,'ArrowRight'),1);
+assert.equal(tabDestination(2,3,'ArrowRight'),0);
+assert.equal(tabDestination(0,3,'ArrowLeft'),2);
+assert.equal(tabDestination(0,3,'ArrowLeft',false,true),1);
+assert.equal(tabDestination(1,3,'ArrowDown',true),2);
+assert.equal(tabDestination(1,3,'ArrowRight',true),-1);
+assert.equal(tabDestination(1,3,'Home'),0);
+assert.equal(tabDestination(1,3,'End'),2);
+assert.equal(tabDestination(1,0,'Home'),-1);
+console.log('Optional tab keyboard navigation passed.');

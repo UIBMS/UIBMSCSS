@@ -356,7 +356,7 @@ const engine = (function materialEngine() {
     const targetRect=()=>{
       const a=s.target.getBoundingClientRect(),b=group.getBoundingClientRect(),sx=(group.offsetWidth||b.width)/Math.max(1,b.width),sy=(group.offsetHeight||b.height)/Math.max(1,b.height);
       const l=(a.left-b.left)*sx+group.scrollLeft-(parseFloat(getComputedStyle(group).borderLeftWidth)||0)+2,t=(a.top-b.top)*sy+group.scrollTop-(parseFloat(getComputedStyle(group).borderTopWidth)||0)+2;
-      if(s.target.matches('input[type=radio]')){let ix=a.width*sx*.22,iy=a.height*sy*.22;return [l+ix,t+iy,l+Math.max(4,a.width*sx-4)-ix,t+Math.max(4,a.height*sy-4)-iy];}
+      if(s.target.matches('input[type=radio]')&&!group.matches('.segmented[role=radiogroup]')){let ix=a.width*sx*.22,iy=a.height*sy*.22;return [l+ix,t+iy,l+Math.max(4,a.width*sx-4)-ix,t+Math.max(4,a.height*sy-4)-iy];}
       return [l,t,l+Math.max(4,a.width*sx-4),t+Math.max(4,a.height*sy-4)];
     };
     const tick=(dt,instant=false,press=null,point=null)=>{
@@ -378,9 +378,10 @@ const engine = (function materialEngine() {
       if(instant){s.f=s.v=0;}else{[s.f,s.v]=step(s.f,s.v,f,dt,config.stiffness*profile.speed,config.damping*profile.speed);if(s.f!==f||s.v!==0)moving=true;}
       const rect=s.target.getBoundingClientRect(),local=point?.el===s.target;
       const x=local?clamp(point.x-rect.left,0,w):s.f!==0&&Number.isFinite(s.x)?clamp(s.x,0,w):w/2,y=local?clamp(point.y-rect.top,0,h):s.f!==0&&Number.isFinite(s.y)?clamp(s.y,0,h):h/2;
-      const rad=s.target.matches('input[type=radio]')?Math.min(w,h)/2:radius(s.target,w,h);
+      const segment=s.target.matches('input[type=radio]')&&group.matches('.segmented[role=radiogroup]');
+      const rad=segment?radius(s.target.closest('label')||s.target,w,h):s.target.matches('input[type=radio]')?Math.min(w,h)/2:radius(s.target,w,h);
       const d=contour(w,h,rad,x,y,clamp(s.f,-1.1,1.1),s.skew,config.amplitude,config.maximum);
-      s.layer.style.setProperty('--_uibms-material-base-color',s.target.matches('input[type=radio]')?'var(--color-accent)':'var(--color-surface-subtle)');
+      s.layer.style.setProperty('--_uibms-material-base-color',s.target.matches('input[type=radio]')&&!segment?'var(--color-accent)':'var(--color-surface-subtle)');
       s.layer.style.setProperty('--_uibms-material-border-color','var(--color-border-subtle)');
       s.layer.style.setProperty('--_uibms-material-border-width','var(--border-width)');
       s.layer.style.setProperty('--_uibms-material-force',String(s.f));

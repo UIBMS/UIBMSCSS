@@ -1,0 +1,45 @@
+/* Optional UIBMS tabs. The class describes structure; native roles hold state. */
+@layer defaults {
+  :where(.tabs[role="tablist"]) {
+    display:flex;flex-wrap:wrap;align-items:stretch;gap:calc(var(--space) * .25);
+    min-inline-size:0;max-inline-size:100%;
+  }
+  :where(.tabs[role="tablist"][aria-orientation="vertical"]) {
+    flex-direction:column;inline-size:max-content;max-inline-size:100%;
+  }
+  :where(.tabs[role="tablist"] > button[role="tab"]) {
+    background-color:transparent;color:var(--color-text);
+    border:var(--border-width) solid transparent;border-radius:var(--radius);
+    padding:calc(var(--space) * .5) var(--space);min-inline-size:0;max-inline-size:100%;
+    min-block-size:var(--target-size);font-weight:550;white-space:normal;overflow-wrap:anywhere;
+    box-shadow:none;
+  }
+  :where(.tabs[role="tablist"] > button[role="tab"][aria-selected="true"]) {
+    background-color:var(--color-surface-subtle);border-color:var(--color-border);font-weight:650;
+  }
+  @media (hover:hover) {
+    :where(.tabs[role="tablist"] > button[role="tab"]:not(:disabled,[aria-disabled="true"]):hover) {
+      background-color:color-mix(in oklab,var(--color-surface) 94%,var(--color-text));
+      color:var(--color-text);border-color:var(--color-border-subtle);
+    }
+    :where(.tabs[role="tablist"] > button[role="tab"][aria-selected="true"]:not(:disabled,[aria-disabled="true"]):hover) {
+      background-color:color-mix(in oklab,var(--color-surface-subtle) 94%,var(--color-text));
+    }
+  }
+  :where(.tabs[role="tablist"] > button[role="tab"]:not(:disabled,[aria-disabled="true"]):active) {
+    background-color:var(--color-loud,var(--color-accent));color:var(--color-on-loud,var(--color-on-accent));border-color:transparent;box-shadow:none;
+  }
+  :where(.tabs[role="tablist"] > button[role="tab"]:is(:disabled,[aria-disabled="true"])) {
+    background-color:transparent;color:var(--color-text-muted);border-color:transparent;cursor:not-allowed;
+  }
+  :where(.tabs[role="tablist"] > button[role="tab"]:focus-visible) {
+    outline:2px solid var(--color-focus);outline-offset:2px;
+  }
+  /* Only tab panels connected by the optional controller get hidden. */
+  :where([role="tabpanel"][hidden]) { display:none !important; }
+}
+@layer preferences {
+  @media (forced-colors:active) {
+    :where(.tabs[role="tablist"] > button[role="tab"][aria-selected="true"]) { border-color:Highlight; }
+  }
+}

@@ -57,11 +57,13 @@ def make_inline(f,settings):
   asset_path=urlsplit(script['src']).path
   source=(root/unquote(asset_path.lstrip('/'))).read_text()
   if asset_path.endswith('/assets/engines.js'):
+   tabs=(site/'engines/components/tabs.mjs').read_text()
    media=(site/'engines/media-deformation.mjs').read_text()
    material=(site/'engines/material.mjs').read_text()
    forms=(site/'engines/forms.mjs').read_text()
    source=source.replace("const revision=new URL(import.meta.url).search;",'')
    source=source.replace("import('../engines/material.mjs'+revision),import('../engines/forms.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(material)+'],{type:"text/javascript"}))),import(URL.createObjectURL(new Blob(['+json.dumps(forms)+'],{type:"text/javascript"})))')
+   source=source.replace("import('../engines/components/tabs.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(tabs)+'],{type:"text/javascript"})))')
    source=source.replace("import('../engines/media-deformation.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(media)+'],{type:"text/javascript"})))')
    image='data:image/svg+xml;base64,'+base64.b64encode((site/'engines/landscape.svg').read_bytes()).decode()
    source=source.replace("new URL('../engines/landscape.svg',import.meta.url).href",json.dumps(image))

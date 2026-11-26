@@ -7,6 +7,7 @@ import {expressivePalettes,expressiveStyles,paletteRoles,oklch} from '../src/lib
 import {renderHtml,slugify} from '../src/lib/render.mjs';
 import {codeBlock} from '../src/lib/code.mjs';
 const allowedClasses=new Set(framework.classes);
+const componentClasses=new Set(['tabs','segmented']);
 const attrs=new Set([...profiles.map(p=>'data-'+p.key),'data-uibms',...framework.effectAttributes]);
 const css=await readFile(new URL('../../dist/uibms.full.css',import.meta.url),'utf8')+'\n'+expressiveStyles();
 assert.equal(expressivePalettes.length,5);
@@ -14,6 +15,7 @@ for(const p of expressivePalettes){assert.deepEqual(paletteRoles(p,p.scheme),p.c
 for(const p of profiles){assert(p.values.includes(p.default),p.key);assert.deepEqual(p.values,configDetails[p.key].values.map(([v])=>v));if(p.key!=='material')for(const v of p.values)assert(css.includes('[data-'+p.key+'="'+v+'"]'),`Missing supported profile ${p.key}/${v}`);}
 const slugs=new Set(pages.map(p=>p.slug));assert.equal(slugs.size,pages.length);
 for(const cls of allowedClasses)assert(slugs.has('docs/'+cls),`Missing class ${cls}`);
+for(const cls of componentClasses)assert(slugs.has('docs/'+cls),`Missing optional component ${cls}`);
 for(const p of profiles)assert(slugs.has('docs/'+p.key),`Missing profile ${p.key}`);
 for(const attr of framework.effectAttributes)assert(slugs.has('docs/'+(attr==='data-effect'?'materials':attr.slice(5))),attr);
 for(const p of profiles){const examples=docPages.find(d=>d.slug==='docs/'+p.key).sections.flatMap(s=>s.examples).filter(e=>e.html);assert(examples.some(e=>!e.html.includes('data-'+p.key+'=')),`Missing inherited example for ${p.key}`);}
@@ -23,7 +25,7 @@ for(const p of pages){
   for(const s of p.sections){assert(!ids.has(slugify(s.title)),`Duplicate section ${p.slug}/${s.title}`);ids.add(slugify(s.title));
     for(const ex of s.examples){codeExamples++;assert(ex.code&&ex.lang,`Missing code ${p.slug}`);
       if(ex.html){liveExamples++;assert.equal(ex.html,ex.code,`Source differs from rendered markup ${p.slug}`);
-        for(const match of ex.html.matchAll(/\bclass="([^"]+)"/g))for(const cls of match[1].split(/\s+/)){assert(allowedClasses.has(cls),`Unknown demo class ${cls}`);checks++;}
+        for(const match of ex.html.matchAll(/\bclass="([^"]+)"/g))for(const cls of match[1].split(/\s+/)){assert(allowedClasses.has(cls)||(p.group==='Components'&&componentClasses.has(cls)),`Unknown demo class ${cls}`);checks++;}
         for(const match of ex.html.matchAll(/\b(data-[\w-]+)(?:=|[\s>])/g)){assert(attrs.has(match[1]),`Unknown demo attribute ${match[1]}`);checks++;}
         assert(!/\bcontenteditable\b|<script\b/i.test(ex.html));
       }

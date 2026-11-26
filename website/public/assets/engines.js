@@ -1,5 +1,9 @@
 const revision=new URL(import.meta.url).search;
 const [{mountMaterial},{mountForms}]=await Promise.all([import('../engines/material.mjs'+revision),import('../engines/forms.mjs'+revision)]);
+if(document.querySelector('.tabs[role="tablist"]')){
+  const {mountTabs}=await import('../engines/components/tabs.mjs'+revision);
+  mountTabs(document);
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});
