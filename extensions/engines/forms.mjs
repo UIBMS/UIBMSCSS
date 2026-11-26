@@ -87,7 +87,7 @@ const engine = (function formEngine(){
     }
     function render(){
       if(!current)return;
-      const c=current,p=c.popup,el=c.el;p.replaceChildren();
+      const c=current,el=c.el,p=node('div',{'data-uibms-form-content':''});c.popup.replaceChildren(p);
       const title=node('div',{'data-uibms-form-toolbar':''});title.append(node('strong',{},label(el)));
       const done=node('button',{type:'button','aria-label':'Close picker'},'Done');done.addEventListener('click',()=>close());title.append(done);p.append(title);
       function choose(parent,b,value){if(commit(c,value)){mark(parent,b);updateReadout();}}

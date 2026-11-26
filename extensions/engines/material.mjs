@@ -1,7 +1,7 @@
 // UIBMS Material Engine - optional development candidate. MIT.
 const engine = (function materialEngine() {
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  const selector='article,aside,nav,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,.card,.panel,[data-material="liquid-silicone"]';
+  const selector='article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,hr,.card,.panel,[data-material="liquid-silicone"]';
   const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,thead,tbody,tfoot,tr,td,th,option,optgroup';
   const groups='nav,[role=tablist],[role=radiogroup],[data-uibms-form-options]';
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
@@ -50,12 +50,12 @@ const engine = (function materialEngine() {
     if(native){el.setAttribute('data-uibms-material-native','');return s;}
     if(el.matches('html,body,template,script,style,link,meta,head,slot,br,wbr'))return null;
     positionHost(el);el.setAttribute('data-uibms-material-host','');
-    Object.assign(s,decoration('material-layer'));el.prepend(s.layer);return s;
+    Object.assign(s,decoration('material-layer'));el.append(s.layer);return s;
   }
   function removeSurface(s){
     s.layer?.remove();
     for(const k of ['data-uibms-material-host','data-uibms-material-native','data-uibms-material-position'])s.el.removeAttribute(k);
-    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale'])s.el.style.removeProperty(k);
+    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress'])s.el.style.removeProperty(k);
   }
   function radius(el,w,h){
     const cs=getComputedStyle(el),parts=cs.borderTopLeftRadius.split(/\s+/);
@@ -71,7 +71,57 @@ const engine = (function materialEngine() {
   function setPoint(s,x,y){
     const r=measure(s);s.tx=clamp((x-r.left)*s.w/Math.max(1,r.width),-12,s.w+12);s.ty=clamp((y-r.top)*s.h/Math.max(1,r.height),-12,s.h+12);
   }
-  function paint(s,config){
+
+  // Optional real pixel refraction over a developer-supplied, CORS-readable image.
+  // The browser's live DOM is not sampled. A shared cached image is the source.
+  function imagePixels(backdrop){
+    const r=backdrop.el.getBoundingClientRect();
+    const w=backdrop.el.clientWidth,h=backdrop.el.clientHeight;
+    if(!w||!h||!backdrop.image)return null;
+    const ratio=Math.min(1,1000/Math.max(w,h)),cw=Math.max(2,Math.round(w*ratio)),ch=Math.max(2,Math.round(h*ratio));
+    if(!backdrop.pixels||backdrop.w!==cw||backdrop.h!==ch){
+      const c=backdrop.canvas;c.width=cw;c.height=ch;const ctx=c.getContext('2d',{willReadFrequently:true});
+      const z=Math.max(cw/backdrop.image.naturalWidth,ch/backdrop.image.naturalHeight);
+      try{ctx.drawImage(backdrop.image,(cw-backdrop.image.naturalWidth*z)/2,(ch-backdrop.image.naturalHeight*z)/2,backdrop.image.naturalWidth*z,backdrop.image.naturalHeight*z);
+        backdrop.pixels=ctx.getImageData(0,0,cw,ch).data;backdrop.w=cw;backdrop.h=ch;backdrop.rev++;
+      }catch{backdrop.failed=true;return null;}
+    }
+    return {pixels:backdrop.pixels,w:cw,h:ch,rect:r,rev:backdrop.rev};
+  }
+  function paintOptics(s,backdrop,rect,host){
+    if(!backdrop||backdrop.failed||!s.fill){if(s.optical){s.optical.remove();s.optical=null;s.fill?.removeAttribute('data-uibms-optical');}return;}
+    const source=imagePixels(backdrop);if(!source)return;
+    const cs=getComputedStyle(host),a=cs.getPropertyValue('--uibms-material-opacity').trim();
+    const alpha=clamp((parseFloat(a)||0)/(a.endsWith('%')?100:1),0,.95);
+    const tint=cs.getPropertyValue('--uibms-material-tint').trim()||'#dceaff';
+    const key=[source.rev,rect.left-source.rect.left,rect.top-source.rect.top,s.w,s.h,s.f,s.x,s.y,s.skew,alpha,tint].map(x=>typeof x==='number'?Math.round(x*50):x).join('|');
+    if(s.opticalKey===key&&s.optical)return;s.opticalKey=key;
+    if(!s.optical){s.optical=document.createElement('canvas');s.optical.setAttribute('data-uibms-optical-canvas','');s.fill.append(s.optical);s.fill.setAttribute('data-uibms-optical','');}
+    const w=s.w+72,h=s.h+72,ratio=Math.min(.72,Math.sqrt(120000/(w*h))),nw=Math.max(2,Math.ceil(w*ratio)),nh=Math.max(2,Math.ceil(h*ratio));
+    const c=s.optical;if(c.width!==nw||c.height!==nh){c.width=nw;c.height=nh;}
+    const ctx=c.getContext('2d'),im=ctx.createImageData(nw,nh),out=im.data;
+    const colorCanvas=backdrop.colorCanvas||(backdrop.colorCanvas=document.createElement('canvas'));colorCanvas.width=colorCanvas.height=1;
+    const colorCtx=colorCanvas.getContext('2d');colorCtx.fillStyle='#dceaff';colorCtx.fillStyle=tint;colorCtx.fillRect(0,0,1,1);const color=colorCtx.getImageData(0,0,1,1).data;
+    const sig=clamp(Math.min(s.w,s.h)*.68,19,78),rad=clamp(s.r||0,0,Math.min(s.w,s.h)/2),rim=clamp(Math.min(s.w,s.h)*.16,4,19),f=s.f||0,skew=s.skew||0;
+    const sxScale=source.w/Math.max(1,source.rect.width),syScale=source.h/Math.max(1,source.rect.height),raw=source.pixels,sw=source.w,sh=source.h;
+    for(let yy=0,j=0;yy<nh;yy++){const y=yy*h/nh-36,dy=y-s.y,ry=y-s.h/2;
+      for(let xx=0;xx<nw;xx++,j+=4){const x=xx*w/nw-36,dx=x-s.x,rx=x-s.w/2+skew*clamp(ry/Math.max(1,s.h/2),-1.5,1.5);
+        const qx=Math.abs(rx)-(s.w/2-rad),qy=Math.abs(ry)-(s.h/2-rad),ax=Math.max(qx,0),ay=Math.max(qy,0),len=Math.hypot(ax,ay);
+        const sd=len+Math.min(Math.max(qx,qy),0)-rad;let nx=0,ny=0;
+        if(len>0){nx=ax/len*Math.sign(rx);ny=ay/len*Math.sign(ry);}else if(qx>qy)nx=Math.sign(rx);else ny=Math.sign(ry);
+        const edge=Math.exp(-Math.pow((sd+2)/rim,2)),g=Math.exp(-(dx*dx+dy*dy)/(sig*sig));
+        const ix=clamp((rect.left-source.rect.left+(x+nx*edge*rim+dx*g*f*.46)*rect.width/Math.max(1,s.w))*sxScale,0,sw-1.001);
+        const iy=clamp((rect.top-source.rect.top+(y+ny*edge*rim+dy*g*f*.46)*rect.height/Math.max(1,s.h))*syScale,0,sh-1.001);
+        const bx=Math.floor(ix),by=Math.floor(iy),fx=ix-bx,fy=iy-by,k=(by*sw+bx)*4,light=clamp(edge*(-ny*.16+.045)+f*g*(-dy/sig)*.18,-.35,.35);
+        for(let q=0;q<3;q++){const a=raw[k+q]*(1-fx)+raw[k+4+q]*fx,b=raw[k+sw*4+q]*(1-fx)+raw[k+sw*4+4+q]*fx;
+          let v=(a*(1-fy)+b*fy)*(1-alpha)+color[q]*alpha;v=light>0?v+(255-v)*light:v*(1+light);out[j+q]=v;}
+        out[j+3]=255;
+      }
+    }
+    ctx.putImageData(im,0,0);
+  }
+
+  function paint(s,config,backdrop){
     if(!s.w||!s.h)return;
     const el=s.el;
     if(s.native){
@@ -82,6 +132,7 @@ const engine = (function materialEngine() {
       const corner=(x,y)=>Math.max(0,r+variation*Math.exp(-Math.hypot(x-s.x,y-s.y)/42)).toFixed(2)+'px';
       el.style.setProperty('--_uibms-material-radius',[corner(0,0),corner(s.w,0),corner(s.w,s.h),corner(0,s.h)].join(' '));
       el.style.setProperty('--_uibms-thumb-scale',String(clamp(1+s.f*.18,.76,1.2)));
+      if(el.matches('input[type=range]')){const min=Number(el.min||0),max=Number(el.max||100);el.style.setProperty('--_uibms-range-progress',clamp((Number(el.value)-min)/Math.max(.0001,max-min)*100,0,100)+'%');}
       return;
     }
     const d=contour(s.w,s.h,s.r,s.x,s.y,s.f,0,config.amplitude,config.maximum);
@@ -90,25 +141,27 @@ const engine = (function materialEngine() {
     s.layer.style.setProperty('--_uibms-material-force',String(s.f));
     s.fill.style.setProperty('--_uibms-material-x',clamp((s.x+36)/(s.w+72)*100,0,100)+'%');
     s.fill.style.setProperty('--_uibms-material-y',clamp((s.y+36)/(s.h+72)*100,0,100)+'%');
+    paintOptics(s,backdrop,s.rect,el);
   }
   function selected(group){
-    return [...group.querySelectorAll('[aria-current]:not([aria-current=false]),[aria-selected=true],[aria-pressed=true]')].find(el=>el.closest(groups)===group&&visible(el));
+    return [...group.querySelectorAll('[aria-current]:not([aria-current=false]),[aria-selected=true],[aria-pressed=true],input[type=radio]:checked')].find(el=>el.closest(groups)===group&&visible(el));
   }
-  function selection(group,config=defaults){
+  function selection(group,config=defaults,findBackdrop=()=>null){
     const s={group,...decoration('selection-layer'),edge:null,velocity:[0,0,0,0],skew:0,f:0,v:0,target:null};
-    positionHost(group);group.setAttribute('data-uibms-selection-host','');group.prepend(s.layer);
+    positionHost(group);group.setAttribute('data-uibms-selection-host','');group.append(s.layer);
     s.layer.hidden=true;
     const set=(el,immediate=false)=>{
-      if(!el||!group.contains(el)||!visible(el)){s.target=null;s.layer.hidden=true;return;}
-      s.target=el;s.layer.hidden=false;if(immediate)s.edge=null;
+      if(!el||!group.contains(el)||!visible(el)){s.target=null;if(!s.layer.hidden)s.layer.hidden=true;return;}
+      s.target=el;if(s.layer.hidden)s.layer.hidden=false;if(immediate)s.edge=null;
     };
     const targetRect=()=>{
       const a=s.target.getBoundingClientRect(),b=group.getBoundingClientRect(),sx=(group.offsetWidth||b.width)/Math.max(1,b.width),sy=(group.offsetHeight||b.height)/Math.max(1,b.height);
       const l=(a.left-b.left)*sx+group.scrollLeft-group.clientLeft+2,t=(a.top-b.top)*sy+group.scrollTop-group.clientTop+2;
+      if(s.target.matches('input[type=radio]')){let ix=a.width*sx*.22,iy=a.height*sy*.22;return [l+ix,t+iy,l+Math.max(4,a.width*sx-4)-ix,t+Math.max(4,a.height*sy-4)-iy];}
       return [l,t,l+Math.max(4,a.width*sx-4),t+Math.max(4,a.height*sy-4)];
     };
     const tick=(dt,instant=false,press=null,point=null)=>{
-      if(!s.target||!visible(s.target)){s.layer.hidden=true;return false;}
+      if(!s.target||!visible(s.target)){if(!s.layer.hidden)s.layer.hidden=true;return false;}
       let dest=targetRect();if(!s.edge||instant){s.edge=dest.slice();s.velocity.fill(0);s.skew=0;}
       let moving=false,dx=(dest[0]+dest[2]-s.edge[0]-s.edge[2])/2,dy=(dest[1]+dest[3]-s.edge[1]-s.edge[3])/2;
       for(let i=0;i<4;i++){
@@ -126,21 +179,24 @@ const engine = (function materialEngine() {
       const d=contour(w,h,Math.min(18,h/2),x,y,clamp(s.f,-1.1,1.1),s.skew,config.amplitude,config.maximum);
       Object.assign(s.layer.style,{left:(l-36)+'px',top:(t-36)+'px',width:(w+72)+'px',height:(h+72)+'px'});
       s.fill.style.clipPath='path("'+d+'")';s.path.setAttribute('d',d);s.svg.setAttribute('viewBox','0 0 '+(w+72)+' '+(h+72));
+      const gr=group.getBoundingClientRect(),sx=gr.width/Math.max(1,group.offsetWidth),sy=gr.height/Math.max(1,group.offsetHeight);
+      Object.assign(s,{w,h,r:Math.min(18,h/2),x,y});paintOptics(s,findBackdrop(group),{left:gr.left+(l-group.scrollLeft+group.clientLeft)*sx,top:gr.top+(t-group.scrollTop+group.clientTop)*sy,width:w*sx,height:h*sy},group);
       return moving;
     };
     return {set,tick,destroy(){s.layer.remove();group.removeAttribute('data-uibms-selection-host');if(!group.hasAttribute('data-uibms-material-host'))group.removeAttribute('data-uibms-material-position');},get target(){return s.target;}};
   }
   function mountMaterial(root=document,options={}){
     if(instances.has(root))return instances.get(root);
-    const config={...defaults,...options},surfaces=new Map(),selections=new Map(),dirty=new Set(),animating=new Set();
+    const config={...defaults,...options},surfaces=new Map(),selections=new Map(),dirty=new Set(),animating=new Set(),backdrops=new Map();
+    const findBackdrop=el=>{for(let p=el;p;p=p.parentElement){if(backdrops.has(p))return backdrops.get(p);}return null;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)'),forced=matchMedia('(forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce)');
-    let frame=0,last=0,hover=null,pressed=null,pointer=null,point=null,disposed=false,refreshPending=false;
-    const cancel=()=>{pressed=null;pointer=null;point=null;targetHover(null);request();};
+    let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,disposed=false,refreshPending=false;
+    const cancel=()=>{pressed=null;pointer=null;pressTarget=null;keyPress=false;point=null;targetHover(null);request();};
     function request(){if(!frame&&!disposed)frame=requestAnimationFrame(tick);}
     function queueRefresh(){if(refreshPending||disposed)return;refreshPending=true;queueMicrotask(()=>{refreshPending=false;if(!disposed)refresh();});}
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el){
-      if(!enabled(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer]'))return false;
+      if(!enabled(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot'))return false;
       if(el.matches('a[href],button,[role=tab]')&&el.closest(groups)&&el.closest(groups)!==el&&!el.matches('[data-material]'))return false;
       return true;
@@ -152,7 +208,7 @@ const engine = (function materialEngine() {
       for(const [el,s] of selections){if(!el.isConnected||!enabled(el)){s.destroy();selections.delete(el);}}
       for(const el of root.querySelectorAll(groups))if(enabled(el)){
         let a=selected(el),s=selections.get(el);
-        if(!s&&a){s=selection(el,config);selections.set(el,s);}
+        if(!s&&a){s=selection(el,config,findBackdrop);selections.set(el,s);}
         if(s)s.set(a);
       }
       request();
@@ -161,7 +217,7 @@ const engine = (function materialEngine() {
     function locate(e){
       if(!e.isPrimary)return;
       const target=e.target instanceof Element?e.target:null,canHover=e.pointerType!=='touch';
-      point=canHover?{x:e.clientX,y:e.clientY,el:target?.closest('a[href],button,[role=tab],[aria-pressed]')}:null;
+      point=canHover?{x:e.clientX,y:e.clientY,el:target?.closest('a[href],button,input[type=radio],[role=tab],[aria-pressed]')}:null;
       if(pressed){setPoint(pressed,e.clientX,e.clientY);animating.add(pressed);}
       let best=null,bestDistance=config.range;
       if(canHover&&target&&root.contains(target)){
@@ -179,16 +235,16 @@ const engine = (function materialEngine() {
     function down(e){
       if(!e.isPrimary||e.button!==0)return;pointer=e.pointerId;
       const el=e.target instanceof Element?e.target.closest(activeSelector):null;
-      const s=surfaces.get(el);
+      pressTarget=el;keyPress=false;const s=surfaces.get(el);
       if(s&&interactive(el)&&!muted(el,'active')){pressed=s;setPoint(s,e.clientX,e.clientY);animating.add(s);}
       locate(e);
     }
-    function up(e){if(pointer!==e.pointerId)return;if(pressed)animating.add(pressed);pressed=null;pointer=null;locate(e);}
-    function keydown(e){if(![' ','Enter'].includes(e.key))return;const s=surfaces.get(e.target);if(s&&interactive(s.el)&&!muted(s.el,'active')){pressed=s;measure(s);s.tx=s.w/2;s.ty=s.h/2;animating.add(s);request();}}
-    function keyup(){if(pressed){animating.add(pressed);pressed=null;request();}}
+    function up(e){if(pointer!==e.pointerId)return;if(pressed)animating.add(pressed);pressed=null;pointer=null;pressTarget=null;locate(e);}
+    function keydown(e){if(![' ','Enter'].includes(e.key)||pointer!==null)return;const el=e.target;if(!interactive(el))return;keyPress=true;pressTarget=el;const s=surfaces.get(el);if(s&&!muted(s.el,'active')){pressed=s;measure(s);s.tx=s.w/2;s.ty=s.h/2;animating.add(s);}request();}
+    function keyup(){if(!keyPress)return;keyPress=false;pressTarget=null;if(pressed)animating.add(pressed);pressed=null;request();}
     function tick(now){
       frame=0;const dt=last?Math.min(.05,(now-last)/1000):1/60;last=now;
-      for(const s of dirty){if(visible(s.el)){measure(s);paint(s,config);}}dirty.clear();
+      for(const s of dirty){if(visible(s.el)){measure(s);paint(s,config,forced.matches?null:findBackdrop(s.el));}}dirty.clear();
       const instant=reduced.matches||forced.matches;
       for(const s of [...animating]){
         if(!s.el.isConnected||!visible(s.el)){animating.delete(s);continue;}
@@ -196,26 +252,34 @@ const engine = (function materialEngine() {
         const desired=instant?0:pressed===s&&interactive(s.el)?-config.pressure:hover===s?s.target:0;
         if(instant){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
         else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness,config.damping);s.f=clamp(s.f,-1.2,1.2);s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
-        paint(s,config);
+        paint(s,config,forced.matches?null:findBackdrop(s.el));
         if(s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
       }
       let moving=false;
       for(const [el,s] of selections){
         let current=selected(el);if(current!==s.target)s.set(current);
-        moving=s.tick(dt,instant||muted(el,'hover'),pressed?.el||((pointer!==null)?point?.el:null),point)||moving;
+        moving=s.tick(dt,instant||muted(el,'hover'),pressTarget,point)||moving;
       }
       if(animating.size||moving)request();else last=0;
     }
     const eventRoot=root.nodeType===9?root:root;
-    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown],[eventRoot,'keyup',keyup],[eventRoot,'focusout',keyup],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',cancel],[window,'blur',cancel],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',request,true]];
+    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown],[eventRoot,'keyup',keyup],[eventRoot,'focusout',keyup],[eventRoot,'change',queueRefresh],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',cancel],[window,'blur',cancel],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',request,true]];
     listeners.forEach(([o,k,f,c])=>o.addEventListener(k,f,c||false));
     const observer=new MutationObserver(records=>{
-      if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]'))))queueRefresh();
+      if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')))))queueRefresh();
     });
     observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material','data-effects','data-hover','data-active','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','hidden','open','inert']});
     const preference=()=>{for(const s of surfaces.values())animating.add(s);request();};
     reduced.addEventListener?.('change',preference);forced.addEventListener?.('change',preference);
-    const api={refresh,destroy(){disposed=true;cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
+    function unregisterBackdrop(el){const b=backdrops.get(el);if(!b)return;b.cancelled=true;el.style.backgroundImage=b.oldImage;el.style.backgroundSize=b.oldSize;el.style.backgroundPosition=b.oldPosition;el.style.backgroundRepeat=b.oldRepeat;backdrops.delete(el);for(const s of surfaces.values())dirty.add(s);refresh();}
+    async function registerBackdrop(el,src){
+      if(!(el instanceof Element)||!root.contains(el))throw new TypeError('Backdrop must belong to the mounted root.');
+      unregisterBackdrop(el);const url=new URL(src,document.baseURI);if(!['https:','http:','data:','blob:'].includes(url.protocol))throw new TypeError('Unsupported image URL.');
+      const b={el,canvas:document.createElement('canvas'),rev:0,oldImage:el.style.backgroundImage,oldSize:el.style.backgroundSize,oldPosition:el.style.backgroundPosition,oldRepeat:el.style.backgroundRepeat};backdrops.set(el,b);
+      const image=new Image();if(url.origin!==location.origin&&url.protocol.startsWith('http'))image.crossOrigin='anonymous';image.src=url.href;
+      try{await image.decode();if(b.cancelled||disposed)return false;b.image=image;el.style.backgroundImage='url('+JSON.stringify(url.href)+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';if(!imagePixels(b))throw Error('Image pixels unavailable');for(const s of surfaces.values())dirty.add(s);refresh();return true;}catch{unregisterBackdrop(el);return false;}
+    }
+    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
   return {mountMaterial,contour,step,defaults};
