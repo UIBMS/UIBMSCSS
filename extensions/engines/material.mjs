@@ -1,9 +1,10 @@
 // UIBMS Material Engine - optional development candidate. MIT.
 const engine = (function materialEngine() {
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,hr,.card,.panel,[data-material="liquid-silicone"]';
+  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,img,video,audio,hr,.card,.panel,[data-material="liquid-silicone"]';
   const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,caption,thead,tbody,tfoot,tr,td,th,option,optgroup';
   const tableParts='caption,thead,tbody,tfoot,tr,th,td';
+  const mediaElements='img,video,audio';
   const overlays='dialog,[popover],[data-uibms-form-popup]';
   const overlayContent='p,h1,h2,h3,h4,h5,h6,li,dt,dd,blockquote,pre,figure,section,article,div,header,footer,aside,fieldset,form';
   const overlayOwner=el=>el?.closest(overlays)||null;
@@ -25,7 +26,7 @@ const engine = (function materialEngine() {
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
   const SVG='http://www.w3.org/2000/svg';
   const instances=new WeakMap();
-  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24,touchAttractionTime:80,touchCompressionTime:100,touchSlop:12,overlayMaximum:14,overlaySkew:8});
+  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24,touchAttractionTime:80,touchCompressionTime:100,touchSlop:12,overlayMaximum:14,overlaySkew:8,mediaMaximum:14,mediaSkew:6});
   // A quick tap has a short visual impulse even if the finger is lifted before the next frame.
   // This controls paint only; native click, focus, scroll and form events are not delayed.
   function touchPhase(age,releasedAt,pressable,attractionTime=defaults.touchAttractionTime,compressionTime=defaults.touchCompressionTime){
@@ -65,7 +66,7 @@ const engine = (function materialEngine() {
   const enabled=el=>el.closest('[data-material="default"],[data-material="liquid-silicone"]')?.getAttribute('data-material')==='liquid-silicone';
   const legacyMaterial=el=>(el.getAttribute('data-effect')||'').split(/\s+/).some(v=>['glass','frosted','metallic','matte'].includes(v));
   const profileKeys=['theme','palette','shape','border','density','typography','effects','material'];
-  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius','data-uibms-material-table','data-uibms-material-overlay','data-uibms-material-contact','data-uibms-overlay-contour'];
+  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius','data-uibms-material-table','data-uibms-material-overlay','data-uibms-material-contact','data-uibms-overlay-contour','data-uibms-material-media','data-uibms-media-frame'];
   const sides=['Top','Right','Bottom','Left'];
   const corners=['TopLeft','TopRight','BottomRight','BottomLeft'];
   function visibleColor(c){
@@ -108,13 +109,13 @@ const engine = (function materialEngine() {
     const fits=e=>e.scrollWidth<=e.clientWidth+1&&e.scrollHeight<=e.clientHeight+1;
     const inner=isOverlay?el.querySelector(':scope > [data-uibms-form-content]'):null;
     const overlayContour=isOverlay&&CSS.supports('overflow','clip')&&surface&&sameBorder&&uniformRadius&&image==='none'&&filter!==null&&['solid','none','hidden','dashed','dotted'].includes(borders[0].style)&&['visible','auto'].includes(cs.overflowX)&&['visible','auto'].includes(cs.overflowY)&&fits(el)&&(!inner||fits(inner));
-    const result={background,image,shadow,filter,border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table'),overlay:isOverlay,overlayContour};
+    const result={background,image,shadow,filter,border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table'),overlay:isOverlay,overlayContour,media:el.matches(mediaElements),mediaContour:sameBorder&&uniformRadius&&cs.borderImageSource==='none'&&cs.clipPath==='none'&&['solid','none','hidden','dashed','dotted'].includes(borders[0].style)&&CSS.supports('border-image-slice','0 fill'),foreground:cs.color};
     if(isOverlay)el.removeAttribute('data-uibms-overlay-measure');
     for(const k of restore)el.setAttribute(k,'');
     return result;
   }
   const disabled=el=>el.matches(':disabled,[readonly]')||!!el.closest('[inert],[aria-disabled=true]');
-  const interactive=el=>!disabled(el)&&!el.matches('table,'+tableParts+','+overlays)&&el.matches(activeSelector);
+  const interactive=el=>!disabled(el)&&!el.matches('table,'+tableParts+','+overlays+','+mediaElements)&&el.matches(activeSelector);
   const visible=el=>el.isConnected&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden';
   const muted=(el,channel)=>el.closest('[data-effects="default"],[data-effects="none"],[data-effects="minimal"],[data-effects="fluid"],[data-effects="dynamic"]')?.getAttribute('data-effects')==='none'||el.getAttribute('data-'+channel)?.split(/\s+/).includes('none');
   function decoration(kind){
@@ -137,7 +138,7 @@ const engine = (function materialEngine() {
     s.layer?.remove();s.overlayLayer?.layer.remove();
     for(const k of [...paintFlags,'data-uibms-material-surface'])s.el.removeAttribute(k);
     if(!s.el.hasAttribute('data-uibms-selection-host'))s.el.removeAttribute('data-uibms-material-position');
-    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-outer-shadow'])s.el.style.removeProperty(k);
+    for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-outer-shadow','--_uibms-media-image','--_uibms-media-outset'])s.el.style.removeProperty(k);
   }
   function radius(el,w,h,value){
     const raw=value||getComputedStyle(el).borderTopLeftRadius,parts=raw.split(/\s+/);
@@ -250,6 +251,51 @@ const engine = (function materialEngine() {
     layer.start.setAttribute('stop-opacity',String(clamp(.04+s.f*.18,0,.3)));
     el.setAttribute('data-uibms-overlay-contour','');
   }
+  // A media element is replaced content, so never append or wrap its playback
+  // node. Paint an SVG ring as a CSS border image with visual-only outset.
+  // This leaves image pixels, native controls, source nodes and hit areas intact.
+  function mediaFrame(w,h,r,x,y,force,config=defaults){
+    const f=clamp(force,0,1.2),size=Math.max(1,Math.min(w,h));
+    const cap=clamp(Number(config.mediaMaximum)||0,0,size*.17);
+    const skewLimit=clamp(Number(config.mediaSkew)||0,0,size*.08);
+    const skew=f*clamp((x/Math.max(1,w)-.5)*2,-1,1)*skewLimit;
+    // Keep the entire original media box inside the outward frame even when
+    // the edge leans. Small media (including audio controls) get less motion.
+    const margin=f*(Math.min(3,size*.04)+Math.min(3,h*.07)+Math.abs(skewLimit));
+    const outset=Math.ceil(4+1.2*(cap+skewLimit+Math.min(3,size*.04)+Math.min(3,h*.07)+skewLimit));
+    const inner=contour(w,h,r,x,y,0,0,0,0,outset);
+    if(f===0)return {outer:inner,inner,outset,skew:0};
+    const outer=contour(w+margin*2,h+margin*2,r+margin,x+margin,y+margin,f,skew,config.amplitude,Math.max(2,cap),outset-margin);
+    return {outer,inner,outset,skew};
+  }
+  const xml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+  function fullscreenMedia(el){
+    const active=el.ownerDocument.fullscreenElement||el.ownerDocument.webkitFullscreenElement;
+    return !!(active&&(active===el||active.contains(el)))||el.webkitDisplayingFullscreen===true;
+  }
+  function paintMedia(s,config,d){
+    const el=s.el,active=s.f>.001&&!fullscreenMedia(el);
+    el.setAttribute('data-uibms-material-media','');
+    el.toggleAttribute('data-uibms-material-contact',active);
+    el.style.setProperty('--_uibms-material-outer-shadow',d.shadow==='none'?'0 0 0 0 transparent':d.shadow);
+    if(!active||!d.mediaContour||s.w<1||s.h<1){
+      el.removeAttribute('data-uibms-media-frame');el.style.removeProperty('--_uibms-media-image');el.style.removeProperty('--_uibms-media-outset');s.mediaKey=null;return;
+    }
+    const r=el.matches('audio')&&d.border.width===0&&s.r===0?Math.min(s.w,s.h)/2:s.r;
+    const g=mediaFrame(s.w,s.h,r,s.x,s.y,s.f,config);
+    const w=s.w+2*g.outset,h=s.h+2*g.outset;
+    const originalBorder=d.border.width>0&&!['none','hidden'].includes(d.border.style);
+    const stroke=xml(originalBorder?d.border.color:d.foreground),fill=xml(visibleColor(d.background)?d.background:d.foreground);
+    const width=originalBorder?d.border.width:1,alpha=clamp(s.f*.17,0,.24),lineAlpha=originalBorder?1:clamp(s.f*.6,0,.8);
+    const dash=d.border.style==='dashed'?' stroke-dasharray="'+(width*3)+' '+(width*2)+'"':d.border.style==='dotted'?' stroke-dasharray="'+width+' '+width+'"':'';
+    // Only the ring outside the original silhouette is filled. Native image
+    // or player content is never sampled, filtered or clipped by this layer.
+    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><path d="'+g.outer+' '+g.inner+'" fill="'+fill+'" fill-opacity="'+alpha+'" fill-rule="evenodd"/><path d="'+g.outer+'" fill="none" stroke="'+stroke+'" stroke-width="'+width+'" stroke-opacity="'+lineAlpha+'" stroke-linejoin="round"'+dash+'/></svg>';
+    if(s.mediaKey!==svg){
+      s.mediaKey=svg;el.style.setProperty('--_uibms-media-image','url("data:image/svg+xml,'+encodeURIComponent(svg)+'")');el.style.setProperty('--_uibms-media-outset',g.outset+'px');
+    }
+    el.setAttribute('data-uibms-media-frame','');
+  }
   function paint(s,config,backdrop){
     if(!s.w||!s.h)return;
     const el=s.el,d=design(el);s.design=d;s.r=radius(el,s.w,s.h,d.radii[0]);
@@ -277,6 +323,7 @@ const engine = (function materialEngine() {
       el.style.setProperty('--_uibms-thumb-scale',String(clamp(1+s.f*.18,.76,1.2)));
       if(el.matches('input[type=range]')){const min=Number(el.min||0),max=Number(el.max||100);el.style.setProperty('--_uibms-range-progress',clamp((Number(el.value)-min)/Math.max(.0001,max-min)*100,0,100)+'%');}
       if(d.overlay)paintOverlay(s,config,d);
+      if(d.media)paintMedia(s,config,d);
       return;
     }
     el.removeAttribute('data-uibms-material-native');el.removeAttribute('data-uibms-material-surface');el.removeAttribute('data-uibms-material-radius');el.removeAttribute('data-uibms-material-table');el.removeAttribute('data-uibms-material-overlay');el.removeAttribute('data-uibms-overlay-contour');el.removeAttribute('data-uibms-material-contact');
@@ -412,11 +459,11 @@ const engine = (function materialEngine() {
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts)||!inOpenOverlays(el))return false;
+      if(el.matches(tableParts+',picture,source,track')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
       const overlay=overlayOwner(el);
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
-      if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter')&&el.getAttribute('data-material')!=='liquid-silicone')return false;
+      if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter,'+mediaElements)&&el.getAttribute('data-material')!=='liquid-silicone')return false;
       if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot,input[type=hidden]'))return false;
       const group=el.closest(groups);
@@ -433,7 +480,7 @@ const engine = (function materialEngine() {
         if(!wanted(el,groupTargets))continue;
         const d=design(el);
         if(!d.surface&&!el.matches(activeSelector)&&!el.matches(replaced)&&el.getAttribute('data-material')!=='liquid-silicone')continue;
-        if(!d.surface&&el.matches('hr,progress,meter,img,video,audio,iframe,canvas,svg'))continue;
+        if(!d.surface&&el.matches('hr,progress,meter,iframe,canvas,svg'))continue;
         keep.add(el);
         let s=surfaces.get(el);const native=d.complex||!d.surface;
         if(s&&s.native!==native){ro?.unobserve(el);removeSurface(s);surfaces.delete(el);animating.delete(s);dirty.delete(s);if(hover===s)hover=null;if(pressed===s)pressed=null;s=null;}
@@ -573,7 +620,7 @@ const engine = (function materialEngine() {
         const pull=!disabled(s.el)&&!muted(s.el,'hover'),push=interactive(s.el)&&!muted(s.el,'active');
         const desired=stopped?0:touching?(phase==='press'&&push&&touch.canPress?-config.pressure*profile.press:phase==='attract'&&pull?config.attraction*profile.hover:0):pressed===s&&push?-config.pressure*profile.press:hover===s&&pull?s.target*profile.hover:0;
         if(stopped){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
-        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if((s.design.table||s.design.overlay)&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
+        else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if((s.design.table||s.design.overlay||s.design.media)&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
         paint(s,config,forced.matches?null:findBackdrop(s.el));
         if(s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
       }
@@ -585,12 +632,12 @@ const engine = (function materialEngine() {
       if(animating.size||moving||touch)request();else last=0;
     }
     const eventRoot=root.nodeType===9?root:root;
-    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'toggle',overlayChanged,true],[eventRoot,'close',overlayChanged,true],[eventRoot,'load',e=>{if(e.target instanceof Element&&overlayOwner(e.target))queueRefresh();},true],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
+    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'toggle',overlayChanged,true],[eventRoot,'close',overlayChanged,true],[eventRoot,'load',e=>{if(e.target instanceof Element&&(overlayOwner(e.target)||e.target.matches(mediaElements)))queueRefresh();},true],[eventRoot,'loadedmetadata',queueRefresh,true],[eventRoot,'fullscreenchange',queueRefresh,true],[eventRoot,'webkitfullscreenchange',queueRefresh,true],[eventRoot,'webkitbeginfullscreen',queueRefresh,true],[eventRoot,'webkitendfullscreen',queueRefresh,true],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
     listeners.forEach(([o,k,f,c])=>o.addEventListener(k,f,c||false));
     const observer=new MutationObserver(records=>{
       if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||(r.type==='characterData'&&!!overlayOwner(r.target.parentElement))||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')||n.nodeType===3&&!!overlayOwner(r.target)))))queueRefresh();
     });
-    observer.observe(root,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','popover','inert','class']});
+    observer.observe(root,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','popover','inert','class','controls','src','srcset','sizes']});
     const preference=()=>{if(reduced.matches||forced.matches)cancel();refresh();for(const s of surfaces.values())animating.add(s);request();};
     reduced.addEventListener?.('change',preference);forced.addEventListener?.('change',preference);scheme.addEventListener?.('change',preference);
     function unregisterBackdrop(el){const b=backdrops.get(el);if(!b)return;b.cancelled=true;el.style.backgroundImage=b.oldImage;el.style.backgroundSize=b.oldSize;el.style.backgroundPosition=b.oldPosition;el.style.backgroundRepeat=b.oldRepeat;backdrops.delete(el);for(const s of surfaces.values())dirty.add(s);refresh();}
@@ -604,6 +651,6 @@ const engine = (function materialEngine() {
     const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearFlatLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
-  return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase,overlayPath};
+  return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase,overlayPath,mediaFrame};
 })();
-export const {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase,overlayPath}=engine;
+export const {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase,overlayPath,mediaFrame}=engine;

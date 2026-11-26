@@ -383,6 +383,48 @@ try:
                 overlay.get_by_role("button",name="Close",exact=True).tap()
                 overlay.wait_for(state="hidden")
             phone.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
+        # Native media must retain the same DOM nodes, dimensions and player controls.
+        phone.goto(url+"docs/media/",wait_until="load")
+        phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(phone,material="liquid-silicone",effects="default")
+        image=phone.locator("[data-site-demo-content] img").first
+        phone.wait_for_function("()=>document.querySelector('[data-site-demo-content] img')?.hasAttribute('data-uibms-material-media')")
+        before=image.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,src:e.currentSrc,alt:e.alt,tag:e.parentElement.tagName})")
+        monitor(image)
+        image.tap()
+        phone.wait_for_function("()=>window.__touchSample.max>.04")
+        phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
+        check(phone.evaluate("()=>window.__touchSample.min>=0"),"image is passive on touch")
+        check(image.get_attribute("data-uibms-media-frame") is None,"image frame clears after touch")
+        check(before==image.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,src:e.currentSrc,alt:e.alt,tag:e.parentElement.tagName})"),"image dimensions, source and parent unchanged")
+        check_width(phone,"media mobile")
+        media_page=browser.new_context(viewport={"width":1280,"height":900},reduced_motion="no-preference")
+        mp=media_page.new_page()
+        mp.on("pageerror",lambda error:touch_errors.append(str(error)))
+        mp.goto(url+"docs/media/",wait_until="load")
+        mp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(mp,material="liquid-silicone",effects="default")
+        for tag in ["img","video","audio"]:
+            selector="[data-site-demo-content] "+tag
+            item=mp.locator(selector).first
+            mp.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-material-media')",arg=selector)
+            state=item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc,children:e.childElementCount,controls:e.controls??null,clip:getComputedStyle(e).clipPath})")
+            item.hover()
+            mp.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-media-frame')",arg=selector)
+            check(item.evaluate("e=>getComputedStyle(e).borderImageSource.startsWith('url(')"),tag+" SVG frame painted")
+            check(state==item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc,children:e.childElementCount,controls:e.controls??null,clip:getComputedStyle(e).clipPath})"),tag+" native element geometry and controls preserved")
+            check(item.locator("[data-uibms-material-layer]").count()==0,tag+" has no injected children")
+            check_width(mp,tag+" active frame")
+            mp.mouse.move(0,0)
+            mp.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-media-frame')",arg=selector)
+        # Media playback APIs remain native; test fixtures are local and generated.
+        for tag in ["video","audio"]:
+            player=mp.locator("[data-site-demo-content] "+tag).first
+            check(player.evaluate("e=>e.controls&&e instanceof HTMLMediaElement"),tag+" native playback controls")
+        set_profile(mp,material="default")
+        mp.wait_for_function("()=>!document.querySelector('[data-site-demo-content] img').hasAttribute('data-uibms-material-media')")
+        check(mp.locator("[data-uibms-media-frame]").count()==0,"material opt-out removes media paint")
+        media_page.close()
         check(not touch_errors,"no mobile runtime errors",touch_errors)
         mobile.close()
         browser.close()

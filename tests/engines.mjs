@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath} from '../extensions/engines/material.mjs';
+import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
 assert.notEqual(contour(200,50,12,180,20,1),contour(200,50,12,180,20,-1));
 assert.match(contour(200,50,12,180,20,0),/^M .* Z$/);
@@ -56,3 +56,15 @@ assert.equal(overlayPath(320,180,12,160,90,-1),overlayPath(320,180,12,160,90,0))
 assert.notEqual(overlayPath(320,180,12,20,30,1),overlayPath(320,180,12,300,30,1));
 assert.notEqual(overlayPath(320,180,12,300,30,1),overlayPath(320,180,12,300,30,1,{...defaults,overlaySkew:0}));
 console.log('Overlay resting contour, passive force and directional skew tests passed.');
+
+const mediaRest=mediaFrame(320,180,8,160,90,0);
+assert.equal(mediaRest.inner,mediaRest.outer);
+assert.deepEqual(mediaFrame(320,180,8,160,90,-1),mediaRest);
+const mediaLeft=mediaFrame(320,180,8,20,90,1),mediaRight=mediaFrame(320,180,8,300,90,1);
+assert.notEqual(mediaLeft.outer,mediaRight.outer);
+assert.equal(mediaLeft.inner,mediaRight.inner);
+assert.ok(mediaLeft.skew<0&&mediaRight.skew>0);
+assert.equal(mediaLeft.outset,mediaRight.outset);
+assert.ok(mediaFrame(300,40,20,20,20,1).outset<mediaLeft.outset);
+assert.ok(mediaFrame(320,180,8,300,90,1,{...defaults,mediaSkew:0}).skew===0);
+console.log('Native media frame geometry, passive response and smaller audio-size response passed.');
