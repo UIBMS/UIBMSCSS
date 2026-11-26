@@ -19,7 +19,21 @@ const engine = (function formEngine(){
     const adapters=new Map(),filter=typeof options.filter==='function'?options.filter:()=>true;let current=null,disposed=false,pending=false,uid=0;
     const doc=root.ownerDocument||root;
     const requestRefresh=()=>{if(pending||disposed)return;pending=true;queueMicrotask(()=>{pending=false;if(!disposed)refresh();});};
-    function label(el){return Array.from(el.labels||[]).map(l=>l.textContent.trim()).filter(Boolean).join(' ')||el.getAttribute('aria-label')||el.name||valueType(el);}
+    function label(el){
+      // Decorative value text and native select options are not label text.
+      return el.getAttribute('aria-label')||Array.from(el.labels||[]).map(l=>{
+        const copy=l.cloneNode(true);for(const child of copy.querySelectorAll('[data-uibms-form-control],select,input,textarea'))child.remove();
+        return copy.textContent.trim();
+      }).filter(Boolean).join(' ')||el.name||valueType(el);
+    }
+    function syncColor(el){
+      const face=el.parentElement?.querySelector(':scope > [data-uibms-form-color-face]');
+      if(!face)return;
+      const value=el.value||'#000000',chip=face.querySelector('[data-uibms-form-color-chip]'),text=face.querySelector('[data-uibms-form-color-text]');
+      if(chip.style.getPropertyValue('--_uibms-form-color-value')!==value)chip.style.setProperty('--_uibms-form-color-value',value);
+      const display=/^#[0-9a-f]{6}$/i.test(value)?value.toUpperCase():value;
+      if(text.textContent!==display)text.textContent=display;
+    }
     function removeAdapter(el,a){
       const wrapper=a.parentElement;
       if(wrapper?.hasAttribute('data-uibms-form-control')){
@@ -33,7 +47,7 @@ const engine = (function formEngine(){
       for(const [el,a] of adapters){
         if(!el.isConnected||!eligible(el)||!enabled(el)||!filter(el)){
           if(current?.el===el)close(false);removeAdapter(el,a);adapters.delete(el);
-        }
+        }else if(valueType(el)==='color')syncColor(el);
       }
       for(const el of root.querySelectorAll('select,input')){
         if(!eligible(el)||!enabled(el)||!filter(el)||adapters.has(el)||el.closest('[data-uibms-form-popup]'))continue;
@@ -45,6 +59,11 @@ const engine = (function formEngine(){
         if(implicit)a.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();e.stopPropagation();open(el,a);}});
         el.setAttribute('data-uibms-form-source','');
         el.before(wrapper);wrapper.append(el,a);adapters.set(el,a);
+        if(valueType(el)==='color'){
+          const face=node('span',{'data-uibms-form-color-face':'','aria-hidden':'true'});
+          face.append(node('span',{'data-uibms-form-color-chip':''}),node('span',{'data-uibms-form-color-text':''}));
+          wrapper.insertBefore(face,a);syncColor(el);
+        }
       }
     }
     function close(focus=true){
@@ -127,7 +146,8 @@ const engine = (function formEngine(){
       const c=current,el=c.el,p=node('div',{'data-uibms-form-content':''});c.popup.replaceChildren(p);
       const title=node('div',{'data-uibms-form-toolbar':''});title.append(node('strong',{},label(el)));
       const done=node('button',{type:'button','aria-label':'Close picker'},'Done');done.addEventListener('click',()=>close());title.append(done);p.append(title);
-      function choose(parent,b,value){if(commit(c,value)){mark(parent,b);updateReadout();}}
+      let hexField=null;
+      function choose(parent,b,value){if(commit(c,value)){mark(parent,b);if(hexField)hexField.value=el.value;updateReadout();}}
       function updateReadout(){readout.textContent=c.type==='select'?el.selectedOptions[0]?.textContent||'No selection':el.value||'No selection';}
       const readout=node('output',{'data-uibms-form-readout':'','aria-live':'polite'});
       function shift(n,year=false){if(year)c.y=Math.max(1,c.y+n);else{let d=day(c.y,c.m+n,1);c.y=Math.max(1,d.getUTCFullYear());c.m=d.getUTCMonth();}render();position();}
@@ -139,7 +159,7 @@ const engine = (function formEngine(){
         for(const v of ['#80bceb','#a58ce7','#8e234a','#77d3af','#e9bc76','#f3f1ed','#192d49','#ffffff','#000000']){
           const b=choice(g,v,v.toUpperCase(),el.value.toLowerCase()===v,(b,v)=>choose(g,b,v));const s=node('span',{'data-uibms-form-swatch':''});s.style.backgroundColor=v;b.prepend(s);
         }
-        const hex=node('input',{type:'text','aria-label':'Custom hexadecimal colour',maxlength:7,value:el.value||'#000000'});hex.addEventListener('change',()=>{if(/^#[0-9a-f]{6}$/i.test(hex.value)&&commit(c,hex.value.toLowerCase())){for(const b of g.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b.textContent.toLowerCase()===hex.value.toLowerCase()));updateReadout();}});p.append(hex);
+        const hex=hexField=node('input',{type:'text','aria-label':'Custom hexadecimal colour',maxlength:7,value:el.value||'#000000'});hex.addEventListener('change',()=>{if(/^#[0-9a-f]{6}$/i.test(hex.value)&&commit(c,hex.value.toLowerCase())){for(const b of g.querySelectorAll('button'))b.setAttribute('aria-pressed',String(b.textContent.toLowerCase()===hex.value.toLowerCase()));updateReadout();}});p.append(hex);
       }else{
         if(c.type==='datetime-local'){
           const tabs=group(2,'Date or time');p.append(tabs);
@@ -185,13 +205,14 @@ const engine = (function formEngine(){
       e.preventDefault();let n=e.key==='Home'?0:e.key==='End'?items.length-1:Math.max(0,Math.min(items.length-1,i+offset));
       const direction=(e.key==='End'||offset<0)?-1:1;while(items[n]?.disabled&&n>=0&&n<items.length)n+=direction;items[n]?.focus();
     }
-    const change=e=>{if(current&&e.target===current.el&&current.value!==current.el.value){current.value=current.el.value;render();position();}};
-    const reset=()=>queueMicrotask(()=>{if(current){current.value=current.el.value;render();position();}});
-    doc.addEventListener('pointerdown',outside);doc.addEventListener('keydown',keys);doc.addEventListener('change',change);doc.addEventListener('reset',reset);
+    const syncInput=e=>{if(adapters.has(e.target)&&valueType(e.target)==='color')syncColor(e.target);};
+    const change=e=>{syncInput(e);if(current&&e.target===current.el&&current.value!==current.el.value){current.value=current.el.value;render();position();}};
+    const reset=()=>queueMicrotask(()=>{if(disposed)return;for(const el of adapters.keys())if(valueType(el)==='color')syncColor(el);if(current){current.value=current.el.value;render();position();}});
+    doc.addEventListener('pointerdown',outside);doc.addEventListener('keydown',keys);doc.addEventListener('input',syncInput);doc.addEventListener('change',change);doc.addEventListener('reset',reset);
     window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
     const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches('input,select,option,fieldset,form,[data-material]')||n.querySelector('input,select')))))requestRefresh();});
     observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material',...contextKeys.map(k=>'data-'+k),'disabled','aria-disabled','readonly','multiple','size','inert','type']});
-    const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const [el,a] of adapters)removeAdapter(el,a);adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
+    const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const [el,a] of adapters)removeAdapter(el,a);adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('input',syncInput);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
     mounted.set(root,api);refresh();return api;
   }
   return {mountForms,isoWeek,weekStart,calendarDays,formatDate,parseDate};

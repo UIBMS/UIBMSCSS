@@ -582,6 +582,55 @@ try:
         phone.set_default_timeout(12000)
         touch_errors=[]
         phone.on("pageerror",lambda error:touch_errors.append(str(error)))
+        # Mobile form geometry: intrinsic native widths and platform-specific
+        # color artwork must not disturb a stacked form or its label alignment.
+        phone.goto(url+"docs/form-engine/",wait_until="load")
+        phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(phone,theme="dark",palette="royal",shape="soft",density="default",material="liquid-silicone",effects="none")
+        form=phone.locator('[data-site-demo-run="form-engine"] form')
+        color=form.locator('input[name=color]')
+        face=form.locator('[data-uibms-form-color-face]')
+        value=form.locator('[data-uibms-form-color-text]')
+        swatch=form.locator('[data-uibms-form-color-chip]')
+        picker_arrow=form.locator('[data-uibms-form-kind=color] [data-uibms-form-trigger]')
+        face.wait_for()
+        for width in [320,390,430]:
+            phone.set_viewport_size({"width":width,"height":844})
+            frame(phone)
+            check(form.evaluate("""f=>[...f.querySelectorAll(':scope > label')].every(label=>{
+              const field=label.querySelector(':scope > [data-uibms-form-control],:scope > input,:scope > textarea,:scope > select');
+              if(!field)return false;
+              const l=label.getBoundingClientRect(),r=field.getBoundingClientRect();
+              return Math.abs(l.left-r.left)<2&&Math.abs(l.width-r.width)<2&&r.top>=l.top+parseFloat(getComputedStyle(label).fontSize)*.9;
+            })"""),"stacked labels and full-width native/composite fields "+str(width))
+            check(face.evaluate("""e=>{
+              const r=e.getBoundingClientRect(),s=e.querySelector('[data-uibms-form-color-chip]').getBoundingClientRect(),p=e.parentElement.getBoundingClientRect();
+              return s.width<r.width&&s.width>=16&&s.height>=10&&r.left>=p.left&&r.right<=p.right&&getComputedStyle(e).pointerEvents==='none';
+            }"""),"compact rectangular swatch in responsive colour field "+str(width))
+            check_width(phone,"form-engine mobile "+str(width))
+        color.scroll_into_view_if_needed()
+        check(color.evaluate("""e=>{
+          const r=e.getBoundingClientRect();
+          return Number(getComputedStyle(e).opacity)===0&&e.tabIndex===0&&document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)===e;
+        }"""),"native colour input remains focusable and directly tappable")
+        check(value.inner_text()=="#80BCEB","initial native colour face")
+        color.evaluate("""e=>{e.value='#123456';e.dispatchEvent(new Event('input',{bubbles:true}));e.dispatchEvent(new Event('change',{bubbles:true}));}""")
+        check(value.inner_text()=="#123456" and swatch.evaluate("e=>getComputedStyle(e).backgroundColor")=="rgb(18, 52, 86)","native change updates visible swatch")
+        picker_arrow.tap()
+        popup=phone.locator('[data-uibms-form-popup]')
+        popup.wait_for(state="visible")
+        check(popup.get_attribute("aria-label")=="Accent picker","generated value does not pollute field label")
+        check(popup.evaluate("""e=>{const r=e.getBoundingClientRect();return r.left>=-1&&r.right<=innerWidth+1&&r.top>=-1&&r.bottom<=innerHeight+1}"""),"colour picker fits mobile viewport")
+        popup.get_by_role("button",name="#A58CE7",exact=True).tap()
+        check(color.input_value().lower()=="#a58ce7" and value.inner_text()=="#A58CE7","enhanced choice updates native input and visible swatch")
+        check(popup.get_by_role("textbox",name="Custom hexadecimal colour").input_value().lower()=="#a58ce7","hex field stays synchronized")
+        check(form.evaluate("e=>new FormData(e).get('color')").lower()=="#a58ce7","native colour form serialization")
+        popup.get_by_role("button",name="Close picker",exact=True).tap()
+        popup.wait_for(state="detached")
+        form.get_by_role("button",name="Reset",exact=True).tap()
+        phone.wait_for_function("()=>document.querySelector('[data-site-demo-run=form-engine] [data-uibms-form-color-text]').textContent==='#80BCEB'")
+        check(color.input_value().lower()=="#80bceb","native reset restores colour and swatch")
+        phone.set_viewport_size({"width":390,"height":844})
         phone.goto(url+"docs/buttons/",wait_until="load")
         phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
         set_profile(phone,material="liquid-silicone",effects="default")

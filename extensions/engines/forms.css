@@ -1,13 +1,58 @@
 /* UIBMS optional Form Engine. Internal selectors are not public layout classes. */
+/* A stack is an explicit vertical layout. Keep its field labels and the
+   entire field aligned, without turning checkbox/radio labels into rows
+   of full-width controls or imposing widths on other application layouts. */
+:where(.stack > label:has(> :is(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="button"],[type="submit"],[type="reset"],[type="image"]),select,textarea,[data-uibms-form-control]))) {
+  display:flex;flex-direction:column;align-items:stretch;gap:calc(var(--space,1rem)*.25);min-inline-size:0;max-inline-size:100%;
+}
+:where(.stack > label > :is(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="button"],[type="submit"],[type="reset"],[type="image"],[type="color"]),select,textarea,[data-uibms-form-control])) {
+  display:block;box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;
+}
 /* Enhanced inputs share a single visual field rather than two separate layout items. */
 :where([data-uibms-form-control]) { position:relative;display:inline-flex;align-items:center;box-sizing:border-box;max-inline-size:100%;min-inline-size:0;vertical-align:middle; }
+:where([data-uibms-form-control][data-uibms-form-kind=color]) { inline-size:min(13rem,100%);min-inline-size:0; }
 :where(label > [data-uibms-form-control]) { inline-size:100%; }
-:where([data-uibms-form-control][data-uibms-form-kind=color]) { min-inline-size:min(7rem,100%); }
 :where([data-uibms-form-control] > [data-uibms-form-source]) { inline-size:100%;max-inline-size:100%;min-inline-size:0;box-sizing:border-box;padding-inline-end:calc(var(--target-size,2.75rem) + .2rem);margin:0; }
 :where(select[data-uibms-form-source]) { appearance:none;-webkit-appearance:none; }
 :where(input[data-uibms-form-source])::-webkit-calendar-picker-indicator { opacity:0;pointer-events:none; }
 :where([data-uibms-form-trigger]) { position:absolute;inset-inline-end:.15rem;inset-block-start:50%;transform:translateY(-50%);display:grid;place-items:center;inline-size:var(--target-size,2.75rem);block-size:var(--target-size,2.75rem);min-inline-size:0;min-block-size:0;margin:0;padding:0;border:0;border-radius:var(--radius,.5rem);background:transparent;color:inherit;cursor:pointer;box-shadow:none;translate:none;line-height:1; }
 :where([data-uibms-form-trigger])::before { content:'';inline-size:.5em;block-size:.5em;border-inline-end:1.5px solid currentColor;border-block-end:1.5px solid currentColor;transform:translateY(-.15em) rotate(45deg); }
+/* The real native color input is still focusable, form-associated and
+   directly tappable. Only its OS-specific artwork is hidden, avoiding
+   WebKit's stretched oval. The generated face is decorative and inert. */
+:where([data-uibms-form-control][data-uibms-form-kind=color]) {
+  display:inline-flex;align-items:center;min-block-size:var(--target-size,2.75rem);
+  padding:calc(var(--space,1rem)*.5) calc(var(--space,1rem)*.75);
+  padding-inline-end:calc(var(--target-size,2.75rem) + .2rem);
+  border:var(--border-width,1px) solid var(--color-border-strong,currentColor);
+  border-radius:var(--radius,.5rem);background:var(--color-surface,Canvas);color:var(--color-text,CanvasText);
+  overflow:hidden;
+}
+:where([data-uibms-form-control][data-uibms-form-kind=color] > input[data-uibms-form-source]) {
+  position:absolute;inset-block:0;inset-inline-start:0;inset-inline-end:auto;
+  inline-size:calc(100% - var(--target-size,2.75rem) - .3rem);block-size:100%;
+  min-inline-size:0;min-block-size:0;max-inline-size:100%;max-block-size:100%;
+  margin:0;padding:0;border:0;opacity:0;cursor:pointer;z-index:1;
+}
+:where([data-uibms-form-color-face]) {
+  display:flex;align-items:center;gap:calc(var(--space,1rem)*.55);
+  flex:1;min-inline-size:0;pointer-events:none;
+}
+:where([data-uibms-form-color-chip]) {
+  display:block;flex:none;inline-size:1.85em;block-size:1.2em;
+  border:var(--border-width,1px) solid var(--color-border-strong,currentColor);
+  border-radius:min(var(--radius,.5rem),.35rem);background-color:var(--_uibms-form-color-value,transparent);
+  box-sizing:border-box;forced-color-adjust:none;
+}
+:where([data-uibms-form-color-text]) { min-inline-size:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums; }
+:where([data-uibms-form-control][data-uibms-form-kind=color] > [data-uibms-form-trigger]) { z-index:2; }
+:where([data-uibms-form-control][data-uibms-form-kind=color]:has(> input[data-uibms-form-source]:focus-visible)) {
+  outline:2px solid var(--color-focus,currentColor);outline-offset:2px;
+}
+/* Leave native date/time editing and pickers intact; normalize WebKit's
+   centered native value box rather than manufacturing an empty-date value. */
+:where([data-uibms-form-control] > input[data-uibms-form-source]:is([type=date],[type=datetime-local],[type=time],[type=week],[type=month])) { text-align:start; }
+:where([data-uibms-form-control] > input[data-uibms-form-source])::-webkit-date-and-time-value { text-align:start;min-inline-size:0; }
 :where([data-uibms-form-trigger]:focus-visible) { outline:2px solid var(--color-focus,currentColor);outline-offset:-3px; }
 @media(forced-colors:active) { :where([data-uibms-form-trigger]) { color:ButtonText; } }
 :where([data-uibms-form-popup]) { position:fixed; z-index:2147483000; box-sizing:border-box; inline-size:min(var(--uibms-picker-inline-size,26rem),calc(100dvw - var(--uibms-overlay-gap,1.25rem)*2)); padding:var(--space,1rem); max-block-size:calc(100dvh - var(--uibms-overlay-gap,1.25rem)*2); overflow:visible; border:var(--border-width,1px) solid var(--color-border,currentColor); border-radius:calc(var(--radius,.5rem)*3); background:var(--color-surface,Canvas);color:var(--color-text,CanvasText);box-shadow:var(--shadow,none); }
@@ -17,7 +62,7 @@
 @media(prefers-reduced-motion:reduce){:where([data-uibms-form-popup]) { animation:none; }}
 :where([data-uibms-form-toolbar]) { display:flex;align-items:center;justify-content:space-between;gap:calc(var(--space,1rem)*.6);margin-block-end:calc(var(--space,1rem)*.6); }
 :where([data-uibms-form-popup] strong) { font:inherit;font-weight:600; }
-:where([data-uibms-form-popup] button) { font:inherit;cursor:pointer;min-block-size:var(--target-size,2.75rem);min-inline-size:0;padding:calc(var(--space,1rem)*.3) calc(var(--space,1rem)*.55);border:var(--border-width,1px) solid transparent;border-radius:var(--radius,.5rem); }
+:where([data-uibms-form-popup] button) { font:inherit;cursor:pointer;min-block-size:var(--target-size,2.75rem);min-inline-size:0;padding:calc(var(--space,1rem)*.3) calc(var(--space,1rem)*.55);border:var(--border-width,1px) solid transparent;border-radius:var(--radius,.5rem);max-inline-size:100%;white-space:normal;overflow-wrap:anywhere; }
 :where([data-uibms-form-options]) { display:grid;grid-template-columns:repeat(var(--_uibms-picker-columns,1),minmax(0,1fr));gap:calc(var(--space,1rem)*.18);margin-block:calc(var(--space,1rem)*.5);position:relative;isolation:isolate; }
 :where([data-uibms-form-options] button) { background:transparent;color:inherit;box-shadow:none;translate:none; }
 :where([data-uibms-form-options] button[aria-pressed=true]) { font-weight:700; }

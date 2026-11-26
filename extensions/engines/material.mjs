@@ -1,7 +1,7 @@
 // UIBMS Material Engine - optional development candidate. MIT.
 const engine = (function materialEngine() {
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,img,video,audio,hr,.card,.panel,[data-material="liquid-silicone"]';
+  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,img,video,audio,hr,.card,.panel,[data-uibms-form-control][data-uibms-form-kind="color"],[data-material="liquid-silicone"]';
   const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,caption,thead,tbody,tfoot,tr,td,th,option,optgroup';
   const tableParts='caption,thead,tbody,tfoot,tr,th,td';
   const mediaElements='img,video,audio';
@@ -464,7 +464,7 @@ const engine = (function materialEngine() {
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip],.toasts')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
+      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip],.toasts,input[type=color][data-uibms-form-source]')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
       const overlay=overlayOwner(el);
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
