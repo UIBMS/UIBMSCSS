@@ -1,6 +1,6 @@
 const revision=new URL(import.meta.url).search;
 const [{mountMaterial},{mountForms}]=await Promise.all([import('../engines/material.mjs'+revision),import('../engines/forms.mjs'+revision)]);
-const material=mountMaterial(document);
+const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});
 for(const demo of document.querySelectorAll('[data-site-demo-run="liquid-silicone"]')){
@@ -17,4 +17,20 @@ for(const demo of document.querySelectorAll('[data-site-demo-run="liquid-silicon
   });
 }
 
+// The deformable video example has real HTML playback controls, not a
+// rasterized imitation of browser controls. Ordinary native players are untouched.
+for(const demo of document.querySelectorAll('[data-site-demo-run="media-deformation"]')){
+  const video=demo.querySelector('video'),play=demo.querySelector('button'),seek=demo.querySelector('input[type=range]'),out=demo.querySelector('output');
+  if(!video||!play||!seek||!out)continue;
+  function update(){
+    const duration=Number.isFinite(video.duration)?video.duration:0;
+    play.textContent=video.paused?'Play':'Pause';
+    seek.disabled=!duration;seek.max=String(duration||1);seek.value=String(video.currentTime||0);
+    out.value=(video.currentTime||0).toFixed(1)+' / '+duration.toFixed(1)+' s';
+  }
+  play.addEventListener('click',async()=>{try{if(video.paused)await video.play();else video.pause();}catch{out.value='Playback unavailable';}});
+  seek.addEventListener('input',()=>{if(Number.isFinite(video.duration))video.currentTime=Number(seek.value);});
+  for(const type of ['loadedmetadata','timeupdate','play','pause','ended','seeked'])video.addEventListener(type,update);
+  update();
+}
 document.documentElement.setAttribute('data-site-engines-ready','');

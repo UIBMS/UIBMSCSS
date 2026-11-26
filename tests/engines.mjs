@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
+import {meshPoint,objectRectangle} from '../extensions/engines/media-deformation.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
 assert.notEqual(contour(200,50,12,180,20,1),contour(200,50,12,180,20,-1));
 assert.match(contour(200,50,12,180,20,0),/^M .* Z$/);
@@ -68,3 +69,13 @@ assert.equal(mediaLeft.outset,mediaRight.outset);
 assert.ok(mediaFrame(300,40,20,20,20,1).outset<mediaLeft.outset);
 assert.ok(mediaFrame(320,180,8,300,90,1,{...defaults,mediaSkew:0}).skew===0);
 console.log('Native media frame geometry, passive response and smaller audio-size response passed.');
+
+assert.deepEqual(meshPoint(.5,.5,320,180,300,50,0,24,80),[160,90]);
+assert.ok(meshPoint(1,.5,320,180,315,90,1,24,80)[0]>330);
+assert.ok(meshPoint(.9,.5,320,180,315,90,1,24,80)[0]>288);
+assert.ok(meshPoint(0,.5,320,180,5,90,1,24,80)[0]<-10);
+assert.deepEqual(objectRectangle(100,100,200,100,'cover','50% 50%'),{x:-50,y:0,w:200,h:100});
+assert.deepEqual(objectRectangle(100,100,200,100,'contain','50% 50%'),{x:0,y:25,w:100,h:50});
+assert.deepEqual(objectRectangle(100,100,50,50,'scale-down','right bottom'),{x:50,y:50,w:50,h:50});
+assert.equal(objectRectangle(100,100,50,50,'contain','right 10px bottom 20px'),null);
+console.log('Shared media mesh and object-fit calculations passed.');

@@ -26,7 +26,7 @@ const engine = (function materialEngine() {
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
   const SVG='http://www.w3.org/2000/svg';
   const instances=new WeakMap();
-  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24,touchAttractionTime:80,touchCompressionTime:100,touchSlop:12,overlayMaximum:14,overlaySkew:8,mediaMaximum:14,mediaSkew:6});
+  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24,touchAttractionTime:80,touchCompressionTime:100,touchSlop:12,overlayMaximum:14,overlaySkew:8,mediaMaximum:14,mediaSkew:6,mediaRadius:null,mediaRenderer:'auto'});
   // A quick tap has a short visual impulse even if the finger is lifted before the next frame.
   // This controls paint only; native click, focus, scroll and form events are not delayed.
   function touchPhase(age,releasedAt,pressable,attractionTime=defaults.touchAttractionTime,compressionTime=defaults.touchCompressionTime){
@@ -135,7 +135,7 @@ const engine = (function materialEngine() {
     positionHost(el);Object.assign(s,decoration('material-layer'));el.append(s.layer);return s;
   }
   function removeSurface(s){
-    s.layer?.remove();s.overlayLayer?.layer.remove();
+    s.releaseMedia?.();s.layer?.remove();s.overlayLayer?.layer.remove();
     for(const k of [...paintFlags,'data-uibms-material-surface'])s.el.removeAttribute(k);
     if(!s.el.hasAttribute('data-uibms-selection-host'))s.el.removeAttribute('data-uibms-material-position');
     for(const k of ['--_uibms-material-force','--_uibms-material-x','--_uibms-material-y','--_uibms-material-radius','--_uibms-thumb-scale','--_uibms-range-progress','--_uibms-material-base-image','--_uibms-material-base-color','--_uibms-material-outer-shadow','--_uibms-media-image','--_uibms-media-outset'])s.el.style.removeProperty(k);
@@ -268,33 +268,26 @@ const engine = (function materialEngine() {
     const outer=contour(w+margin*2,h+margin*2,r+margin,x+margin,y+margin,f,skew,config.amplitude,Math.max(2,cap),outset-margin);
     return {outer,inner,outset,skew};
   }
-  const xml=value=>String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
   function fullscreenMedia(el){
     const active=el.ownerDocument.fullscreenElement||el.ownerDocument.webkitFullscreenElement;
     return !!(active&&(active===el||active.contains(el)))||el.webkitDisplayingFullscreen===true;
   }
   function paintMedia(s,config,d){
     const el=s.el,active=s.f>.001&&!fullscreenMedia(el);
-    el.setAttribute('data-uibms-material-media','');
+    el.setAttribute('data-uibms-material-media','');s.mediaRunning=false;
     el.toggleAttribute('data-uibms-material-contact',active);
     el.style.setProperty('--_uibms-material-outer-shadow',d.shadow==='none'?'0 0 0 0 transparent':d.shadow);
-    if(!active||!d.mediaContour||s.w<1||s.h<1){
-      el.removeAttribute('data-uibms-media-frame');el.style.removeProperty('--_uibms-media-image');el.style.removeProperty('--_uibms-media-outset');s.mediaKey=null;return;
+    // Native audio and video with browser-owned controls remain fully native.
+    // Do not show an empty frame as if it were true media deformation.
+    if(active&&el.matches('img,video:not([controls])')&&d.mediaContour&&s.w>1&&s.h>1){
+      config.loadMedia();
+      if(config.mediaDeformer?.paint(s,d)){
+        s.releaseMedia=()=>config.mediaDeformer?.release(el);
+        s.mediaRunning=el.matches('video')&&!el.paused&&!el.ended;
+        return;
+      }
     }
-    const r=el.matches('audio')&&d.border.width===0&&s.r===0?Math.min(s.w,s.h)/2:s.r;
-    const g=mediaFrame(s.w,s.h,r,s.x,s.y,s.f,config);
-    const w=s.w+2*g.outset,h=s.h+2*g.outset;
-    const originalBorder=d.border.width>0&&!['none','hidden'].includes(d.border.style);
-    const stroke=xml(originalBorder?d.border.color:d.foreground),fill=xml(visibleColor(d.background)?d.background:d.foreground);
-    const width=originalBorder?d.border.width:1,alpha=clamp(s.f*.17,0,.24),lineAlpha=originalBorder?1:clamp(s.f*.6,0,.8);
-    const dash=d.border.style==='dashed'?' stroke-dasharray="'+(width*3)+' '+(width*2)+'"':d.border.style==='dotted'?' stroke-dasharray="'+width+' '+width+'"':'';
-    // Only the ring outside the original silhouette is filled. Native image
-    // or player content is never sampled, filtered or clipped by this layer.
-    const svg='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'" viewBox="0 0 '+w+' '+h+'"><path d="'+g.outer+' '+g.inner+'" fill="'+fill+'" fill-opacity="'+alpha+'" fill-rule="evenodd"/><path d="'+g.outer+'" fill="none" stroke="'+stroke+'" stroke-width="'+width+'" stroke-opacity="'+lineAlpha+'" stroke-linejoin="round"'+dash+'/></svg>';
-    if(s.mediaKey!==svg){
-      s.mediaKey=svg;el.style.setProperty('--_uibms-media-image','url("data:image/svg+xml,'+encodeURIComponent(svg)+'")');el.style.setProperty('--_uibms-media-outset',g.outset+'px');
-    }
-    el.setAttribute('data-uibms-media-frame','');
+    s.releaseMedia?.();s.releaseMedia=null;
   }
   function paint(s,config,backdrop){
     if(!s.w||!s.h)return;
@@ -402,6 +395,17 @@ const engine = (function materialEngine() {
   function mountMaterial(root=document,options={}){
     if(instances.has(root))return instances.get(root);
     const config={...defaults,...options},surfaces=new Map(),selections=new Map(),dirty=new Set(),animating=new Set(),backdrops=new Map();
+    let mediaPromise=null;
+    config.loadMedia=()=>{
+      if(mediaPromise||config.mediaDeformer)return;
+      const loader=typeof options.mediaLoader==='function'?options.mediaLoader:()=>import('./media-deformation.mjs');
+      mediaPromise=Promise.resolve().then(loader).then(({createMediaDeformer})=>{
+        if(disposed)return;
+        config.mediaDeformer=createMediaDeformer(config);
+        for(const s of surfaces.values())if(s.design.media&&s.f>.001){dirty.add(s);animating.add(s);}
+        request();
+      }).catch(()=>{/* Native media and the optical fallback remain usable. */});
+    };
     const findBackdrop=el=>{for(let p=el;p;p=p.parentElement){if(backdrops.has(p))return backdrops.get(p);}return null;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)'),forced=matchMedia('(forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce)'),scheme=matchMedia('(prefers-color-scheme: dark)');
     let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,touch=null,touchFocus=null,disposed=false,refreshPending=false;
@@ -464,7 +468,7 @@ const engine = (function materialEngine() {
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
       if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter,'+mediaElements)&&el.getAttribute('data-material')!=='liquid-silicone')return false;
-      if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
+      if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-media-raster],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot,input[type=hidden]'))return false;
       const group=el.closest(groups);
       if(group&&group!==el&&groupTargets.get(group)&&el.matches('a[href],button,[role=tab],input[type=radio]'))return false;
@@ -613,7 +617,7 @@ const engine = (function materialEngine() {
         else {touch.age+=dt*1000;touchPoint={x:touch.x,y:touch.y,el:touch.el,touchPhase:phase};if(touch.surface)animating.add(touch.surface);}
       }
       for(const s of [...animating]){
-        if(!s.el.isConnected||!visible(s.el)){s.f=s.v=s.target=0;animating.delete(s);if(touch?.surface===s)releaseTouch();continue;}
+        if(!s.el.isConnected||!visible(s.el)){s.releaseMedia?.();s.releaseMedia=null;s.mediaRunning=false;s.f=s.v=s.target=0;animating.delete(s);if(touch?.surface===s)releaseTouch();continue;}
         measure(s);
         const profile=s.motion||motion(s.el),stopped=instant||profile.instant;
         const touching=touch?.surface===s;
@@ -622,7 +626,7 @@ const engine = (function materialEngine() {
         if(stopped){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
         else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);if((s.design.table||s.design.overlay||s.design.media)&&desired===0&&s.f<0){s.f=s.v=0;}s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
         paint(s,config,forced.matches?null:findBackdrop(s.el));
-        if(s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
+        if(!s.mediaRunning&&s.f===desired&&s.v===0&&Math.abs(s.x-s.tx)<.1&&Math.abs(s.y-s.ty)<.1)animating.delete(s);
       }
       let moving=false;
       for(const [el,s] of selections){
@@ -631,11 +635,12 @@ const engine = (function materialEngine() {
       }
       if(animating.size||moving||touch)request();else last=0;
     }
+    function mediaChanged(e){const s=surfaces.get(e.target);if(s&&s.design.media&&s.f>.001){dirty.add(s);animating.add(s);request();}}
     const eventRoot=root.nodeType===9?root:root;
-    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'toggle',overlayChanged,true],[eventRoot,'close',overlayChanged,true],[eventRoot,'load',e=>{if(e.target instanceof Element&&(overlayOwner(e.target)||e.target.matches(mediaElements)))queueRefresh();},true],[eventRoot,'loadedmetadata',queueRefresh,true],[eventRoot,'fullscreenchange',queueRefresh,true],[eventRoot,'webkitfullscreenchange',queueRefresh,true],[eventRoot,'webkitbeginfullscreen',queueRefresh,true],[eventRoot,'webkitendfullscreen',queueRefresh,true],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
+    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'toggle',overlayChanged,true],[eventRoot,'close',overlayChanged,true],[eventRoot,'load',e=>{if(e.target instanceof Element&&(overlayOwner(e.target)||e.target.matches(mediaElements)))queueRefresh();},true],[eventRoot,'loadedmetadata',queueRefresh,true],[eventRoot,'loadeddata',mediaChanged,true],[eventRoot,'play',mediaChanged,true],[eventRoot,'pause',mediaChanged,true],[eventRoot,'seeked',mediaChanged,true],[eventRoot,'ended',mediaChanged,true],[eventRoot,'fullscreenchange',queueRefresh,true],[eventRoot,'webkitfullscreenchange',queueRefresh,true],[eventRoot,'webkitbeginfullscreen',queueRefresh,true],[eventRoot,'webkitendfullscreen',queueRefresh,true],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
     listeners.forEach(([o,k,f,c])=>o.addEventListener(k,f,c||false));
     const observer=new MutationObserver(records=>{
-      if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||(r.type==='characterData'&&!!overlayOwner(r.target.parentElement))||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')||n.nodeType===3&&!!overlayOwner(r.target)))))queueRefresh();
+      if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-media-raster]')&&(r.type==='attributes'||(r.type==='characterData'&&!!overlayOwner(r.target.parentElement))||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-media-raster]')||n.nodeType===3&&!!overlayOwner(r.target)))))queueRefresh();
     });
     observer.observe(root,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','popover','inert','class','controls','src','srcset','sizes']});
     const preference=()=>{if(reduced.matches||forced.matches)cancel();refresh();for(const s of surfaces.values())animating.add(s);request();};
@@ -648,7 +653,7 @@ const engine = (function materialEngine() {
       const image=new Image();if(url.origin!==location.origin&&url.protocol.startsWith('http'))image.crossOrigin='anonymous';image.src=url.href;
       try{await image.decode();if(b.cancelled||disposed)return false;b.image=image;el.style.backgroundImage='url('+JSON.stringify(url.href)+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';if(!imagePixels(b))throw Error('Image pixels unavailable');for(const s of surfaces.values())dirty.add(s);refresh();return true;}catch{unregisterBackdrop(el);return false;}
     }
-    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearFlatLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
+    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();clearFlatLights();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);config.mediaDeformer?.destroy();instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
   return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase,overlayPath,mediaFrame};

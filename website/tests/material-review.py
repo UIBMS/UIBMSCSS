@@ -383,7 +383,8 @@ try:
                 overlay.get_by_role("button",name="Close",exact=True).tap()
                 overlay.wait_for(state="hidden")
             phone.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
-        # Native media must retain the same DOM nodes, dimensions and player controls.
+        # Images and the control-free video use true texture deformation;
+        # browser-native controls remain native. Force GPU failure in a second context.
         phone.goto(url+"docs/media/",wait_until="load")
         phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
         set_profile(phone,material="liquid-silicone",effects="default")
@@ -395,36 +396,66 @@ try:
         phone.wait_for_function("()=>window.__touchSample.max>.04")
         phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
         check(phone.evaluate("()=>window.__touchSample.min>=0"),"image is passive on touch")
-        check(image.get_attribute("data-uibms-media-frame") is None,"image frame clears after touch")
+        check(image.get_attribute("data-uibms-media-rendered") is None,"image native at rest")
         check(before==image.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,src:e.currentSrc,alt:e.alt,tag:e.parentElement.tagName})"),"image dimensions, source and parent unchanged")
         check_width(phone,"media mobile")
-        media_page=browser.new_context(viewport={"width":1280,"height":900},reduced_motion="no-preference")
-        mp=media_page.new_page()
-        mp.on("pageerror",lambda error:touch_errors.append(str(error)))
-        mp.goto(url+"docs/media/",wait_until="load")
-        mp.wait_for_selector("html[data-site-engines-ready]",state="attached")
-        set_profile(mp,material="liquid-silicone",effects="default")
-        for tag in ["img","video","audio"]:
-            selector="[data-site-demo-content] "+tag
-            item=mp.locator(selector).first
-            mp.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-material-media')",arg=selector)
-            state=item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc,children:e.childElementCount,controls:e.controls??null,clip:getComputedStyle(e).clipPath})")
-            item.hover()
-            mp.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-media-frame')",arg=selector)
-            check(item.evaluate("e=>getComputedStyle(e).borderImageSource.startsWith('url(')"),tag+" SVG frame painted")
-            check(state==item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc,children:e.childElementCount,controls:e.controls??null,clip:getComputedStyle(e).clipPath})"),tag+" native element geometry and controls preserved")
-            check(item.locator("[data-uibms-material-layer]").count()==0,tag+" has no injected children")
-            check_width(mp,tag+" active frame")
+        for fallback in [False,True]:
+            media_page=browser.new_context(viewport={"width":1280,"height":900},reduced_motion="no-preference")
+            if fallback:
+                media_page.add_init_script("""(()=>{const orig=HTMLCanvasElement.prototype.getContext;HTMLCanvasElement.prototype.getContext=function(type,...args){if(type==='webgl'||type==='webgl2')return null;return orig.call(this,type,...args);};})()""")
+            mp=media_page.new_page()
+            mp.on("pageerror",lambda error:touch_errors.append(str(error)))
+            mp.goto(url+"docs/media/",wait_until="load")
+            mp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+            set_profile(mp,material="liquid-silicone",effects="default")
+            item=mp.locator("[data-site-demo-content] img").first
+            item.scroll_into_view_if_needed()
+            state=item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc})")
+            box=item.bounding_box()
+            item.hover(position={"x":box["width"]-4,"y":box["height"]//2})
+            mp.wait_for_function("()=>!!document.querySelector('[data-site-demo-content] img')?.getAttribute('data-uibms-media-rendered')")
+            renderer=item.get_attribute("data-uibms-media-rendered")
+            check(renderer in ["webgl","canvas2d"],"actual texture renderer",renderer)
+            if fallback:
+                check(renderer=="canvas2d","Canvas fallback selected when WebGL unavailable")
+            elif mp.evaluate("()=>!!document.createElement('canvas').getContext('webgl')"):
+                check(renderer=="webgl","WebGL selected when available")
+            raster=item.locator("xpath=following-sibling::canvas[@data-uibms-media-raster][1]")
+            raster.wait_for()
+            check(item.evaluate("e=>getComputedStyle(e).opacity==='0'"),"original rigid pixels hidden only while raster is visible")
+            # Pixel alpha beyond the original right edge proves the image itself
+            # expands, rather than merely drawing a border around it.
+            mp.wait_for_function("""()=>{
+              const e=document.querySelector('[data-site-demo-content] img'),c=e.nextElementSibling;
+              if(!c?.matches('[data-uibms-media-raster]'))return false;
+              const r=e.getBoundingClientRect(),q=c.getBoundingClientRect(),x=Math.floor((r.right-q.left+3)*c.width/q.width),y=Math.floor((r.top+r.height/2-q.top)*c.height/q.height);
+              return x>=0&&x<c.width&&y>=0&&y<c.height&&c.getContext('2d').getImageData(x,y,1,1).data[3]>200;
+            }""")
+            check(state==item.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,parent:e.parentElement.tagName,source:e.currentSrc})"),"raster preserves native layout")
+            check_width(mp,"deformed media")
             mp.mouse.move(0,0)
-            mp.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-media-frame')",arg=selector)
-        # Media playback APIs remain native; test fixtures are local and generated.
-        for tag in ["video","audio"]:
-            player=mp.locator("[data-site-demo-content] "+tag).first
-            check(player.evaluate("e=>e.controls&&e instanceof HTMLMediaElement"),tag+" native playback controls")
-        set_profile(mp,material="default")
-        mp.wait_for_function("()=>!document.querySelector('[data-site-demo-content] img').hasAttribute('data-uibms-material-media')")
-        check(mp.locator("[data-uibms-media-frame]").count()==0,"material opt-out removes media paint")
-        media_page.close()
+            mp.wait_for_function("()=>!document.querySelector('[data-site-demo-content] img').hasAttribute('data-uibms-media-rendered')")
+            check(item.evaluate("e=>getComputedStyle(e).opacity==='1'"),"native image restored")
+            check(mp.locator("[data-uibms-media-raster]").count()==0,"raster released at rest")
+            for tag in ["video","audio"]:
+                player=mp.locator("[data-site-demo-content] "+tag+"[controls]").first
+                player.hover()
+                frame(mp)
+                check(player.evaluate("e=>e.controls&&getComputedStyle(e).opacity==='1'"),tag+" native controls remain visible")
+                check(player.get_attribute("data-uibms-media-rendered") is None,tag+" native player is not rasterized")
+            demo=mp.locator('[data-site-demo-run="media-deformation"]')
+            video=demo.locator("video")
+            demo.get_by_role("button",name="Play",exact=True).click()
+            mp.wait_for_function("()=>{const v=document.querySelector('[data-site-demo-run=media-deformation] video');return v&&!v.paused&&v.readyState>=2}")
+            video.hover()
+            mp.wait_for_function("()=>!!document.querySelector('[data-site-demo-run=media-deformation] video')?.getAttribute('data-uibms-media-rendered')")
+            check(video.evaluate("v=>!v.paused&&v.readyState>=2"),"deformable video still playing")
+            demo.get_by_role("button",name="Pause",exact=True).click()
+            check(video.evaluate("v=>v.paused"),"HTML controls pause the original video")
+            set_profile(mp,material="default")
+            mp.wait_for_function("()=>!document.querySelector('[data-site-demo-content] img').hasAttribute('data-uibms-material-media')")
+            check(mp.locator("[data-uibms-media-raster]").count()==0,"material opt-out removes raster")
+            media_page.close()
         check(not touch_errors,"no mobile runtime errors",touch_errors)
         mobile.close()
         browser.close()

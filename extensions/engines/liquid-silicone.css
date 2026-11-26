@@ -160,22 +160,25 @@
     var(--_uibms-flat-light-image,none) !important;
 }
 
-/* Native media remains the original replaced element. Border-image outset is
-   visual-only ink overflow: no wrapper, absolute hit layer, crop, transform,
-   canvas sampling, media API interception or additional box dimensions. */
-[data-uibms-material-media][data-uibms-material-contact] {
+/* Media texture is warped as a whole. The original node retains its place,
+   accessibility and hit area. Hide it only while a successful raster is visible. */
+[data-uibms-media-rendered] { opacity:0 !important; transition:none !important; }
+[data-uibms-media-raster] {
+  display:block !important;position:absolute !important;pointer-events:none !important;
+  margin:0 !important;padding:0 !important;border:0 !important;border-radius:0 !important;
+  max-inline-size:none !important;max-block-size:none !important;min-inline-size:0 !important;min-block-size:0 !important;
+  box-sizing:border-box !important;aspect-ratio:auto !important;object-fit:fill !important;
+  background:transparent !important;box-shadow:none !important;translate:none !important;transform:none !important;
+  inset-inline-end:auto !important;inset-block-end:auto !important;flex:none !important;user-select:none;
+}
+/* Native players and unsupported/custom media use optical feedback only. */
+[data-uibms-material-media][data-uibms-material-contact]:not([data-uibms-media-rendered]) {
   box-shadow:0 0 calc(max(0,var(--_uibms-material-force,0))*10px)
     color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*20%),transparent),
     var(--_uibms-material-outer-shadow,0 0 0 0 transparent) !important;
 }
-[data-uibms-media-frame] {
-  border-image-source:var(--_uibms-media-image,none) !important;
-  border-image-slice:0 fill !important;
-  border-image-width:0 !important;
-  border-image-outset:var(--_uibms-media-outset,0px) !important;
-  border-image-repeat:stretch !important;
-}
 @media (prefers-reduced-motion:reduce),(forced-colors:active) {
-  [data-uibms-media-frame] { border-image-source:none !important; }
+  [data-uibms-media-rendered] { opacity:1 !important; }
+  [data-uibms-media-raster] { display:none !important; }
   [data-uibms-material-media][data-uibms-material-contact] { box-shadow:var(--_uibms-material-outer-shadow,none) !important; }
 }
