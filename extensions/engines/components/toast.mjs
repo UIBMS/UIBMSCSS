@@ -14,8 +14,23 @@ export function mountToasts(container,{maxVisible=3,labels={}}={}){
   const names={info:'Information',success:'Success',warning:'Warning',danger:'Error',dismiss:'Dismiss notification',...labels};
   const queue=[],visible=new Set();
   let serial=0,dead=false,clearing=false;
-  const previousTab=container.getAttribute('tabindex');
+  const previousTab=container.getAttribute('tabindex'),previousPopover=container.getAttribute('popover');
+  const topLayer=typeof container.showPopover==='function'&&typeof container.hidePopover==='function';
+  if(topLayer)container.setAttribute('popover','manual');
   if(previousTab===null)container.tabIndex=-1;
+  const open=()=>topLayer&&container.matches(':popover-open');
+  // A notification is non-modal: it must never escape a dialog's native
+  // inertness rules. A stack mounted inside that dialog remains interactive.
+  const blockedByModal=()=>topLayer&&[...doc.querySelectorAll('dialog:modal')].some(d=>!d.contains(container));
+  function syncLayer(raise=false){
+    if(!topLayer)return;
+    if(!visible.size){if(open())container.hidePopover();return;}
+    if(!container.isConnected)return;
+    const focused=container.contains(doc.activeElement)?doc.activeElement:null;
+    if(raise&&open())container.hidePopover();
+    if(!open())container.showPopover();
+    if(focused?.isConnected&&!blockedByModal())focused.focus({preventScroll:true});
+  }
   function node(tag,attrs={},text){
     const el=doc.createElement(tag);
     for(const [k,v] of Object.entries(attrs))el.setAttribute(k,v);
@@ -31,7 +46,7 @@ export function mountToasts(container,{maxVisible=3,labels={}}={}){
   const stop=r=>{if(r.timer!==null){win.clearTimeout(r.timer);r.timer=null;r.remaining=Math.max(0,r.remaining-(win.performance.now()-r.started));}};
   function schedule(r){
     stop(r);
-    if(!r.duration||r.hover||r.focus||doc.hidden||!visible.has(r))return;
+    if(!r.duration||r.hover||r.focus||doc.hidden||blockedByModal()||!visible.has(r))return;
     r.started=win.performance.now();r.timer=win.setTimeout(()=>{r.timer=null;dismiss(r);},r.remaining);
   }
   function dismiss(r){
@@ -64,8 +79,9 @@ export function mountToasts(container,{maxVisible=3,labels={}}={}){
       el.addEventListener('pointerleave',e=>{if(e.pointerType!=='touch'){r.hover=false;schedule(r);}});
       el.addEventListener('focusin',()=>{r.focus=true;schedule(r);});
       el.addEventListener('focusout',e=>{if(!el.contains(e.relatedTarget)){r.focus=false;schedule(r);}});
-      container.append(el);announce(r);schedule(r);
+      container.append(el);syncLayer();announce(r);schedule(r);
     }
+    syncLayer();
   }
   function show({title='',message='',tone='info',duration=0}={}){
     if(dead)throw new Error('Notification stack was destroyed');
@@ -78,12 +94,25 @@ export function mountToasts(container,{maxVisible=3,labels={}}={}){
   }
   function clear(){
     clearing=true;for(const r of [...visible,...queue])dismiss(r);
-    polite.textContent=urgent.textContent='';clearing=false;
+    syncLayer();polite.textContent=urgent.textContent='';clearing=false;
   }
   const visibility=()=>{for(const r of visible)schedule(r);};
+  // Native top-layer order follows opening order, not z-index. Raise the
+  // existing stack after a new menu, popover or modal opens. Never react to
+  // our own (or another toast stack's) toggle, avoiding a promotion loop.
+  const overlayChanged=e=>{
+    const el=e.target;
+    if(!topLayer||dead||!el?.matches||el.matches('.toasts')||!el.matches('dialog,[popover]'))return;
+    if(e.newState==='open'&&el.matches('dialog:modal,[popover]:popover-open')&&visible.size)syncLayer(true);
+    if(el.matches('dialog'))visibility();
+  };
   doc.addEventListener('visibilitychange',visibility);
+  if(topLayer){doc.addEventListener('toggle',overlayChanged,true);doc.addEventListener('close',overlayChanged,true);}
   const api={show,clear,get visibleCount(){return visible.size;},get pendingCount(){return queue.length;},
-    destroy(){if(dead)return;dead=true;clear();doc.removeEventListener('visibilitychange',visibility);polite.remove();urgent.remove();
+    destroy(){if(dead)return;dead=true;clear();doc.removeEventListener('visibilitychange',visibility);
+      if(topLayer){doc.removeEventListener('toggle',overlayChanged,true);doc.removeEventListener('close',overlayChanged,true);
+        if(previousPopover===null)container.removeAttribute('popover');else container.setAttribute('popover',previousPopover);}
+      polite.remove();urgent.remove();
       if(previousTab===null)container.removeAttribute('tabindex');else container.setAttribute('tabindex',previousTab);
       instances.delete(container);}};
   instances.set(container,api);return api;

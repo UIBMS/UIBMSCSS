@@ -464,11 +464,11 @@ const engine = (function materialEngine() {
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip]')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
+      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip],.toasts')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
       const overlay=overlayOwner(el);
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
-      if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter,'+mediaElements)&&el.getAttribute('data-material')!=='liquid-silicone')return false;
+      if(overlay&&overlay!==el&&!el.matches(activeSelector+',input,select,textarea,table,progress,meter,.toast,'+mediaElements)&&el.getAttribute('data-material')!=='liquid-silicone')return false;
       if(forced.matches||!enabled(el)||legacyMaterial(el)||backdrops.has(el)||el.closest('[data-uibms-material-layer],[data-uibms-selection-layer],[data-uibms-media-raster],[data-uibms-form-trigger],.visually-hidden,[hidden]'))return false;
       if(el.matches('html,body,script,style,template,link,meta,head,br,wbr,option,optgroup,slot,input[type=hidden]'))return false;
       const group=el.closest(groups);

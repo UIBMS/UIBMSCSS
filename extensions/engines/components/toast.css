@@ -1,13 +1,20 @@
 /* Optional notification stack. Native content and controls stay focusable. */
 .toasts {
-  position:fixed;z-index:var(--toast-z-index,100);
-  inset-inline-end:var(--space);inset-block-end:max(var(--space),env(safe-area-inset-bottom));
+  /* Native manual popover escapes all ancestor stacking contexts. The
+     z-index token is used only for the ordinary fixed-position fallback. */
+  position:fixed;z-index:var(--toast-z-index,1000);
+  inset:auto;inset-inline-end:var(--space);inset-block-end:max(var(--space),env(safe-area-inset-bottom));
+  margin:0;min-inline-size:0;
   inline-size:min(var(--toast-width,24rem),calc(100dvw - var(--space)*2));
+  max-inline-size:calc(100dvw - var(--space)*2);
   max-block-size:calc(100dvh - var(--space)*2);overflow:auto;overscroll-behavior:contain;
   box-sizing:border-box;display:grid;gap:calc(var(--space)*.6);padding:2px;
+  border:0;border-radius:0;background:transparent;box-shadow:none;color:inherit;
   pointer-events:none;
 }
 .toasts:empty { display:none; }
+.toasts[popover]:not(:popover-open) { display:none; }
+.toasts[popover]::backdrop { background:transparent;pointer-events:none; }
 .toast {
   --_uibms-toast-tone:var(--color-info);
   box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto;

@@ -391,6 +391,38 @@ try:
         success.click()
         check(stack.locator(".toast").count()==1 and stack.inner_text().find("Changes saved")>=0,"toast appears")
         check(success.evaluate("e=>document.activeElement===e"),"toast does not steal focus")
+        check(stack.evaluate("e=>e.matches(':popover-open')"),"notifications use native top layer")
+        # Deliberately place a maximum ordinary z-index layer above a transformed,
+        # clipped notification ancestor. The native stack must escape both.
+        cp.evaluate("""()=>{
+          const stack=document.querySelector('#demo-notifications');
+          const parent=stack.parentElement;
+          parent.style.transform='translateZ(0)';parent.style.isolation='isolate';parent.style.overflow='hidden';
+          const cover=document.createElement('div');cover.id='toast-stacking-probe';
+          cover.style.cssText='position:fixed;inset:0;background:transparent;z-index:2147483647';
+          document.body.append(cover);
+        }""")
+        check(stack.get_by_role("button",name="Dismiss notification").evaluate("""e=>{
+          const r=e.getBoundingClientRect();
+          return e.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
+        }"""),"toast escapes transformed clipped ancestor and higher ordinary z-index")
+        cp.evaluate("()=>document.querySelector('#toast-stacking-probe').remove()")
+        # A popover opened after the notification must not cover the stack.
+        cp.evaluate("""()=>{
+          const p=document.createElement('div');p.id='toast-popover-probe';p.setAttribute('popover','manual');
+          p.style.cssText='position:fixed;inset:0;margin:0;max-width:none;max-height:none;width:100vw;height:100dvh;background:transparent;border:0';
+          document.body.append(p);p.showPopover();
+        }""")
+        cp.wait_for_function("""()=>{
+          const b=document.querySelector('#demo-notifications .toast button'),r=b.getBoundingClientRect();
+          return b.contains(document.elementFromPoint(r.x+r.width/2,r.y+r.height/2));
+        }""")
+        check(stack.evaluate("e=>e.matches(':popover-open')"),"toast stays above a subsequently opened popover")
+        cp.evaluate("""()=>{
+          const p=document.querySelector('#toast-popover-probe');p.hidePopover();p.remove();
+          const parent=document.querySelector('#demo-notifications').parentElement;
+          for(const key of ['transform','isolation','overflow'])parent.style.removeProperty(key);
+        }""")
         cp.locator("#toast-warning").click()
         cp.locator("#toast-danger").click()
         success.click()
@@ -401,6 +433,24 @@ try:
         check(stack.locator(".toast").count()==3 and stack.locator(".toast").last.inner_text().find("Changes saved")>=0,"toast queue drains on dismissal")
         cp.locator("#toast-clear").click()
         check(stack.locator(".toast").count()==0,"clear removes visible and queued notifications")
+        check(stack.evaluate("e=>!e.matches(':popover-open')"),"empty notification stack leaves top layer")
+        # A modal-local stack may overlap the modal and remains dismissible
+        # without overriding the browser's native focus isolation.
+        cp.evaluate("""async()=>{
+          const {mountToasts}=await import(new URL('engines/components/toast.mjs',new URL('../../',location.href)).href);
+          const dialog=document.createElement('dialog');dialog.id='toast-modal-probe';
+          const close=document.createElement('button');close.textContent='Close modal';close.type='button';
+          const region=document.createElement('div');region.className='toasts';region.id='modal-toast-probe';
+          dialog.append(close,region);document.body.append(dialog);
+          const notifications=mountToasts(region);close.addEventListener('click',()=>{notifications.destroy();dialog.close();dialog.remove();});
+          dialog.showModal();notifications.show({title:'Modal notification',tone:'success'});
+        }""")
+        modal_stack=cp.locator("#modal-toast-probe")
+        check(modal_stack.evaluate("e=>e.matches(':popover-open')"),"modal-local toast uses top layer")
+        modal_stack.get_by_role("button",name="Dismiss notification").click()
+        check(modal_stack.locator(".toast").count()==0,"modal-local notification dismissible")
+        cp.get_by_role("button",name="Close modal",exact=True).click()
+        check(cp.locator("#toast-modal-probe").count()==0,"modal-local stack cleanup")
         cp.set_viewport_size({"width":390,"height":812})
         set_profile(cp,material="liquid-silicone")
         success.click()
