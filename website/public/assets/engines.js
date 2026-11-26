@@ -5,7 +5,11 @@ const material=mountMaterial(document);
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-run="form-engine"]')});
 for(const demo of document.querySelectorAll('[data-site-demo-run="liquid-silicone"]')){
   const scope=demo.querySelector('[data-material="liquid-silicone"]');
-  if(scope){scope.style.setProperty('--uibms-material-tint','#dceaff');scope.style.setProperty('--uibms-material-opacity','18%');scope.style.setProperty('--uibms-material-border','rgba(255,255,255,.65)');material.registerBackdrop(scope,new URL('../engines/landscape.svg',import.meta.url).href);}
+  if(scope){
+    material.registerBackdrop(scope,new URL('../engines/landscape.svg',import.meta.url).href);
+    const slider=scope.querySelector('input[type=range]');
+    if(slider)slider.addEventListener('input',()=>{scope.style.setProperty('--uibms-material-opacity',slider.value+'%');material.refresh();});
+  }
   demo.addEventListener('click',e=>{
     const button=e.target.closest('nav button[aria-pressed]');
     if(!button)return;

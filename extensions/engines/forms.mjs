@@ -12,7 +12,7 @@ const engine = (function formEngine(){
   function calendarDays(y,m){let d=day(y,m,1);d.setUTCDate(d.getUTCDate()-(d.getUTCDay()||7)+1);return Array.from({length:42},(_,i)=>day(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()+i));}
   function node(tag,attrs={},content=''){const el=document.createElement(tag);for(const [k,v] of Object.entries(attrs)){if(v!==undefined)el.setAttribute(k,String(v));}el.textContent=content;return el;}
   const eligible=el=>el.matches('select:not([multiple])')&&el.size<=1||el.tagName==='INPUT'&&types.has(el.getAttribute('type')?.toLowerCase());
-  const enabled=el=>el.closest('[data-material]')?.getAttribute('data-material')==='liquid-silicone'&&!el.matches(':disabled,[readonly]')&&!el.closest('[inert],[aria-disabled=true]');
+  const enabled=el=>el.closest('[data-material="default"],[data-material="liquid-silicone"]')?.getAttribute('data-material')==='liquid-silicone'&&!el.matches(':disabled,[readonly]')&&!el.closest('[inert],[aria-disabled=true]');
   const valueType=el=>el.tagName==='SELECT'?'select':el.getAttribute('type').toLowerCase();
   function mountForms(root=document,options={}){
     if(mounted.has(root))return mounted.get(root);
@@ -29,6 +29,7 @@ const engine = (function formEngine(){
       el.removeAttribute('data-uibms-form-source');
     }
     function refresh(){
+      if(current&&eligible(current.el)&&enabled(current.el)){syncContext(current.el,current.popup);position();}
       for(const [el,a] of adapters){
         if(!el.isConnected||!eligible(el)||!enabled(el)||!filter(el)){
           if(current?.el===el)close(false);removeAdapter(el,a);adapters.delete(el);
@@ -58,6 +59,20 @@ const engine = (function formEngine(){
       popup.style.left=Math.max(10,Math.min(r.right-width,window.innerWidth-width-10))+'px';
       popup.style.top=Math.max(10,Math.min(r.bottom+8,window.innerHeight-height-10))+'px';
     }
+    const contextKeys=['theme','palette','shape','border','density','typography','effects'];
+    function syncContext(el,popup){
+      for(const k of contextKeys){
+        const attr='data-'+k,v=el.closest('['+attr+']')?.getAttribute(attr);
+        if(v){if(popup.getAttribute(attr)!==v)popup.setAttribute(attr,v);}
+        else if(popup.hasAttribute(attr))popup.removeAttribute(attr);
+      }
+      const cs=getComputedStyle(el);
+      for(const k of ['--uibms-material-opacity','--uibms-material-tint','--uibms-material-blur','--uibms-material-border']){
+        const v=cs.getPropertyValue(k).trim();
+        if(v&&popup.style.getPropertyValue(k)!==v)popup.style.setProperty(k,v);
+        else if(!v)popup.style.removeProperty(k);
+      }
+    }
     function open(el,trigger){
       if(!eligible(el)||!enabled(el)||!filter(el))return;
       if(current?.el===el){close();return;}close(false);
@@ -66,7 +81,7 @@ const engine = (function formEngine(){
       date=date||today;
       const popup=node('div',{id:'uibms-form-picker-'+(++uid),'data-uibms-form-popup':'','data-material':'liquid-silicone',role:'dialog','aria-label':label(el)+' picker',tabindex:'-1'});
       // Attach to body for viewport positioning; copy the local contextual profiles.
-      for(const k of ['theme','palette','shape','border','density','typography','effects']){const v=el.closest('[data-'+k+']')?.getAttribute('data-'+k);if(v)popup.setAttribute('data-'+k,v);}
+      syncContext(el,popup);
       doc.body.append(popup);
       trigger.setAttribute('aria-controls',popup.id);trigger.setAttribute('aria-expanded','true');
       current={el,trigger,popup,type,y:date.getUTCFullYear(),m:date.getUTCMonth(),tab:'date',value:el.value,today};
@@ -171,7 +186,7 @@ const engine = (function formEngine(){
     doc.addEventListener('pointerdown',outside);doc.addEventListener('keydown',keys);doc.addEventListener('change',change);doc.addEventListener('reset',reset);
     window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
     const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&n.matches('input,select,option,fieldset,form,[data-material]'))))requestRefresh();});
-    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material','disabled','aria-disabled','readonly','multiple','size','inert','type']});
+    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material',...contextKeys.map(k=>'data-'+k),'disabled','aria-disabled','readonly','multiple','size','inert','type']});
     const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const [el,a] of adapters)removeAdapter(el,a);adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
     mounted.set(root,api);refresh();return api;
   }

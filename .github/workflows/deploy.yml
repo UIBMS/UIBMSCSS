@@ -51,6 +51,12 @@ jobs:
       - name: Verify generated static website
         working-directory: website
         run: node tools/check-build.mjs
+      - name: Install browser regression test dependencies
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps chromium
+      - name: Verify material profile integration in Chromium
+        run: python website/tests/material-review.py
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
