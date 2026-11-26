@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {contour,step,motionProfile,shadowFilter} from '../extensions/engines/material.mjs';
+import {contour,step,motionProfile,shadowFilter,touchPhase,defaults} from '../extensions/engines/material.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
 assert.notEqual(contour(200,50,12,180,20,1),contour(200,50,12,180,20,-1));
 assert.match(contour(200,50,12,180,20,0),/^M .* Z$/);
@@ -26,3 +26,27 @@ assert.equal(shadowFilter('rgba(0, 0, 0, 0.2) 0px 4px 16px 2px'),null);
 assert.equal(shadowFilter('rgba(0, 0, 0, 0.2) 0px 4px 16px 0px inset'),null);
 assert.equal(contour(200,50,0,100,25,0),'M 36 36 H 236 V 86 H 36 Z');
 console.log('Motion profile, exact resting geometry and inherited shadow conversion tests passed.');
+
+const rise=defaults.touchAttractionTime,press=defaults.touchCompressionTime;
+assert.equal(touchPhase(0,null,true),'attract');
+assert.equal(touchPhase(rise+1,null,true),'press');
+assert.equal(touchPhase(rise+press+1,null,true),'press');
+assert.equal(touchPhase(0,5,true),'attract');
+assert.equal(touchPhase(rise+1,5,true),'press');
+assert.equal(touchPhase(rise+press,5,true),'rest');
+assert.equal(touchPhase(0,5,false),'attract');
+assert.equal(touchPhase(rise,5,false),'rest');
+assert.equal(touchPhase(rise+press+1,null,false),'attract');
+assert.equal(touchPhase(500,500,true),'rest');
+assert.equal(touchPhase(0,0,true,0,press),'press');
+assert.equal(touchPhase(0,0,false,0,press),'rest');
+// Verify the quick-tap sequence generates both positive and negative displacement
+// and then settles to the exact resting shape, without requiring a hover event.
+let force=0,speed=0,maximum=0,minimum=0;
+for(let age=0;age<1800;age+=1000/60){
+  const phase=touchPhase(age,8,true);
+  [force,speed]=step(force,speed,phase==='attract'?defaults.attraction:phase==='press'?-defaults.pressure:0,1/60);
+  maximum=Math.max(maximum,force);minimum=Math.min(minimum,force);
+}
+assert.ok(maximum>.1);assert.ok(minimum<-.1);assert.equal(force,0);assert.equal(speed,0);
+console.log('Touch attraction, compression, passive contact and release tests passed.');

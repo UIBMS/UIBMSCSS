@@ -48,11 +48,11 @@
 }
 /* Scrollable, sticky, asymmetric and native surfaces keep their existing paint.
    The added lighting is an optical property, not a replacement palette. */
-[data-uibms-material-native][data-uibms-material-surface]:not(input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,hr,pre) {
+[data-uibms-material-native][data-uibms-material-surface]:not(input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
   background-color:color-mix(in srgb,var(--uibms-material-tint,var(--_uibms-material-base-color,transparent)) var(--uibms-material-opacity,92%),transparent) !important;
 }
 /* Preserve the independent scroll progress layer and its native animated size. */
-[data-uibms-material-native][data-uibms-material-surface]:not([data-scroll~="progress"],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,hr,pre) {
+[data-uibms-material-native][data-uibms-material-surface]:not([data-scroll~="progress"],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
   background-image:radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
     rgb(255 255 255 / max(.025,calc(var(--_uibms-material-force,0)*.18))),
     rgb(0 0 0 / max(0,calc(-1*var(--_uibms-material-force,0)*.13))) 28%,transparent 70%),
@@ -86,4 +86,24 @@
 }
 @media (prefers-reduced-motion:reduce) {
   :where([data-uibms-material-host],[data-uibms-material-native],[data-uibms-selection-item]) { transition:none;translate:none; }
+}
+
+/* Touch focus is not a latched hover or press. Do not blur the native control.
+   Text-entry, keyboard focus, and accessibility preferences retain focus feedback. */
+@media not (forced-colors:active) {
+  [data-uibms-touch-focus]:focus { outline:none; }
+  :where([data-uibms-material-host],[data-uibms-material-native],[data-uibms-selection-item],[data-uibms-touch-focus]) {
+    -webkit-tap-highlight-color:transparent;
+  }
+}
+/* Native table parts share the same force/point as other silicone surfaces.
+   Paint only a local optical response: never change border-collapse, display,
+   widths, padding or the native table's header/cell semantics. */
+[data-uibms-material-table][data-uibms-material-contact] {
+  background-image:
+    radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
+      rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.28))),
+      color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*16%),transparent) 34%,
+      transparent 75%),
+    var(--_uibms-material-base-image,none) !important;
 }

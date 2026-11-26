@@ -206,6 +206,76 @@ try:
             set_profile(page,material="default")
             check_width(page,"desktop "+slug)
         check(not errors,"no browser runtime errors",errors)
+        # Use an actual touch-capable, mobile context, with motion permitted.
+        mobile=browser.new_context(viewport={"width":390,"height":844},has_touch=True,is_mobile=True,device_scale_factor=2,color_scheme="light",reduced_motion="no-preference")
+        phone=mobile.new_page()
+        phone.set_default_timeout(12000)
+        touch_errors=[]
+        phone.on("pageerror",lambda error:touch_errors.append(str(error)))
+        phone.goto(url+"docs/buttons/",wait_until="load")
+        phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(phone,material="liquid-silicone",effects="default")
+        button=phone.locator("[data-site-demo-content] button[type=button]:not(:disabled)").first
+        button.wait_for()
+        phone.wait_for_function("()=>document.querySelector('[data-site-demo-content] button[type=button]')?.matches('[data-uibms-material-host],[data-uibms-material-native]')")
+        def monitor(locator):
+            locator.evaluate("""el=>{
+                window.__touchSample={min:0,max:0,last:0,frames:0};
+                const sample=window.__touchSample;
+                const loop=()=>{
+                    if(window.__touchSample!==sample)return;
+                    const layer=el.querySelector(':scope > [data-uibms-material-layer]');
+                    const f=Number((layer?.style.getPropertyValue('--_uibms-material-force')||el.style.getPropertyValue('--_uibms-material-force')||'0').trim());
+                    sample.min=Math.min(sample.min,f);sample.max=Math.max(sample.max,f);
+                    sample.last=f;sample.frames++;requestAnimationFrame(loop);
+                };
+                requestAnimationFrame(loop);
+            }""")
+        monitor(button)
+        button.tap()
+        phone.wait_for_function("()=>window.__touchSample.max>.04&&window.__touchSample.min<-.04")
+        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        check(True,"real mobile tap attracts, compresses and releases")
+        check(button.evaluate("e=>getComputedStyle(e).outlineStyle==='none'||!e.matches(':focus')"),"touch leaves no focused ghost outline")
+        # Test repeated activation and keyboard focus without removing the native focus.
+        monitor(button)
+        button.tap()
+        button.tap()
+        phone.wait_for_function("()=>window.__touchSample.min<-.04")
+        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        phone.keyboard.press("Tab")
+        check(button.get_attribute("data-uibms-touch-focus") is None,"keyboard clears touch-only focus marker")
+        check(phone.evaluate("()=>document.activeElement.matches(':focus-visible')&&getComputedStyle(document.activeElement).outlineStyle!=='none'"),"keyboard focus indicator retained")
+        phone.goto(url+"docs/tables/",wait_until="load")
+        phone.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(phone,material="liquid-silicone",effects="default")
+        cell=phone.locator("[data-site-demo-content] tbody td").first
+        phone.wait_for_function("()=>document.querySelector('[data-site-demo-content] tbody td')?.hasAttribute('data-uibms-material-table')")
+        before=cell.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,display:getComputedStyle(e).display,border:getComputedStyle(e).borderBottomWidth,collapse:getComputedStyle(e.closest('table')).borderCollapse})")
+        monitor(cell)
+        cell.tap()
+        phone.wait_for_function("()=>window.__touchSample.max>.04")
+        phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+        check(cell.evaluate("e=>!e.hasAttribute('data-uibms-material-contact')"),"table contact clears")
+        after=cell.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,display:getComputedStyle(e).display,border:getComputedStyle(e).borderBottomWidth,collapse:getComputedStyle(e.closest('table')).borderCollapse})")
+        check(before==after,"native table layout and borders preserved",[before,after])
+        check(phone.locator("[data-site-demo-content] table [data-uibms-material-layer]").count()==0,"table contains no injected contour markup")
+        # Cancel an actual touch gesture rather than holding a stale press when scrolling.
+        if args.browser=="chromium":
+            cell.scroll_into_view_if_needed()
+            box=cell.bounding_box()
+            x,y=box["x"]+box["width"]/2,box["y"]+box["height"]/2
+            session=mobile.new_cdp_session(phone)
+            monitor(cell)
+            session.send("Input.dispatchTouchEvent",{"type":"touchStart","touchPoints":[{"x":x,"y":y}]})
+            phone.wait_for_function("()=>window.__touchSample.max>.04")
+            session.send("Input.dispatchTouchEvent",{"type":"touchCancel","touchPoints":[]})
+            phone.wait_for_function("()=>Math.abs(window.__touchSample.last)<.001")
+            check(cell.evaluate("e=>!e.hasAttribute('data-uibms-material-contact')"),"pointer cancellation clears table feedback")
+        set_profile(phone,material="default")
+        phone.wait_for_function("()=>!document.querySelector('[data-site-demo-content] tbody td').hasAttribute('data-uibms-material-table')")
+        check(not touch_errors,"no mobile runtime errors",touch_errors)
+        mobile.close()
         browser.close()
     print(json.dumps({"browser":args.browser,"checks":checks,"passed":True},indent=2))
 finally:

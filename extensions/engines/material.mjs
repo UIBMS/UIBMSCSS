@@ -1,13 +1,22 @@
 // UIBMS Material Engine - optional development candidate. MIT.
 const engine = (function materialEngine() {
   const clamp=(x,a,b)=>Math.max(a,Math.min(b,x));
-  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,hr,.card,.panel,[data-material="liquid-silicone"]';
-  const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,thead,tbody,tfoot,tr,td,th,option,optgroup';
+  const selector='div,section,header,footer,main,article,aside,nav,form,fieldset,dialog,[popover],details,summary,button,a[href],input:not([type=hidden]),select,textarea,figure,blockquote,pre,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,.card,.panel,[data-material="liquid-silicone"]';
+  const replaced='input,select,textarea,progress,meter,img,video,audio,iframe,canvas,svg,hr,table,caption,thead,tbody,tfoot,tr,td,th,option,optgroup';
+  const tableParts='table,caption,thead,tbody,tfoot,tr,th,td';
   const groups='nav,[role=tablist],[role=radiogroup],[data-uibms-form-options]';
   const activeSelector='button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio],[type=range],[type=color],[type=file]),select,[role=button],[role=tab],[role=switch]';
   const SVG='http://www.w3.org/2000/svg';
   const instances=new WeakMap();
-  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24});
+  const defaults=Object.freeze({attraction:.85,range:32,pressure:1,stiffness:17,damping:8,amplitude:.18,maximum:24,touchAttractionTime:80,touchCompressionTime:100,touchSlop:12});
+  // A quick tap has a short visual impulse even if the finger is lifted before the next frame.
+  // This controls paint only; native click, focus, scroll and form events are not delayed.
+  function touchPhase(age,releasedAt,pressable,attractionTime=defaults.touchAttractionTime,compressionTime=defaults.touchCompressionTime){
+    const rise=Math.max(0,attractionTime),press=Math.max(0,compressionTime);
+    const end=releasedAt===null?Infinity:Math.max(releasedAt,rise+(pressable?press:0));
+    if(age>=end)return 'rest';
+    return !pressable||age<rise?'attract':'press';
+  }
   function step(value,velocity,target,dt,stiffness=17,damping=8){
     // Analytic stability is not required; cap and substep integration at 120 Hz.
     let remaining=Math.min(.05,Math.max(0,dt));
@@ -39,7 +48,7 @@ const engine = (function materialEngine() {
   const enabled=el=>el.closest('[data-material="default"],[data-material="liquid-silicone"]')?.getAttribute('data-material')==='liquid-silicone';
   const legacyMaterial=el=>(el.getAttribute('data-effect')||'').split(/\s+/).some(v=>['glass','frosted','metallic','matte'].includes(v));
   const profileKeys=['theme','palette','shape','border','density','typography','effects','material'];
-  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius'];
+  const paintFlags=['data-uibms-material-host','data-uibms-material-native','data-uibms-material-shadow','data-uibms-material-radius','data-uibms-material-table','data-uibms-material-contact'];
   const sides=['Top','Right','Bottom','Left'];
   const corners=['TopLeft','TopRight','BottomRight','BottomLeft'];
   function visibleColor(c){
@@ -75,7 +84,7 @@ const engine = (function materialEngine() {
     const uniformRadius=radii.every(r=>r===radii[0])&&!radii[0].includes(' ');
     const surface=visibleColor(background)||image!=='none'||shadow!=='none'||borders.some(b=>b.width>0&&b.style!=='none'&&b.style!=='hidden'&&visibleColor(b.color));
     const complex=!CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")')||el.matches(replaced)||el.matches('pre,details,summary,dialog,[popover]')||['inline','contents','none','list-item'].includes(cs.display)||['sticky','fixed'].includes(cs.position)||cs.overflowX!=='visible'||cs.overflowY!=='visible'||!sameBorder||!uniformRadius||image!=='none'||!['solid','none','hidden','dashed','dotted'].includes(borders[0].style);
-    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex};
+    const result={background,image,shadow,filter:shadowFilter(shadow),border:borders[0],radii,uniformRadius,surface,complex,table:el.matches(tableParts)};
     for(const k of restore)el.setAttribute(k,'');
     return result;
   }
@@ -181,6 +190,9 @@ const engine = (function materialEngine() {
       if(s.layer&&!s.layer.hidden)s.layer.hidden=true;
       el.setAttribute('data-uibms-material-native','');
       el.toggleAttribute('data-uibms-material-surface',d.surface);
+      // Never add non-table children or alter native table layout. Only paint the existing part.
+      el.toggleAttribute('data-uibms-material-table',d.table);
+      el.toggleAttribute('data-uibms-material-contact',d.table&&Math.abs(s.f)>.001);
       el.style.setProperty('--_uibms-material-base-image',d.image||'none');
       el.style.setProperty('--_uibms-material-base-color',d.background);
       el.style.setProperty('--_uibms-material-force',String(s.f));
@@ -196,7 +208,7 @@ const engine = (function materialEngine() {
       if(el.matches('input[type=range]')){const min=Number(el.min||0),max=Number(el.max||100);el.style.setProperty('--_uibms-range-progress',clamp((Number(el.value)-min)/Math.max(.0001,max-min)*100,0,100)+'%');}
       return;
     }
-    el.removeAttribute('data-uibms-material-native');el.removeAttribute('data-uibms-material-surface');el.removeAttribute('data-uibms-material-radius');
+    el.removeAttribute('data-uibms-material-native');el.removeAttribute('data-uibms-material-surface');el.removeAttribute('data-uibms-material-radius');el.removeAttribute('data-uibms-material-table');el.removeAttribute('data-uibms-material-contact');
     if(s.layer.hidden)s.layer.hidden=false;
     const cs=getComputedStyle(el),left=parseFloat(cs.borderLeftWidth)||0,top=parseFloat(cs.borderTopWidth)||0;
     Object.assign(s.layer.style,{left:(-36-left+el.scrollLeft)+'px',top:(-36-top+el.scrollTop)+'px',right:'auto',bottom:'auto',width:(s.w+72)+'px',height:(s.h+72)+'px'});
@@ -250,9 +262,11 @@ const engine = (function materialEngine() {
       s.skew=instant?0:s.skew+(targetSkew-s.skew)*Math.min(1,dt*19);
       if(Math.abs(s.skew)<.02&&targetSkew===0)s.skew=0;else if(s.skew!==0)moving=true;
       const l=s.edge[0],t=s.edge[1],w=Math.max(4,s.edge[2]-l),h=Math.max(4,s.edge[3]-t);
-      let f=press===s.target&&!muted(s.target,'active')?-config.pressure*profile.press:point&&point.el===s.target&&!muted(s.target,'hover')?config.attraction*.73*profile.hover:0;
+      const over=point?.el===s.target&&!disabled(s.target),canPull=over&&!muted(s.target,'hover'),canPress=interactive(s.target)&&!muted(s.target,'active');
+      let f=point?.touchPhase?(point.touchPhase==='press'&&over&&canPress?-config.pressure*profile.press:point.touchPhase==='attract'&&canPull?config.attraction*.73*profile.hover:0):press===s.target&&canPress?-config.pressure*profile.press:canPull?config.attraction*.73*profile.hover:0;
       if(instant){s.f=s.v=0;}else{[s.f,s.v]=step(s.f,s.v,f,dt,config.stiffness*profile.speed,config.damping*profile.speed);if(s.f!==f||s.v!==0)moving=true;}
-      const rect=s.target.getBoundingClientRect(),x=point?clamp(point.x-rect.left,0,w):w/2,y=point?clamp(point.y-rect.top,0,h):h/2;
+      const rect=s.target.getBoundingClientRect(),local=point?.el===s.target;
+      const x=local?clamp(point.x-rect.left,0,w):s.f!==0&&Number.isFinite(s.x)?clamp(s.x,0,w):w/2,y=local?clamp(point.y-rect.top,0,h):s.f!==0&&Number.isFinite(s.y)?clamp(s.y,0,h):h/2;
       const rad=s.target.matches('input[type=radio]')?Math.min(w,h)/2:radius(s.target,w,h);
       const d=contour(w,h,rad,x,y,clamp(s.f,-1.1,1.1),s.skew,config.amplitude,config.maximum);
       s.layer.style.setProperty('--_uibms-material-base-color',s.target.matches('input[type=radio]')?'var(--color-accent)':'var(--color-surface-subtle)');
@@ -272,8 +286,24 @@ const engine = (function materialEngine() {
     const config={...defaults,...options},surfaces=new Map(),selections=new Map(),dirty=new Set(),animating=new Set(),backdrops=new Map();
     const findBackdrop=el=>{for(let p=el;p;p=p.parentElement){if(backdrops.has(p))return backdrops.get(p);}return null;};
     const reduced=matchMedia('(prefers-reduced-motion: reduce)'),forced=matchMedia('(forced-colors: active), (prefers-contrast: more), (prefers-reduced-transparency: reduce)'),scheme=matchMedia('(prefers-color-scheme: dark)');
-    let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,disposed=false,refreshPending=false;
-    const cancel=()=>{pressed=null;pointer=null;pressTarget=null;keyPress=false;point=null;targetHover(null);request();};
+    let frame=0,last=0,hover=null,pressed=null,pointer=null,pressTarget=null,keyPress=false,point=null,touch=null,touchFocus=null,disposed=false,refreshPending=false;
+    const clearTouchFocus=()=>{if(touchFocus){touchFocus.removeAttribute('data-uibms-touch-focus');touchFocus=null;}};
+    const setTouchFocus=el=>{
+      clearTouchFocus();
+      // Text entry retains its native focus indicator. Keyboard and AT navigation retain focus.
+      if(!forced.matches&&el&&enabled(el)&&interactive(el)&&el.matches('button,a[href],summary,input:is([type=button],[type=submit],[type=reset],[type=image],[type=checkbox],[type=radio]),[role=button],[role=tab],[role=switch]')){
+        touchFocus=el;el.setAttribute('data-uibms-touch-focus','');
+      }
+    };
+    function releaseTouch(){
+      if(touch?.surface)animating.add(touch.surface);
+      touch=null;
+    }
+    const cancel=()=>{
+      if(pressed)animating.add(pressed);
+      releaseTouch();pressed=null;pointer=null;pressTarget=null;keyPress=false;point=null;
+      targetHover(null);clearTouchFocus();request();
+    };
     function request(){if(!frame&&!disposed)frame=requestAnimationFrame(tick);}
     function queueRefresh(){if(refreshPending||disposed)return;refreshPending=true;queueMicrotask(()=>{refreshPending=false;if(!disposed)refresh();});}
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
@@ -294,7 +324,7 @@ const engine = (function materialEngine() {
         if(!wanted(el,groupTargets))continue;
         const d=design(el);
         if(!d.surface&&!el.matches(activeSelector)&&!el.matches(replaced)&&el.getAttribute('data-material')!=='liquid-silicone')continue;
-        if(!d.surface&&el.matches('table,hr,progress,meter,img,video,audio,iframe,canvas,svg'))continue;
+        if(!d.surface&&el.matches('hr,progress,meter,img,video,audio,iframe,canvas,svg'))continue;
         keep.add(el);
         let s=surfaces.get(el);const native=d.complex||!d.surface;
         if(s&&s.native!==native){ro?.unobserve(el);removeSurface(s);surfaces.delete(el);animating.delete(s);dirty.delete(s);if(hover===s)hover=null;if(pressed===s)pressed=null;s=null;}
@@ -306,44 +336,113 @@ const engine = (function materialEngine() {
       for(const [el,a] of groupTargets){let s=selections.get(el);if(!s){s=selection(el,config,findBackdrop);selections.set(el,s);}s.set(a);}
       request();
     }
-        function targetHover(s){if(hover&&hover!==s){hover.target=0;animating.add(hover);}hover=s;if(s)animating.add(s);}
+    function targetHover(s){
+      if(hover&&hover!==s){hover.target=0;animating.add(hover);}
+      hover=s;if(s)animating.add(s);
+    }
+    function hitSurface(target){
+      for(let el=target;el;el=el.parentElement)if(surfaces.has(el))return surfaces.get(el);
+      return null;
+    }
+    function hitControl(target){
+      const direct=target?.closest(activeSelector);
+      if(direct)return direct;
+      const label=target?.closest('label');
+      return label?.control?.matches(activeSelector)?label.control:null;
+    }
     function locate(e){
       if(!e.isPrimary)return;
-      const target=e.target instanceof Element?e.target:null,canHover=e.pointerType!=='touch';
-      point=canHover?{x:e.clientX,y:e.clientY,el:target?.closest('a[href],button,input[type=radio],[role=tab],[aria-pressed]')}:null;
+      if(e.pointerType==='touch'){
+        // Do not synthesize hover after a finger has left the screen.
+        if(!touch||pointer!==e.pointerId||touch.released!==null)return;
+        if(!touch.el?.matches('input[type=range]')&&Math.hypot(e.clientX-touch.originX,e.clientY-touch.originY)>config.touchSlop){cancel();return;}
+        touch.x=e.clientX;touch.y=e.clientY;
+        if(touch.surface){setPoint(touch.surface,e.clientX,e.clientY);animating.add(touch.surface);}
+        request();return;
+      }
+      if(touch)return;
+      const target=e.target instanceof Element?e.target:null;
+      point={x:e.clientX,y:e.clientY,el:hitControl(target)};
       if(pressed){setPoint(pressed,e.clientX,e.clientY);animating.add(pressed);}
       let best=null,bestDistance=config.range;
-      if(canHover&&target&&root.contains(target)){
-        for(let el=target;el;el=el.parentElement){if(surfaces.has(el)){best=surfaces.get(el);bestDistance=0;break;}}
-        if(!best){for(const s of surfaces.values()){
-          if(!visible(s.el))continue;const r=s.el.getBoundingClientRect();
-          let d=Math.hypot(Math.max(r.left-e.clientX,0,e.clientX-r.right),Math.max(r.top-e.clientY,0,e.clientY-r.bottom));
+      if(target&&root.contains(target)){
+        best=hitSurface(target);if(best)bestDistance=0;
+        if(!best)for(const s of surfaces.values()){
+          if(!visible(s.el))continue;
+          const r=s.el.getBoundingClientRect(),d=Math.hypot(Math.max(r.left-e.clientX,0,e.clientX-r.right),Math.max(r.top-e.clientY,0,e.clientY-r.bottom));
           if(d<bestDistance){best=s;bestDistance=d;}
-        }}
+        }
       }
       targetHover(best);
       if(best){best.target=disabled(best.el)||muted(best.el,'hover')?0:config.attraction*clamp(1-bestDistance/config.range,0,1);setPoint(best,e.clientX,e.clientY);}
       request();
     }
     function down(e){
-      if(!e.isPrimary||e.button!==0)return;pointer=e.pointerId;
-      const el=e.target instanceof Element?e.target.closest(activeSelector):null;
-      pressTarget=el;keyPress=false;const s=surfaces.get(el);
+      if(e.pointerType==='touch'&&!e.isPrimary){cancel();return;}
+      if(!e.isPrimary||e.button!==0)return;
+      if(pointer!==null||touch)cancel();
+      pointer=e.pointerId;keyPress=false;
+      const target=e.target instanceof Element?e.target:null,el=hitControl(target);
+      if(e.pointerType==='touch'){
+        targetHover(null);point=null;setTouchFocus(el);
+        const group=el?.closest(groups);
+        // Navigation/choice groups own a single shared selection surface.
+        const surface=surfaces.get(el)||(!(group&&selections.has(group))?hitSurface(target):null);
+        const own=!!el&&(surface?.el===el||!!(group&&selections.has(group)));
+        if(!surface&&!own){pointer=null;return;}
+        const canPress=own&&interactive(el)&&!muted(el,'active');
+        // Advance the visual impulse on rendered frames. A delayed first frame must
+        // not skip the attraction phase of a short, otherwise ordinary native tap.
+        touch={el,surface,x:e.clientX,y:e.clientY,originX:e.clientX,originY:e.clientY,age:0,released:null,canPress};
+        if(surface){measure(surface);setPoint(surface,e.clientX,e.clientY);surface.x=surface.tx;surface.y=surface.ty;animating.add(surface);}
+        request();return;
+      }
+      clearTouchFocus();pressTarget=el;const s=surfaces.get(el);
       if(s&&interactive(el)&&!muted(el,'active')){pressed=s;setPoint(s,e.clientX,e.clientY);animating.add(s);}
       locate(e);
     }
-    function up(e){if(pointer!==e.pointerId)return;if(pressed)animating.add(pressed);pressed=null;pointer=null;pressTarget=null;locate(e);}
-    function keydown(e){if(![' ','Enter'].includes(e.key)||pointer!==null)return;const el=e.target;if(!interactive(el))return;keyPress=true;pressTarget=el;const s=surfaces.get(el);if(s&&!muted(s.el,'active')){pressed=s;measure(s);s.tx=s.w/2;s.ty=s.h/2;animating.add(s);}request();}
+    function up(e){
+      if(pointer!==e.pointerId)return;
+      if(e.pointerType==='touch'){
+        if(touch){touch.released=touch.age;if(touch.surface)animating.add(touch.surface);}
+        pointer=null;pressTarget=null;pressed=null;request();return;
+      }
+      if(pressed)animating.add(pressed);pressed=null;pointer=null;pressTarget=null;locate(e);
+    }
+    function pointerCancel(e){if(pointer===e.pointerId)cancel();}
+    function keydown(e){
+      // Keyboard use immediately restores ordinary focus styling, even after a touch.
+      clearTouchFocus();
+      if(touch)cancel();
+      if(![' ','Enter'].includes(e.key)||pointer!==null||e.repeat)return;
+      const el=e.target;if(!interactive(el))return;
+      keyPress=true;pressTarget=el;const s=surfaces.get(el);
+      if(s&&!muted(s.el,'active')){pressed=s;measure(s);s.tx=s.w/2;s.ty=s.h/2;animating.add(s);}request();
+    }
     function keyup(){if(!keyPress)return;keyPress=false;pressTarget=null;if(pressed)animating.add(pressed);pressed=null;request();}
+    function scroll(){if(touch&&pointer!==null&&!touch.el?.matches('input[type=range]'))cancel();else request();}
+    function focusout(e){if(e.target===touchFocus)clearTouchFocus();keyup();const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}
+    function leave(e){if(e.pointerType!=='touch'&&!e.relatedTarget)cancel();}
+    function visibility(){if(document.hidden)cancel();}
     function tick(now){
       frame=0;const dt=last?Math.min(.05,(now-last)/1000):1/60;last=now;
       for(const s of dirty){if(visible(s.el)){measure(s);paint(s,config,forced.matches?null:findBackdrop(s.el));}}dirty.clear();
       const instant=reduced.matches||forced.matches;
+      let phase='rest',touchPoint=null;
+      if(touch){
+        const profile=motion(touch.el||touch.surface?.el||document.documentElement);
+        const rise=profile.hover===0||muted(touch.el||touch.surface?.el||document.documentElement,'hover')?0:config.touchAttractionTime;
+        phase=instant||profile.instant||(!touch.canPress&&rise===0)?'rest':touchPhase(touch.age,touch.released,touch.canPress,rise,config.touchCompressionTime);
+        if(phase==='rest')releaseTouch();
+        else {touch.age+=dt*1000;touchPoint={x:touch.x,y:touch.y,el:touch.el,touchPhase:phase};if(touch.surface)animating.add(touch.surface);}
+      }
       for(const s of [...animating]){
-        if(!s.el.isConnected||!visible(s.el)){animating.delete(s);continue;}
+        if(!s.el.isConnected||!visible(s.el)){s.f=s.v=s.target=0;animating.delete(s);if(touch?.surface===s)releaseTouch();continue;}
         measure(s);
         const profile=s.motion||motion(s.el),stopped=instant||profile.instant;
-        const desired=stopped?0:pressed===s&&interactive(s.el)&&!muted(s.el,'active')?-config.pressure*profile.press:hover===s&&!disabled(s.el)&&!muted(s.el,'hover')?s.target*profile.hover:0;
+        const touching=touch?.surface===s;
+        const pull=!disabled(s.el)&&!muted(s.el,'hover'),push=interactive(s.el)&&!muted(s.el,'active');
+        const desired=stopped?0:touching?(phase==='press'&&push&&touch.canPress?-config.pressure*profile.press:phase==='attract'&&pull?config.attraction*profile.hover:0):pressed===s&&push?-config.pressure*profile.press:hover===s&&pull?s.target*profile.hover:0;
         if(stopped){s.f=s.v=0;s.x=s.tx;s.y=s.ty;}
         else{[s.f,s.v]=step(s.f,s.v,desired,dt,config.stiffness*profile.speed,config.damping*profile.speed);s.f=clamp(s.f,-1.2,1.2);s.x+=(s.tx-s.x)*Math.min(1,dt*22);s.y+=(s.ty-s.y)*Math.min(1,dt*22);}
         paint(s,config,forced.matches?null:findBackdrop(s.el));
@@ -352,18 +451,18 @@ const engine = (function materialEngine() {
       let moving=false;
       for(const [el,s] of selections){
         let current=selected(el);if(current!==s.target)s.set(current);
-        moving=s.tick(dt,instant,pressTarget,point)||moving;
+        moving=s.tick(dt,instant,pressTarget,touchPoint||point)||moving;
       }
-      if(animating.size||moving)request();else last=0;
+      if(animating.size||moving||touch)request();else last=0;
     }
     const eventRoot=root.nodeType===9?root:root;
-    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown],[eventRoot,'keyup',keyup],[eventRoot,'focusout',keyup],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'focusout',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',cancel],[window,'blur',cancel],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',request,true]];
+    const listeners=[[eventRoot,'pointerdown',down],[eventRoot,'keydown',keydown,true],[eventRoot,'keyup',keyup],[eventRoot,'focusout',focusout],[eventRoot,'change',queueRefresh],[eventRoot,'focusin',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);request();}}],[eventRoot,'input',e=>{const s=surfaces.get(e.target);if(s){dirty.add(s);animating.add(s);request();}}],[window,'pointermove',locate],[window,'pointerup',up],[window,'pointercancel',pointerCancel],[eventRoot,'lostpointercapture',pointerCancel],[window,'pointerout',leave],[window,'blur',cancel],[document,'visibilitychange',visibility],[window,'resize',()=>{for(const s of surfaces.values())dirty.add(s);request();}],[window,'scroll',scroll,true]];
     listeners.forEach(([o,k,f,c])=>o.addEventListener(k,f,c||false));
     const observer=new MutationObserver(records=>{
       if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')))))queueRefresh();
     });
     observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','inert','class']});
-    const preference=()=>{refresh();for(const s of surfaces.values())animating.add(s);request();};
+    const preference=()=>{if(reduced.matches||forced.matches)cancel();refresh();for(const s of surfaces.values())animating.add(s);request();};
     reduced.addEventListener?.('change',preference);forced.addEventListener?.('change',preference);scheme.addEventListener?.('change',preference);
     function unregisterBackdrop(el){const b=backdrops.get(el);if(!b)return;b.cancelled=true;el.style.backgroundImage=b.oldImage;el.style.backgroundSize=b.oldSize;el.style.backgroundPosition=b.oldPosition;el.style.backgroundRepeat=b.oldRepeat;backdrops.delete(el);for(const s of surfaces.values())dirty.add(s);refresh();}
     async function registerBackdrop(el,src){
@@ -373,9 +472,9 @@ const engine = (function materialEngine() {
       const image=new Image();if(url.origin!==location.origin&&url.protocol.startsWith('http'))image.crossOrigin='anonymous';image.src=url.href;
       try{await image.decode();if(b.cancelled||disposed)return false;b.image=image;el.style.backgroundImage='url('+JSON.stringify(url.href)+')';el.style.backgroundSize='cover';el.style.backgroundPosition='center';el.style.backgroundRepeat='no-repeat';if(!imagePixels(b))throw Error('Image pixels unavailable');for(const s of surfaces.values())dirty.add(s);refresh();return true;}catch{unregisterBackdrop(el);return false;}
     }
-    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
+    const api={refresh,registerBackdrop,unregisterBackdrop,destroy(){disposed=true;clearTouchFocus();releaseTouch();for(const b of backdrops.values()){b.cancelled=true;b.el.style.backgroundImage=b.oldImage;b.el.style.backgroundSize=b.oldSize;b.el.style.backgroundPosition=b.oldPosition;b.el.style.backgroundRepeat=b.oldRepeat;}backdrops.clear();cancelAnimationFrame(frame);observer.disconnect();ro?.disconnect();listeners.forEach(([o,k,f,c])=>o.removeEventListener(k,f,c||false));reduced.removeEventListener?.('change',preference);forced.removeEventListener?.('change',preference);scheme.removeEventListener?.('change',preference);for(const s of selections.values())s.destroy();for(const s of surfaces.values())removeSurface(s);instances.delete(root);}};
     instances.set(root,api);refresh();return api;
   }
-  return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter};
+  return {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase};
 })();
-export const {mountMaterial,contour,step,defaults,motionProfile,shadowFilter}=engine;
+export const {mountMaterial,contour,step,defaults,motionProfile,shadowFilter,touchPhase}=engine;
