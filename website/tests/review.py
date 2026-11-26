@@ -81,7 +81,7 @@ try:
    f=site/slug/'index.html';errors.clear();
    if args.inline:page.set_content(make_inline(f,settings or {}),wait_until='load',timeout=10000)
    else:page.goto('http://127.0.0.1:8765'+base+(slug+'/' if slug else ''),wait_until='load',timeout=10000)
-   page.wait_for_selector('html[data-site-ready]',state='attached',timeout=5000)
+   page.wait_for_selector('html[data-site-ready][data-site-engines-ready]',state='attached',timeout=10000)
    page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
   def width_check():return page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
   # All pages across four widths. Check JS errors and responsive overflow.
@@ -108,7 +108,7 @@ try:
   page.set_viewport_size({'width':1440,'height':900});open_page('docs/buttons')
   if args.screenshots:
    shots=Path(args.screenshots);shots.mkdir(parents=True,exist_ok=True);page.screenshot(path=str(shots/'desktop.png'))
-  check('one global appearance control',page.locator('#site-appearance').count()==1 and page.locator('#site-appearance select').count()==7)
+  check('one global appearance control',page.locator('#site-appearance').count()==1 and page.locator('#site-appearance select').count()==page.evaluate("JSON.parse(document.querySelector('#site-data').textContent).profiles.length"))
   page.locator('#site-appearance summary').click()
   for k,v in [('theme','dark'),('palette','bordeaux'),('density','compact'),('shape','sharp'),('border','subtle'),('typography','technical'),('effects','fluid'),('material','liquid-silicone')]:
    page.locator('#appearance-'+k).select_option(v);check('appearance '+k,page.locator('html').get_attribute('data-'+k)==v)

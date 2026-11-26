@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - 'website/**'
+      - 'dist/**'
       - 'extensions/engines/**'
       - 'tests/engines.mjs'
       - '.github/workflows/deploy.yml'

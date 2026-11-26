@@ -82,7 +82,7 @@ const engine = (function materialEngine() {
   const disabled=el=>el.matches(':disabled,[readonly]')||!!el.closest('[inert],[aria-disabled=true]');
   const interactive=el=>!disabled(el)&&el.matches(activeSelector);
   const visible=el=>el.isConnected&&el.getClientRects().length>0&&getComputedStyle(el).visibility!=='hidden';
-  const muted=(el,channel)=>el.closest('[data-effects]')?.getAttribute('data-effects')==='none'||el.closest('[data-'+channel+']')?.getAttribute('data-'+channel)?.split(/\s+/).includes('none');
+  const muted=(el,channel)=>el.closest('[data-effects="default"],[data-effects="none"],[data-effects="minimal"],[data-effects="fluid"],[data-effects="dynamic"]')?.getAttribute('data-effects')==='none'||el.getAttribute('data-'+channel)?.split(/\s+/).includes('none');
   function decoration(kind){
     const layer=document.createElement('span');layer.setAttribute('data-uibms-'+kind,'');layer.setAttribute('aria-hidden','true');
     const fill=document.createElement('span');fill.setAttribute('data-uibms-material-fill','');
@@ -362,7 +362,7 @@ const engine = (function materialEngine() {
     const observer=new MutationObserver(records=>{
       if(records.some(r=>!r.target.closest?.('[data-uibms-material-layer],[data-uibms-selection-layer]')&&(r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&!n.matches('[data-uibms-material-layer],[data-uibms-selection-layer]')))))queueRefresh();
     });
-    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','inert','class']});
+    observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:[...profileKeys.map(k=>'data-'+k),'data-effect','data-hover','data-active','data-focus','data-scroll','aria-current','aria-pressed','aria-selected','disabled','aria-disabled','readonly','hidden','open','inert','class']});
     const preference=()=>{refresh();for(const s of surfaces.values())animating.add(s);request();};
     reduced.addEventListener?.('change',preference);forced.addEventListener?.('change',preference);scheme.addEventListener?.('change',preference);
     function unregisterBackdrop(el){const b=backdrops.get(el);if(!b)return;b.cancelled=true;el.style.backgroundImage=b.oldImage;el.style.backgroundSize=b.oldSize;el.style.backgroundPosition=b.oldPosition;el.style.backgroundRepeat=b.oldRepeat;backdrops.delete(el);for(const s of surfaces.values())dirty.add(s);refresh();}

@@ -8,7 +8,9 @@
 /* Private paint-only flags replace the original paint, not its layout or foreground.
    Important ensures the resolved author background does not remain behind a contour.
    The renderer removes these flags before reading the original CSS. */
-[data-uibms-material-host] { background-color:transparent !important; border-color:transparent !important; translate:none !important; }
+[data-uibms-material-host] { background-color:transparent !important; border-color:transparent !important; }
+/* The material replaces default movement, not an expressly requested channel. */
+[data-uibms-material-host]:not([data-hover~="lift"]:not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"])) { translate:none !important; }
 [data-uibms-material-host][data-uibms-material-shadow] { box-shadow:none !important; }
 :where([data-uibms-material-layer],[data-uibms-selection-layer]) {
   position:absolute;display:block;pointer-events:none;z-index:-1;margin:0;padding:0;border:0;
@@ -37,7 +39,8 @@
   stroke-width:var(--_uibms-material-border-width,0px);
   vector-effect:non-scaling-stroke;
 }
-[data-uibms-selection-item]:not(input) { background-color:transparent !important; border-color:transparent !important; box-shadow:none !important; translate:none !important; }
+[data-uibms-selection-item]:not(input) { background-color:transparent !important; border-color:transparent !important; box-shadow:none !important; }
+[data-uibms-selection-item]:not(input,[data-hover~="lift"]:not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"])) { translate:none !important; }
 [data-uibms-selection-item]:is(button,[role=tab]) { color:inherit !important; }
 :where(input[type=radio][data-uibms-selection-item]) {
   appearance:none;-webkit-appearance:none;border:var(--border-width,1px) solid var(--color-border-strong,currentColor);
@@ -47,6 +50,9 @@
    The added lighting is an optical property, not a replacement palette. */
 [data-uibms-material-native][data-uibms-material-surface]:not(input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,hr,pre) {
   background-color:color-mix(in srgb,var(--uibms-material-tint,var(--_uibms-material-base-color,transparent)) var(--uibms-material-opacity,92%),transparent) !important;
+}
+/* Preserve the independent scroll progress layer and its native animated size. */
+[data-uibms-material-native][data-uibms-material-surface]:not([data-scroll~="progress"],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,hr,pre) {
   background-image:radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
     rgb(255 255 255 / max(.025,calc(var(--_uibms-material-force,0)*.18))),
     rgb(0 0 0 / max(0,calc(-1*var(--_uibms-material-force,0)*.13))) 28%,transparent 70%),

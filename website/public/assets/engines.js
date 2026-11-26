@@ -1,8 +1,8 @@
 const revision=new URL(import.meta.url).search;
 const [{mountMaterial},{mountForms}]=await Promise.all([import('../engines/material.mjs'+revision),import('../engines/forms.mjs'+revision)]);
 const material=mountMaterial(document);
-// Native Appearance settings; custom picker only in the explicit Form Engine laboratory.
-mountForms(document,{filter:el=>!!el.closest('[data-site-demo-run="form-engine"]')});
+// Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
+mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});
 for(const demo of document.querySelectorAll('[data-site-demo-run="liquid-silicone"]')){
   const scope=demo.querySelector('[data-material="liquid-silicone"]');
   if(scope){
@@ -16,3 +16,5 @@ for(const demo of document.querySelectorAll('[data-site-demo-run="liquid-silicon
     for(const b of button.closest('nav').querySelectorAll('button[aria-pressed]'))b.setAttribute('aria-pressed',String(b===button));
   });
 }
+
+document.documentElement.setAttribute('data-site-engines-ready','');

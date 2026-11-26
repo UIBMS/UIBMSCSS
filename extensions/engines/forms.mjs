@@ -185,7 +185,7 @@ const engine = (function formEngine(){
     const reset=()=>queueMicrotask(()=>{if(current){current.value=current.el.value;render();position();}});
     doc.addEventListener('pointerdown',outside);doc.addEventListener('keydown',keys);doc.addEventListener('change',change);doc.addEventListener('reset',reset);
     window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
-    const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&n.matches('input,select,option,fieldset,form,[data-material]'))))requestRefresh();});
+    const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&(n.matches('input,select,option,fieldset,form,[data-material]')||n.querySelector('input,select')))))requestRefresh();});
     observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material',...contextKeys.map(k=>'data-'+k),'disabled','aria-disabled','readonly','multiple','size','inert','type']});
     const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const [el,a] of adapters)removeAdapter(el,a);adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
     mounted.set(root,api);refresh();return api;

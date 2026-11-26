@@ -21,12 +21,18 @@ for(const p of pages){
  assert(html.includes(`${base}framework/uibms.full.min.css`),p.slug);
  assert(!html.includes('{{base}}'),p.slug);
  if(process.env.SITE_PUBLIC==='1')assert(!html.includes('noindex, nofollow'),p.slug);
+ const ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);
+ assert.equal(new Set(ids).size,ids.length,`Duplicate id ${p.slug}`);
+ for(const m of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(m[1]),`Missing fragment ${p.slug}#${m[1]}`);
  // Confirm linked local files/directories exist at the configured project base.
  for(const m of html.matchAll(/\b(?:href|src)="([^"]*)"/g)){
   const value=m[1];if(!value.startsWith(base)||value.startsWith('//'))continue;
   const relative=value.slice(base.length).split(/[?#]/,1)[0];
   const local=path.resolve(root,relative);assert(local===root||local.startsWith(root+path.sep),value);
-  const info=await stat(local);if(info.isDirectory())await stat(path.join(local,'index.html'));
+  const info=await stat(local),target=info.isDirectory()?path.join(local,'index.html'):local;
+  if(info.isDirectory())await stat(target);
+  const fragment=value.includes('#')?decodeURIComponent(value.split('#')[1]):'';
+  if(fragment&&target.endsWith('.html')){const targetHtml=await readFile(target,'utf8');const targetIds=[...targetHtml.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);assert(targetIds.includes(fragment),`Missing target fragment ${value}`);}
  }
 }
 assert((await readFile(path.join(root,'assets/scoped-demo.html'),'utf8')).includes(`${base}framework/uibms.scoped.full.min.css`));
