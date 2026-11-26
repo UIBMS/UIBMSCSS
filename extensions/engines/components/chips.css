@@ -1,0 +1,38 @@
+/* Optional static labels and native selectable/removable chips. */
+@layer defaults {
+  :where(.tags,.chips) { display:flex;flex-wrap:wrap;align-items:center;gap:calc(var(--space)*.35);list-style:none;margin:0;padding:0;min-inline-size:0; }
+  :where(.tags,.chips) > :where(li) { margin:0; }
+  :where(.tag,.chip) {
+    --_uibms-chip-ink:var(--color-text);
+    display:inline-flex;align-items:center;gap:calc(var(--space)*.35);box-sizing:border-box;
+    min-inline-size:0;max-inline-size:100%;padding:calc(var(--space)*.25) calc(var(--space)*.55);
+    border:var(--border-width) solid var(--color-border);border-radius:var(--radius);
+    background-color:var(--color-surface-subtle);color:var(--_uibms-chip-ink);font-size:.875em;font-weight:550;overflow-wrap:anywhere;
+  }
+  :where(.tag,.chip)[data-tone="success"] { --_uibms-chip-ink:var(--color-success); }
+  :where(.tag,.chip)[data-tone="warning"] { --_uibms-chip-ink:var(--color-warning); }
+  :where(.tag,.chip)[data-tone="danger"] { --_uibms-chip-ink:var(--color-danger); }
+  :where(.tag,.chip)[data-tone="info"] { --_uibms-chip-ink:var(--color-info); }
+  :where(.chip:has(> button),label.chip) { min-block-size:var(--target-size); }
+  :where(.chip > button) {
+    min-inline-size:var(--target-size);min-block-size:var(--target-size);padding:calc(var(--space)*.25);
+    margin:calc(var(--space)*-.25) calc(var(--space)*-.35) calc(var(--space)*-.25) 0;
+    border-color:transparent;background-color:transparent;color:inherit;font:inherit;box-shadow:none;
+  }
+  :where(label.chip) { cursor:pointer; }
+  :where(label.chip > input[type="checkbox"]) { flex:none;margin:0; }
+  :where(label.chip:has(> input:checked)) { border-color:var(--color-border-strong);font-weight:650; }
+  :where(label.chip:has(> input:disabled)) { color:var(--color-text-muted);cursor:not-allowed; }
+  :where(label.chip:has(> input:focus-visible)) { outline:2px solid var(--color-focus);outline-offset:2px; }
+  @media (hover:hover) {
+    :where(.chip > button:not(:disabled):hover,label.chip:has(> input:not(:disabled)):hover) {
+      background-color:color-mix(in oklab,var(--color-surface-subtle) 94%,var(--color-text));color:var(--color-text);
+    }
+  }
+  :where(.chip > button:not(:disabled):active) {
+    background-color:var(--color-loud,var(--color-accent));color:var(--color-on-loud,var(--color-on-accent));
+  }
+}
+@media (forced-colors:active) {
+  :where(label.chip:has(> input:checked)) { border-color:Highlight; }
+}

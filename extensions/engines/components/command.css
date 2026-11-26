@@ -1,0 +1,31 @@
+/* Optional search-and-action modal. Browser owns modality and focus. */
+dialog.command-palette {
+  inline-size:min(var(--command-width,38rem),calc(100dvw - var(--space)*2));
+  min-inline-size:0;max-inline-size:calc(100dvw - var(--space)*2);max-block-size:calc(100dvh - var(--space)*2);
+  margin:auto;padding:var(--space);overflow:auto;overscroll-behavior:contain;
+}
+:where(.command-palette > form,.command-palette > .stack) { min-inline-size:0; }
+:where(.command-palette input[type="search"]) { inline-size:100%;min-inline-size:0; }
+:where(.command-results) { list-style:none;padding:0;margin:0;display:grid;gap:calc(var(--space)*.25);min-inline-size:0; }
+:where(.command-results > li) { margin:0;min-inline-size:0; }
+:where(.command-results > li[hidden]) { display:none !important; }
+@layer defaults {
+  :where(.command-results > li > :is(button,a[href])) {
+    display:block;box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;
+    min-block-size:var(--target-size);text-align:start;overflow-wrap:anywhere;white-space:normal;text-decoration:none;
+    background-color:transparent;color:var(--color-text);border:var(--border-width) solid transparent;
+    border-radius:var(--radius);padding:calc(var(--space)*.55) var(--space);font:inherit;font-weight:550;box-shadow:none;
+  }
+  @media (hover:hover) {
+    :where(.command-results > li > :is(button,a[href]):not(:disabled,[aria-disabled="true"]):hover) {
+      background-color:color-mix(in oklab,var(--color-surface) 94%,var(--color-text));color:var(--color-text);text-decoration:none;
+    }
+  }
+  :where(.command-results > li > :is(button,a[href]):not(:disabled,[aria-disabled="true"]):active) {
+    background-color:var(--color-loud,var(--color-accent));color:var(--color-on-loud,var(--color-on-accent));border-color:transparent;box-shadow:none;
+  }
+  :where(.command-results > li > :is(button,a[href]):focus-visible) {
+    outline:2px solid var(--color-focus);outline-offset:-2px;background-color:var(--color-surface-subtle);
+  }
+  :where(.command-results > li > :is(:disabled,[aria-disabled="true"])) { color:var(--color-text-muted);cursor:not-allowed; }
+}

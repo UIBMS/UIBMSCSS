@@ -3,6 +3,8 @@ import {tabDestination} from '../extensions/engines/components/tabs.mjs';
 import {floatingPosition} from '../extensions/engines/components/floating.mjs';
 import {menuDestination} from '../extensions/engines/components/dropdown.mjs';
 import {toastDuration} from '../extensions/engines/components/toast.mjs';
+import {pageWindow} from '../extensions/engines/components/pagination.mjs';
+import {commandMatches} from '../extensions/engines/components/command.mjs';
 import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
 import {meshPoint,objectRectangle} from '../extensions/engines/media-deformation.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
@@ -110,3 +112,16 @@ console.log('Floating placement, viewport flipping, RTL alignment and menu navig
 
 for(const [value,tone,expected] of [[0,'info',0],[500,'info',5000],[10000,'success',10000],[6000,'warning',0],[6000,'danger',0],[Infinity,'info',0],[-1,'info',0],[1e12,'info',2147483647]])assert.equal(toastDuration(value,tone),expected);
 console.log('Toast duration and persistent critical-message policy passed.');
+
+assert.deepEqual(pageWindow(1,1),[1]);
+assert.deepEqual(pageWindow(1,10),[1,2,3,'ellipsis',10]);
+assert.deepEqual(pageWindow(5,10),[1,'ellipsis',4,5,6,'ellipsis',10]);
+assert.deepEqual(pageWindow(10,10),[1,'ellipsis',8,9,10]);
+assert.deepEqual(pageWindow(3,5),[1,2,3,4,5]);
+assert.deepEqual(pageWindow(0,3),[1,2,3]);
+assert.deepEqual(pageWindow(Number.MAX_SAFE_INTEGER,Number.MAX_SAFE_INTEGER,0),[1,'ellipsis',Number.MAX_SAFE_INTEGER]);
+assert.equal(commandMatches('Open project settings','SET project'),true);
+assert.equal(commandMatches('Résumé du projet','resume'),true);
+assert.equal(commandMatches('Create new project','delete'),false);
+assert.equal(commandMatches('Any action',' '),true);
+console.log('Bounded pagination and command search tests passed.');

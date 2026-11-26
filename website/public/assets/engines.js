@@ -33,6 +33,65 @@ if(document.querySelector('#demo-notifications')){
   });
   document.querySelector('#toast-clear').addEventListener('click', () => notifications.clear());
 }
+if(document.querySelector('#onboarding-steps')){
+  const {mountStepper}=await import('../engines/components/stepper.mjs'+revision);
+  const list = document.querySelector('#onboarding-steps');
+  const wizard = mountStepper(list);
+  const back = document.querySelector('#stepper-back');
+  const next = document.querySelector('#stepper-next');
+  const status = document.querySelector('#stepper-status');
+  function update() {
+    back.disabled = wizard.current <= 0;
+    next.disabled = wizard.current >= 2;
+    status.value = 'Step ' + (wizard.current + 1) + ' of 3';
+  }
+  list.addEventListener('stepchange', update);
+  back.addEventListener('click', () => wizard.previous({focus:true}));
+  next.addEventListener('click', () => wizard.next({focus:true}));
+  update();
+}
+if(document.querySelector('#records-pagination')){
+  const {mountPagination}=await import('../engines/components/pagination.mjs'+revision);
+  const summary = document.querySelector('#pagination-summary');
+  const records = document.querySelector('#pagination-records');
+  function showPage(page) {
+    const first = (page - 1) * 10 + 1;
+    const last = page * 10;
+    summary.value = 'Showing records ' + first + '–' + last + ' of 100';
+    records.replaceChildren(...Array.from({length:10}, (_,i) => {
+      const row = document.createElement('p');
+      row.textContent = 'Record ' + (first + i);
+      return row;
+    }));
+  }
+  const pagination = mountPagination(document.querySelector('#records-pagination'), {
+    current:5, total:10, onChange:showPage
+  });
+  showPage(pagination.current);
+}
+if(document.querySelector('#demo-removable-skills')){
+  const {mountChips}=await import('../engines/components/chips.mjs'+revision);
+  const group = document.querySelector('#demo-removable-skills');
+  const status = document.querySelector('#chip-status');
+  const initial = Array.from(group.children, chip => chip.cloneNode(true));
+  const chips = mountChips(group);
+  group.addEventListener('chipremove', event => {
+    status.value = 'Removed ' + event.detail.value + '. ' + group.children.length + ' remaining.';
+  });
+  document.querySelector('#chip-restore').addEventListener('click', () => {
+    group.replaceChildren(...initial.map(chip => chip.cloneNode(true)));
+    status.value = 'Three selected skills';
+  });
+}
+if(document.querySelector('#workspace-commands')){
+  const {mountCommandPalette}=await import('../engines/components/command.mjs'+revision);
+  const dialog = document.querySelector('#workspace-commands');
+  const commands = mountCommandPalette(dialog);
+  dialog.addEventListener('commandselect', event => {
+    document.querySelector('#command-action-status').value =
+      'Selected: ' + event.detail.action.textContent.trim();
+  });
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});

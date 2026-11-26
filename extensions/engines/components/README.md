@@ -33,3 +33,27 @@ Load drawer.css. Use a native dialog with class="drawer" for a logical end drawe
 ## Toast notifications
 
 Load toast.css and import mountToasts(container,{maxVisible:3,labels:{}}) from toast.mjs. The container must be a dedicated initially empty .toasts element, preferably role="region" with an accessible name. show({title,message,tone,duration}) queues a notification and returns {id,dismiss}. Use tones info, success, warning and danger. Text is inserted with textContent, not innerHTML. Default duration is zero (persistent); opt-in positive durations have a five-second minimum and pause on hover, focus and document hiding. Warnings and errors never auto-dismiss. Polite and assertive live regions are created beside the stack; notifications do not take focus when they appear. clear() clears all messages, destroy() restores the container and releases resources. visibleCount and pendingCount expose queue counts. Override --toast-width to customize dimensions. Supported browsers use a native manual popover, escaping ancestor stacking contexts and clipping. The controller promotes the stack after newly opened native overlays; empty stacks leave the top layer. Native modal focus isolation is preserved: mount a stack inside a modal or drawer for interactive notifications within it. Global timed notifications pause when an unrelated native modal is open. Browsers without Popover API support retain a fixed-position fallback with configurable --toast-z-index (default 1000); mount that fallback directly under the document body. The transparent stack is not a Liquid Silicone surface; its individual notifications retain optical feedback.
+
+## Stepper
+
+Load stepper.css and import mountStepper from stepper.mjs when necessary. Use an ordered list with native links, spans or buttons. Mark the active step with aria-current="step". The optional controller maps native buttons to labelled panels, preserves DOM nodes and values, and leaves authored panels readable without scripting. The application owns validation, eligibility, completion and final submission.
+
+mountStepper(list,{scope:list.parentElement}) provides current (zero-based), go(index,{focus:false}), next(), previous(), refresh() and destroy(). Each button has a unique ID and aria-controls; each .stepper-panel has aria-labelledby pointing back to its button. Disabled steps cannot be selected. Cancel beforestepchange to enforce application rules; stepchange reports successful navigation. This is panel navigation, not automatic form validation.
+
+## Pagination
+
+Load pagination.css and import mountPagination from pagination.mjs when necessary. Native links support server-side navigation without JavaScript. For local paging, the optional controller creates real buttons, a bounded page window and ellipses, updates aria-current, and preserves focus. Try navigating the 100 sample records. Applications supply their own data; the framework performs no network requests.
+
+mountPagination(nav,{current:1,total:1,siblings:1,onChange,labels}) expects an empty labelled nav. setPage(), setTotal(), current, total and destroy() control navigation. beforepagechange is cancelable; pagechange and onChange report selection. pageWindow(current,total,siblings) is a pure helper returning page numbers and ellipsis markers.
+
+## Tags and chips
+
+Load chips.css and import mountChips from chips.mjs when necessary. Tags are descriptive text. Selectable chips contain native checkboxes; removable chips use a separate native button. data-tone optionally supplies a semantic colour. The delegated removal helper reports the removed value, supports cancelation and transfers focus to a neighbouring remove button. Restore belongs to this demo, not the library.
+
+mountChips(container) expects .chips with direct .chip children and a separate button named remove-chip. remove(button) dispatches cancelable beforechipremove, removes the chip, then dispatches chipremove with detail.value and detail.chip. destroy() removes listeners and restores the original container tabindex. Removal changes the DOM and is not undone by form reset.
+
+## Command palette
+
+Load command.css and import mountCommandPalette from command.mjs when necessary. Open the native modal and search its real buttons or links. Matching is case- and accent-insensitive; every word must match. Arrow keys move between the search field and enabled results, Home and End navigate results, and Enter activates a result. Escape and the close button use native dialog dismissal. The component inherits contextual styles and existing Liquid Silicone overlays.
+
+mountCommandPalette(dialog,{shortcut:true}) optionally enables Ctrl/Cmd+K outside editable fields and other modals. The docs demo keeps the existing site search shortcut, so use its open button. open(), close(), refresh() and destroy() manage lifecycle. commandselect is cancelable to keep the palette open without suppressing the actual application action. The application owns its command registry, routing and remote data.

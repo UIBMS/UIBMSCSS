@@ -97,7 +97,7 @@ function setupDemos(){
   wrapper.addEventListener('reset',()=>{status.textContent='Native form reset.';});
   wrapper.addEventListener('click',e=>{
     const button=e.target.closest('button[type=button],input[type=button]');
-    if(run==='toast'||!button||button.disabled||button.matches('[popovertarget],[commandfor],[aria-pressed],[role=tab]')||button.closest('[data-uibms-form-popup],[data-uibms-form-control]'))return;
+    if(['toast','stepper','pagination','chips','command'].includes(run)||!button||button.disabled||button.matches('[popovertarget],[commandfor],[aria-pressed],[role=tab]')||button.closest('[data-uibms-form-popup],[data-uibms-form-control]'))return;
     if(run?.startsWith('dialog:')&&button.id===run.split(':')[2])return;
     status.textContent='Button activated. This is a local styling demonstration; no application action is connected.';
   });
