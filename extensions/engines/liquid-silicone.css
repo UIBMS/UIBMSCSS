@@ -5,6 +5,22 @@
 }
 :where([data-uibms-material-position]) { position:relative; }
 :where([data-uibms-material-host],[data-uibms-selection-host]) { isolation:isolate; }
+/* Responsive overlay defaults for applications loading the optional stylesheet.
+   Only genuine content overflow may require scrolling. */
+:where(dialog,[popover]) {
+  --_uibms-overlay-available:calc(100dvw - var(--uibms-overlay-gap,1.25rem)*2);
+  box-sizing:border-box;
+  max-block-size:calc(100dvh - var(--uibms-overlay-gap,1.25rem)*2);
+  overflow:auto;scrollbar-gutter:auto;overscroll-behavior:contain;overflow-wrap:anywhere;
+}
+:where(dialog) {
+  min-inline-size:min(var(--uibms-dialog-min-inline-size,28rem),var(--_uibms-overlay-available));
+  max-inline-size:min(var(--uibms-dialog-max-inline-size,48rem),var(--_uibms-overlay-available));
+}
+:where([popover]:not(dialog)) {
+  min-inline-size:min(var(--uibms-popover-min-inline-size,22rem),var(--_uibms-overlay-available));
+  max-inline-size:min(var(--uibms-popover-max-inline-size,36rem),var(--_uibms-overlay-available));
+}
 /* Private paint-only flags replace the original paint, not its layout or foreground.
    Important ensures the resolved author background does not remain behind a contour.
    The renderer removes these flags before reading the original CSS. */
@@ -48,7 +64,7 @@
 }
 /* Scrollable, sticky, asymmetric and native surfaces keep their existing paint.
    The added lighting is an optical property, not a replacement palette. */
-[data-uibms-material-native][data-uibms-material-surface]:not(input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
+[data-uibms-material-native][data-uibms-material-surface]:not([data-uibms-overlay-contour],input[type=checkbox],input[type=radio],input[type=range],input[type=color],input[type=file],input[type=image],img,video,audio,iframe,canvas,svg,progress,meter,table,caption,thead,tbody,tfoot,tr,th,td,hr,pre) {
   background-color:color-mix(in srgb,var(--uibms-material-tint,var(--_uibms-material-base-color,transparent)) var(--uibms-material-opacity,92%),transparent) !important;
 }
 /* Preserve the independent scroll progress layer and its native animated size. */
@@ -98,7 +114,7 @@
 }
 /* Tables and overlays own a single magnetic surface. Their native geometry,
    scrolling, top-layer positioning and semantics remain unchanged. */
-:is([data-uibms-material-table],[data-uibms-material-overlay])[data-uibms-material-contact] {
+:is([data-uibms-material-table],[data-uibms-material-overlay])[data-uibms-material-contact]:not([data-uibms-overlay-contour]) {
   background-image:
     radial-gradient(ellipse at var(--_uibms-material-x,50%) var(--_uibms-material-y,50%),
       rgb(255 255 255 / max(0,calc(var(--_uibms-material-force,0)*.18))),
@@ -110,6 +126,28 @@
       color-mix(in srgb,var(--color-accent,currentColor) calc(max(0,var(--_uibms-material-force,0))*22%),transparent),
     var(--_uibms-material-outer-shadow,0 0 0 0 transparent) !important;
 }
+/* Fitted overlays bend the visual outline without changing their native box.
+   Long/complex overlays retain auto-scroll. Nested renderer overscan must not
+   inflate the actual scrolling region. */
+:where(dialog,[popover],[data-uibms-form-popup]):not([data-uibms-overlay-contour]) :where([data-uibms-material-host],[data-uibms-selection-host]) {
+  contain:paint;
+}
+[data-uibms-overlay-measure] :is([data-uibms-material-layer],[data-uibms-selection-layer]) { display:none !important; }
+:where([data-uibms-overlay-layer]) { display:none; }
+[data-uibms-overlay-contour] {
+  isolation:isolate;
+  overflow:visible !important;
+  background-color:transparent !important;
+  background-image:none !important;
+  border-color:transparent !important;
+  box-shadow:none !important;
+}
+[data-uibms-overlay-contour] > [data-uibms-overlay-layer] { display:block; }
+[data-uibms-overlay-contour] > [data-uibms-form-content] { overflow:visible; }
+[data-uibms-overlay-layer] > svg > [data-uibms-overlay-outline] {
+  fill:color-mix(in srgb,var(--uibms-material-tint,var(--_uibms-material-base-color,Canvas)) var(--uibms-material-opacity,92%),transparent);
+}
+[data-uibms-overlay-layer] > svg > [data-uibms-overlay-reflection] { stroke:none; }
 /* Flat lighting only. No geometry, per-cell spring, pressure or hover persistence.
    A delegated contact marker avoids sticky :hover on touchscreens and preserves
    existing author background images. Rows receive a gentler light than cells. */

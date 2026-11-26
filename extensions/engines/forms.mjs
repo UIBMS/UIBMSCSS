@@ -54,10 +54,14 @@ const engine = (function formEngine(){
     }
     function position(){
       if(!current)return;
-      const {popup,trigger}=current,r=trigger.getBoundingClientRect(),width=Math.min(344,window.innerWidth-20);
-      popup.style.width=width+'px';const height=popup.offsetHeight;
-      popup.style.left=Math.max(10,Math.min(r.right-width,window.innerWidth-width-10))+'px';
-      popup.style.top=Math.max(10,Math.min(r.bottom+8,window.innerHeight-height-10))+'px';
+      const {popup,trigger}=current,r=trigger.getBoundingClientRect();
+      // CSS owns responsive sizing. Position using the actual box.
+      const width=popup.offsetWidth,height=popup.offsetHeight;
+      const gx=Math.min(20,Math.max(0,(window.innerWidth-width)/2)),gy=Math.min(20,Math.max(0,(window.innerHeight-height)/2));
+      popup.style.left=Math.max(gx,Math.min(r.right-width,window.innerWidth-width-gx))+'px';
+      const below=r.bottom+8,above=r.top-height-8;
+      const y=below+height<=window.innerHeight-gy?below:above>=gy?above:window.innerHeight-height-gy;
+      popup.style.top=Math.max(gy,y)+'px';
     }
     const contextKeys=['theme','palette','shape','border','density','typography','effects'];
     function syncContext(el,popup){
@@ -67,7 +71,7 @@ const engine = (function formEngine(){
         else if(popup.hasAttribute(attr))popup.removeAttribute(attr);
       }
       const cs=getComputedStyle(el);
-      for(const k of ['--uibms-material-opacity','--uibms-material-tint','--uibms-material-blur','--uibms-material-border']){
+      for(const k of ['--uibms-material-opacity','--uibms-material-tint','--uibms-material-blur','--uibms-material-border','--uibms-picker-inline-size','--uibms-overlay-gap']){
         const v=cs.getPropertyValue(k).trim();
         if(v&&popup.style.getPropertyValue(k)!==v)popup.style.setProperty(k,v);
         else if(!v)popup.style.removeProperty(k);

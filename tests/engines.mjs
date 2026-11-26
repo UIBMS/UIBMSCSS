@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import {contour,step,motionProfile,shadowFilter,touchPhase,defaults} from '../extensions/engines/material.mjs';
+import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath} from '../extensions/engines/material.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
 assert.notEqual(contour(200,50,12,180,20,1),contour(200,50,12,180,20,-1));
 assert.match(contour(200,50,12,180,20,0),/^M .* Z$/);
@@ -50,3 +50,9 @@ for(let age=0;age<1800;age+=1000/60){
 }
 assert.ok(maximum>.1);assert.ok(minimum<-.1);assert.equal(force,0);assert.equal(speed,0);
 console.log('Touch attraction, compression, passive contact and release tests passed.');
+
+assert.equal(overlayPath(320,180,12,160,90,0),contour(320,180,12,160,90,0,0,defaults.amplitude,defaults.overlayMaximum,0));
+assert.equal(overlayPath(320,180,12,160,90,-1),overlayPath(320,180,12,160,90,0));
+assert.notEqual(overlayPath(320,180,12,20,30,1),overlayPath(320,180,12,300,30,1));
+assert.notEqual(overlayPath(320,180,12,300,30,1),overlayPath(320,180,12,300,30,1,{...defaults,overlaySkew:0}));
+console.log('Overlay resting contour, passive force and directional skew tests passed.');

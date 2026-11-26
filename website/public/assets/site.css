@@ -90,7 +90,7 @@
 #site-pager a:last-child { text-align:end; }
 #site-pager small { color:var(--color-text-muted); }
 #site-footer { border-block-start:var(--border-width) solid var(--color-border); color:var(--color-text-muted); padding-block-start:var(--space); }
-#site-search { inline-size:min(42rem,calc(100% - 2rem)); }
+#site-search { inline-size:min(var(--uibms-search-inline-size,42rem),calc(100dvw - var(--uibms-overlay-gap,1.25rem)*2)); }
 [data-site-search-heading] { display:flex; align-items:center; justify-content:space-between; gap:var(--space); flex-wrap:wrap; }
 [data-site-search-heading] h2 { margin:0; font-size:1.3em; }
 #site-search-input { inline-size:100%; }

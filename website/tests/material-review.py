@@ -322,6 +322,10 @@ try:
             phone.locator(trigger).tap()
             overlay.wait_for(state="visible")
             phone.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-material-overlay')",arg=selector)
+            phone.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-overlay-contour')",arg=selector)
+            check(overlay.evaluate("e=>getComputedStyle(e).overflow==='visible'"),slug+" fitted overlay has no side scrollbars")
+            check(overlay.evaluate("e=>e.offsetWidth<=innerWidth-20"),slug+" fits mobile viewport")
+            check(overlay.evaluate("e=>getComputedStyle(e).backgroundColor==='rgba(0, 0, 0, 0)'"),slug+" original rectangular fill is not painted behind contour")
             # A styled passive child must remain flat, while a real control stays pressable.
             overlay.evaluate("""el=>{
               const panel=document.createElement('div');panel.className='panel';
@@ -334,19 +338,34 @@ try:
             phone.wait_for_function("sel=>document.querySelector(sel+' [data-test-overlay-action]')?.hasAttribute('data-uibms-material-host')||document.querySelector(sel+' [data-test-overlay-action]')?.hasAttribute('data-uibms-material-native')",arg=selector)
             check(passive.get_attribute("data-uibms-material-host") is None and passive.get_attribute("data-uibms-material-native") is None,slug+" passive panel has no spring")
             before=overlay.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,radius:getComputedStyle(e).borderRadius,overflow:getComputedStyle(e).overflow})")
+            outline=overlay.locator(":scope > [data-uibms-overlay-layer] [data-uibms-overlay-outline]")
+            resting=outline.get_attribute("d")
             monitor(overlay)
             passive.tap()
             phone.wait_for_function("()=>window.__touchSample.max>.04")
+            phone.wait_for_function("([sel,d])=>document.querySelector(sel+' > [data-uibms-overlay-layer] [data-uibms-overlay-outline]')?.getAttribute('d')!==d",arg=[selector,resting])
             phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
             check(phone.evaluate("()=>window.__touchSample.min>=0"),slug+" passive surface never compresses")
             check(passive.get_attribute("data-uibms-overlay-light") is None,slug+" contact light clears")
             after=overlay.evaluate("e=>({width:e.offsetWidth,height:e.offsetHeight,radius:getComputedStyle(e).borderRadius,overflow:getComputedStyle(e).overflow})")
             check(before==after,slug+" native overlay geometry preserved")
+            check(outline.get_attribute("d")==resting,slug+" silhouette recovers exactly")
             monitor(action)
             action.tap()
             phone.wait_for_function("()=>window.__touchSample.max>.04&&window.__touchSample.min<-.04")
             phone.wait_for_function("()=>window.__touchSample.restFrames>=8")
             check(True,slug+" nested button independently attracts and compresses")
+            # Genuine content overflow must remain reachable.
+            overlay.evaluate("""el=>{
+                const extra=document.createElement('div');extra.setAttribute('data-test-long-overlay','');
+                for(let i=0;i<45;i++){const p=document.createElement('p');p.textContent='Additional content '+i;extra.append(p);}el.append(extra);
+            }""")
+            phone.wait_for_function("sel=>!document.querySelector(sel)?.hasAttribute('data-uibms-overlay-contour')",arg=selector)
+            check(overlay.evaluate("e=>getComputedStyle(e).overflowY==='auto'&&e.scrollHeight>e.clientHeight"),slug+" long content keeps native scrolling")
+            overlay.evaluate("e=>{e.scrollTop=e.scrollHeight}")
+            check(overlay.evaluate("e=>e.scrollTop>0"),slug+" long content can scroll")
+            overlay.locator("[data-test-long-overlay]").evaluate("e=>e.remove()")
+            phone.wait_for_function("sel=>document.querySelector(sel)?.hasAttribute('data-uibms-overlay-contour')",arg=selector)
             # Desktop-style keyboard dismissal still works in a touch-capable context.
             phone.keyboard.press("Escape")
             overlay.wait_for(state="hidden")
