@@ -1,5 +1,15 @@
 /* UIBMS optional Form Engine. Internal selectors are not public layout classes. */
-:where([data-uibms-form-trigger]) { margin-inline-start:.3rem;min-inline-size:2.75rem;padding:.25rem .65rem;vertical-align:middle; }
+/* Enhanced inputs share a single visual field rather than two separate layout items. */
+:where([data-uibms-form-control]) { position:relative;display:inline-flex;align-items:center;box-sizing:border-box;max-inline-size:100%;min-inline-size:0;vertical-align:middle; }
+:where(label > [data-uibms-form-control]) { inline-size:100%; }
+:where([data-uibms-form-control][data-uibms-form-kind=color]) { min-inline-size:min(7rem,100%); }
+:where([data-uibms-form-control] > [data-uibms-form-source]) { inline-size:100%;max-inline-size:100%;min-inline-size:0;box-sizing:border-box;padding-inline-end:calc(var(--target-size,2.75rem) + .2rem);margin:0; }
+:where(select[data-uibms-form-source]) { appearance:none;-webkit-appearance:none; }
+:where(input[data-uibms-form-source])::-webkit-calendar-picker-indicator { opacity:0;pointer-events:none; }
+:where([data-uibms-form-trigger]) { position:absolute;inset-inline-end:.15rem;inset-block-start:50%;transform:translateY(-50%);display:grid;place-items:center;inline-size:var(--target-size,2.75rem);block-size:var(--target-size,2.75rem);min-inline-size:0;min-block-size:0;margin:0;padding:0;border:0;border-radius:var(--radius,.5rem);background:transparent;color:inherit;cursor:pointer;box-shadow:none;translate:none;line-height:1; }
+:where([data-uibms-form-trigger])::before { content:'';inline-size:.5em;block-size:.5em;border-inline-end:1.5px solid currentColor;border-block-end:1.5px solid currentColor;transform:translateY(-.15em) rotate(45deg); }
+:where([data-uibms-form-trigger]:focus-visible) { outline:2px solid var(--color-focus,currentColor);outline-offset:-3px; }
+@media(forced-colors:active) { :where([data-uibms-form-trigger]) { color:ButtonText; } }
 :where([data-uibms-form-popup]) { position:fixed; z-index:2147483000; padding:1rem; max-height:calc(100vh - 20px); overflow:auto; border:1px solid var(--color-border-strong,#8095ab); border-radius:1.25rem; background:var(--color-surface,#eef4fa);color:var(--color-text,#152336);box-shadow:0 12px 36px #101d3040; }
 :where([data-uibms-form-popup]) { overflow:visible;max-height:none;transform-origin:top center;animation:uibms-picker-open .28s cubic-bezier(.15,.8,.3,1.05); }
 :where([data-uibms-form-content]) { max-height:calc(100dvh - 2rem - 20px);overflow:auto;overscroll-behavior:contain;padding:.15rem; }

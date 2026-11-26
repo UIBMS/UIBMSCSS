@@ -14,18 +14,36 @@ const engine = (function formEngine(){
   const eligible=el=>el.matches('select:not([multiple])')&&el.size<=1||el.tagName==='INPUT'&&types.has(el.getAttribute('type')?.toLowerCase());
   const enabled=el=>el.closest('[data-material]')?.getAttribute('data-material')==='liquid-silicone'&&!el.matches(':disabled,[readonly]')&&!el.closest('[inert],[aria-disabled=true]');
   const valueType=el=>el.tagName==='SELECT'?'select':el.getAttribute('type').toLowerCase();
-  function mountForms(root=document){
+  function mountForms(root=document,options={}){
     if(mounted.has(root))return mounted.get(root);
-    const adapters=new Map();let current=null,disposed=false,pending=false,uid=0;
+    const adapters=new Map(),filter=typeof options.filter==='function'?options.filter:()=>true;let current=null,disposed=false,pending=false,uid=0;
     const doc=root.ownerDocument||root;
     const requestRefresh=()=>{if(pending||disposed)return;pending=true;queueMicrotask(()=>{pending=false;if(!disposed)refresh();});};
     function label(el){return Array.from(el.labels||[]).map(l=>l.textContent.trim()).filter(Boolean).join(' ')||el.getAttribute('aria-label')||el.name||valueType(el);}
+    function removeAdapter(el,a){
+      const wrapper=a.parentElement;
+      if(wrapper?.hasAttribute('data-uibms-form-control')){
+        if(el.parentElement===wrapper&&wrapper.parentNode)wrapper.before(el);
+        wrapper.remove();
+      }else a.remove();
+      el.removeAttribute('data-uibms-form-source');
+    }
     function refresh(){
-      for(const [el,a] of adapters){if(!el.isConnected||!eligible(el)||!enabled(el)){if(current?.el===el)close(false);a.remove();adapters.delete(el);}}
-      for(const el of root.querySelectorAll('select,input'))if(eligible(el)&&enabled(el)&&!adapters.has(el)&&!el.closest('[data-uibms-form-popup]')){
-        const a=node('button',{type:'button','data-uibms-form-trigger':'','aria-haspopup':'dialog','aria-expanded':'false','aria-label':'Open '+label(el)+' picker',title:'Open enhanced picker'},'▾');
-        // Keep the original control visible and authoritative, including its native UI.
-        el.insertAdjacentElement('afterend',a);a.addEventListener('click',()=>open(el,a));adapters.set(el,a);
+      for(const [el,a] of adapters){
+        if(!el.isConnected||!eligible(el)||!enabled(el)||!filter(el)){
+          if(current?.el===el)close(false);removeAdapter(el,a);adapters.delete(el);
+        }
+      }
+      for(const el of root.querySelectorAll('select,input')){
+        if(!eligible(el)||!enabled(el)||!filter(el)||adapters.has(el)||el.closest('[data-uibms-form-popup]'))continue;
+        const labelText=label(el),implicit=!!el.closest('label');
+        // Preserve the native source in the original layout slot, with an integrated arrow.
+        const wrapper=node('span',{'data-uibms-form-control':'','data-uibms-form-kind':valueType(el)});
+        const a=node(implicit?'span':'button',{'data-uibms-form-trigger':'','data-material':'default',type:implicit?undefined:'button',role:implicit?'button':undefined,tabindex:implicit?'0':undefined,'aria-haspopup':'dialog','aria-expanded':'false','aria-label':'Open '+labelText+' enhanced picker',title:'Open enhanced picker'});
+        a.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();open(el,a);});
+        if(implicit)a.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&!e.repeat){e.preventDefault();e.stopPropagation();open(el,a);}});
+        el.setAttribute('data-uibms-form-source','');
+        el.before(wrapper);wrapper.append(el,a);adapters.set(el,a);
       }
     }
     function close(focus=true){
@@ -41,7 +59,7 @@ const engine = (function formEngine(){
       popup.style.top=Math.max(10,Math.min(r.bottom+8,window.innerHeight-height-10))+'px';
     }
     function open(el,trigger){
-      if(!eligible(el)||!enabled(el))return;
+      if(!eligible(el)||!enabled(el)||!filter(el))return;
       if(current?.el===el){close();return;}close(false);
       const type=valueType(el),now=new Date(),today=day(now.getFullYear(),now.getMonth(),now.getDate());
       let date=type==='week'?weekStart(el.value):type==='month'?parseDate(el.value+'-01'):parseDate(el.value);
@@ -154,7 +172,7 @@ const engine = (function formEngine(){
     window.addEventListener('resize',position);window.addEventListener('scroll',position,true);
     const observer=new MutationObserver(records=>{if(records.some(r=>r.type==='attributes'||[...r.addedNodes,...r.removedNodes].some(n=>n.nodeType===1&&n.matches('input,select,option,fieldset,form,[data-material]'))))requestRefresh();});
     observer.observe(root,{subtree:true,childList:true,attributes:true,attributeFilter:['data-material','disabled','aria-disabled','readonly','multiple','size','inert','type']});
-    const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const a of adapters.values())a.remove();adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
+    const api={refresh,open(el){const a=adapters.get(el);if(a)open(el,a);},close,destroy(){disposed=true;close(false);observer.disconnect();for(const [el,a] of adapters)removeAdapter(el,a);adapters.clear();doc.removeEventListener('pointerdown',outside);doc.removeEventListener('keydown',keys);doc.removeEventListener('change',change);doc.removeEventListener('reset',reset);window.removeEventListener('resize',position);window.removeEventListener('scroll',position,true);mounted.delete(root);}};
     mounted.set(root,api);refresh();return api;
   }
   return {mountForms,isoWeek,weekStart,calendarDays,formatDate,parseDate};

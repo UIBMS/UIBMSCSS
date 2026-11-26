@@ -132,3 +132,22 @@
 @media (max-width:25rem) { #site-pager { grid-template-columns:minmax(0,1fr); } }
 @media (prefers-reduced-motion:reduce) { :root { scroll-behavior:auto; } }
 @media (forced-colors:active) { [data-site-code] .token { color:CanvasText; } #site-doc-nav a[aria-current],#site-top a[aria-current] { outline:1px solid Highlight; } }
+
+/* Decorative overscan must not create a horizontal scrollable page. */
+html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
+#site-main { overflow-x:clip; }
+[data-site-section] { scroll-margin-block-start:.75rem; }
+#site-stats > *,[data-site-swatches] > * { min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere; }
+[data-site-swatches] code { display:block;max-inline-size:100%;white-space:normal;overflow-wrap:anywhere; }
+#site-appearance-panel { overscroll-behavior:contain; }
+#site-appearance-panel form label { min-inline-size:0; }
+#site-appearance-panel form select { min-inline-size:0;max-inline-size:100%; }
+@media(max-width:64rem) {
+  #site-header { isolation:isolate; }
+  #site-appearance-panel { inset-block-start:calc(var(--site-header-size) + .35rem);max-block-size:calc(100dvh - var(--site-header-size) - 1rem); }
+}
+@media(max-width:24rem) {
+  #site-stats { grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem; }
+  #site-stats > * { padding:calc(var(--space)*.7); }
+  #site-appearance-panel label { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); }
+}
