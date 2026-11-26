@@ -7,7 +7,7 @@ import {expressivePalettes,expressiveStyles,paletteRoles,oklch} from '../src/lib
 import {renderHtml,slugify} from '../src/lib/render.mjs';
 import {codeBlock} from '../src/lib/code.mjs';
 const allowedClasses=new Set(framework.classes);
-const componentClasses=new Set(['tabs','segmented']);
+const componentClasses=new Set(['tabs','segmented','dropdown','tooltip']);
 const attrs=new Set([...profiles.map(p=>'data-'+p.key),'data-uibms',...framework.effectAttributes]);
 const css=await readFile(new URL('../../dist/uibms.full.css',import.meta.url),'utf8')+'\n'+expressiveStyles();
 assert.equal(expressivePalettes.length,5);

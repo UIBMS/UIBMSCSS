@@ -15,3 +15,13 @@ Load segmented.css. Use .segmented with role="radiogroup" and an accessible grou
 ## Material and design
 
 Both stylesheets inherit palette, theme, density, shape, typography, border and motion settings. Ordinary hover is subtle; pressed feedback uses the loud palette role when available, otherwise the existing accent. The optional Liquid Silicone engine already owns tab group selection and maps native segmented radio selection to the whole segment, not a separate moving dot. Without the material engine the selected state is ordinary CSS. Forced colors retain a visible selection boundary. These are development candidates, not a certified accessibility implementation.
+
+## Dropdown menus
+
+Load dropdown.css and import mountDropdowns from dropdown.mjs (keep floating.mjs beside it). Use one button with aria-haspopup="menu" and popovertarget per .dropdown[role="menu"][popover="auto"]. The menu has a unique ID, tabindex="-1", an accessible name and native buttons or anchors with role="menuitem". Native popover handles outside dismissal. The controller manages focus, arrow keys, Home/End, typeahead, Escape, selection dismissal and viewport placement. Native button/link actions are not replaced. Single-level menus only. Use refresh() after DOM changes and destroy() for cleanup. Modern Popover API required.
+
+## Tooltips
+
+Load tooltip.css and import mountTooltips from tooltip.mjs (shared floating.mjs dependency). Give a focusable element aria-describedby pointing at its own noninteractive .tooltip[role="tooltip"][popover="manual"]. The native description stays associated while closed. Hover delay defaults to 300ms, leave delay to 160ms; keyboard focus shows immediately. Hovering the tooltip keeps it open; Escape closes without moving focus. Do not hide essential instructions in tooltips or place interactive controls inside them. Touch does not synthesize hover. Pass {delay,leaveDelay} and use refresh()/destroy() for lifecycle. Native popover is required. Tooltip geometry remains stable under Liquid Silicone.
+
+Both floating components use a shared geometry/tracking module, inherit contextual design roles and add no code to the released framework CSS distributions.

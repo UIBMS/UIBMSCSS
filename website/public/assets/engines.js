@@ -4,6 +4,14 @@ if(document.querySelector('.tabs[role="tablist"]')){
   const {mountTabs}=await import('../engines/components/tabs.mjs'+revision);
   mountTabs(document);
 }
+if(document.querySelector('.dropdown[role="menu"][popover]')){
+  const {mountDropdowns}=await import('../engines/components/dropdown.mjs'+revision);
+  mountDropdowns(document);
+}
+if(document.querySelector('.tooltip[role="tooltip"][popover]')){
+  const {mountTooltips}=await import('../engines/components/tooltip.mjs'+revision);
+  mountTooltips(document);
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});

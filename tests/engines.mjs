@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import {tabDestination} from '../extensions/engines/components/tabs.mjs';
+import {floatingPosition} from '../extensions/engines/components/floating.mjs';
+import {menuDestination} from '../extensions/engines/components/dropdown.mjs';
 import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
 import {meshPoint,objectRectangle} from '../extensions/engines/media-deformation.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
@@ -91,3 +93,16 @@ assert.equal(tabDestination(1,3,'Home'),0);
 assert.equal(tabDestination(1,3,'End'),2);
 assert.equal(tabDestination(1,0,'Home'),-1);
 console.log('Optional tab keyboard navigation passed.');
+
+const vp={left:0,top:0,width:390,height:800};
+const f=floatingPosition({left:320,right:370,top:730,bottom:774},{width:210,height:180},vp);
+assert.equal(f.side,'above');assert.equal(f.left,170);assert.equal(f.top,544);
+assert.equal(floatingPosition({left:20,right:80,top:70,bottom:110},{width:150,height:50},vp,{prefer:'above'}).side,'above');
+assert.equal(floatingPosition({left:20,right:80,top:15,bottom:55},{width:150,height:50},vp,{prefer:'above'}).side,'below');
+assert.equal(floatingPosition({left:40,right:220,top:20,bottom:64},{width:120,height:50},vp,{rtl:true}).left,100);
+assert.equal(menuDestination(2,3,'ArrowDown'),0);
+assert.equal(menuDestination(0,3,'ArrowUp'),2);
+assert.equal(menuDestination(-1,3,'ArrowUp'),2);
+assert.equal(menuDestination(1,3,'Home'),0);
+assert.equal(menuDestination(1,0,'End'),-1);
+console.log('Floating placement, viewport flipping, RTL alignment and menu navigation passed.');

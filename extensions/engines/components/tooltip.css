@@ -1,0 +1,14 @@
+/* Optional supplementary, non-interactive tooltip. */
+.tooltip[role="tooltip"][popover] {
+  position:fixed;inset:auto;left:var(--_uibms-floating-left,0px);top:var(--_uibms-floating-top,0px);margin:0;
+  box-sizing:border-box;inline-size:max-content;min-inline-size:0;
+  max-inline-size:min(18rem,var(--_uibms-floating-max-width,calc(100dvw - 24px)));
+  max-block-size:var(--_uibms-floating-max-height,calc(100dvh - 24px));
+  padding:calc(var(--space) * .45) calc(var(--space) * .65);
+  border-radius:var(--radius);background-color:var(--color-surface);color:var(--color-text);
+  border:var(--border-width) solid var(--color-border-strong);box-shadow:var(--shadow);
+  font-size:.875em;line-height:1.45;overflow-wrap:anywhere;overflow:auto;pointer-events:auto;
+}
+@media (forced-colors:active) {
+  .tooltip[role="tooltip"][popover] { border-color:CanvasText;background:Canvas;color:CanvasText; }
+}

@@ -464,7 +464,7 @@ const engine = (function materialEngine() {
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts+',picture,source,track')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
+      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip]')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
       const overlay=overlayOwner(el);
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
