@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import {tabDestination} from '../extensions/engines/components/tabs.mjs';
 import {floatingPosition} from '../extensions/engines/components/floating.mjs';
 import {menuDestination} from '../extensions/engines/components/dropdown.mjs';
+import {toastDuration} from '../extensions/engines/components/toast.mjs';
 import {contour,step,motionProfile,shadowFilter,touchPhase,defaults,overlayPath,mediaFrame} from '../extensions/engines/material.mjs';
 import {meshPoint,objectRectangle} from '../extensions/engines/media-deformation.mjs';
 import {isoWeek,weekStart,calendarDays,parseDate} from '../extensions/engines/forms.mjs';
@@ -106,3 +107,6 @@ assert.equal(menuDestination(-1,3,'ArrowUp'),2);
 assert.equal(menuDestination(1,3,'Home'),0);
 assert.equal(menuDestination(1,0,'End'),-1);
 console.log('Floating placement, viewport flipping, RTL alignment and menu navigation passed.');
+
+for(const [value,tone,expected] of [[0,'info',0],[500,'info',5000],[10000,'success',10000],[6000,'warning',0],[6000,'danger',0],[Infinity,'info',0],[-1,'info',0],[1e12,'info',2147483647]])assert.equal(toastDuration(value,tone),expected);
+console.log('Toast duration and persistent critical-message policy passed.');

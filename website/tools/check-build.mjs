@@ -17,7 +17,7 @@ await stat(path.join(root,'framework/LICENSE'));
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.css'),'utf8'),expressiveStyles());
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.scoped.css'),'utf8'),expressiveStyles(true));
 for(const file of ['material.mjs','media-deformation.mjs','forms.mjs','liquid-silicone.css','forms.css','landscape.svg'])await stat(path.join(root,'engines',file));
-for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdown.css','dropdown.mjs','tooltip.css','tooltip.mjs','README.md'])await stat(path.join(root,'engines/components',file));
+for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdown.css','dropdown.mjs','tooltip.css','tooltip.mjs','drawer.css','drawer.mjs','toast.css','toast.mjs','README.md'])await stat(path.join(root,'engines/components',file));
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
  assert(html.includes('id="site-appearance"'),p.slug);

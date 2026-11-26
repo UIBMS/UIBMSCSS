@@ -108,7 +108,7 @@ const engine = (function materialEngine() {
     const filter=shadowFilter(shadow);
     const fits=e=>e.scrollWidth<=e.clientWidth+1&&e.scrollHeight<=e.clientHeight+1;
     const inner=isOverlay?el.querySelector(':scope > [data-uibms-form-content]'):null;
-    const overlayContour=isOverlay&&CSS.supports('overflow','clip')&&surface&&sameBorder&&uniformRadius&&image==='none'&&filter!==null&&['solid','none','hidden','dashed','dotted'].includes(borders[0].style)&&['visible','auto'].includes(cs.overflowX)&&['visible','auto'].includes(cs.overflowY)&&fits(el)&&(!inner||fits(inner));
+    const overlayContour=isOverlay&&!el.matches('dialog.drawer')&&CSS.supports('overflow','clip')&&surface&&sameBorder&&uniformRadius&&image==='none'&&filter!==null&&['solid','none','hidden','dashed','dotted'].includes(borders[0].style)&&['visible','auto'].includes(cs.overflowX)&&['visible','auto'].includes(cs.overflowY)&&fits(el)&&(!inner||fits(inner));
     const result={background,image,shadow,filter,border:borders[0],radii,uniformRadius,surface,complex,table:el.matches('table'),overlay:isOverlay,overlayContour,media:el.matches(mediaElements),mediaContour:sameBorder&&uniformRadius&&cs.borderImageSource==='none'&&cs.clipPath==='none'&&['solid','none','hidden','dashed','dotted'].includes(borders[0].style)&&CSS.supports('border-image-slice','0 fill'),foreground:cs.color};
     if(isOverlay)el.removeAttribute('data-uibms-overlay-measure');
     for(const k of restore)el.setAttribute(k,'');

@@ -12,6 +12,27 @@ if(document.querySelector('.tooltip[role="tooltip"][popover]')){
   const {mountTooltips}=await import('../engines/components/tooltip.mjs'+revision);
   mountTooltips(document);
 }
+if(document.querySelector('dialog.drawer')){
+  const {mountDrawers}=await import('../engines/components/drawer.mjs'+revision);
+  mountDrawers(document);
+}
+if(document.querySelector('#demo-notifications')){
+  const {mountToasts}=await import('../engines/components/toast.mjs'+revision);
+  const notifications = mountToasts(document.querySelector('#demo-notifications'));
+  document.querySelector('#toast-success').addEventListener('click', () => {
+    notifications.show({tone:'success', title:'Changes saved', message:'Your workspace is up to date.'});
+  });
+  document.querySelector('#toast-info').addEventListener('click', () => {
+    notifications.show({tone:'info', title:'Export ready', message:'This message expires after six seconds.', duration:6000});
+  });
+  document.querySelector('#toast-warning').addEventListener('click', () => {
+    notifications.show({tone:'warning', title:'Review required', message:'Two items need your attention.'});
+  });
+  document.querySelector('#toast-danger').addEventListener('click', () => {
+    notifications.show({tone:'danger', title:'Connection unavailable', message:'Your changes have not been submitted.'});
+  });
+  document.querySelector('#toast-clear').addEventListener('click', () => notifications.clear());
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});

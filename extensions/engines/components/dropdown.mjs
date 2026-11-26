@@ -21,9 +21,10 @@ export function mountDropdowns(root=document){
     const open=()=>menu.matches(':popover-open');
     const focusItem=(end=false)=>{const enabled=items();(enabled[end?enabled.length-1:0]||menu).focus();};
     const close=(returnFocus=false)=>{if(open())menu.hidePopover();if(returnFocus&&trigger.isConnected&&!unavailable(trigger))trigger.focus({preventScroll:true});};
-    const before=e=>{if(e.target===menu)trigger.setAttribute('aria-expanded',String(e.newState==='open'));};
+    const before=e=>{if(e.target!==menu)return;trigger.setAttribute('aria-expanded',String(e.newState==='open'));menu.toggleAttribute('data-uibms-menu-positioning',e.newState==='open');};
     const toggle=e=>{if(e.target!==menu)return;stop?.();stop=null;trigger.setAttribute('aria-expanded',String(open()));
-      if(open()){syncItems();stop=trackFloating(trigger,menu,{gap:8,inset:14});focusItem(last);}
+      if(open()){syncItems();stop=trackFloating(trigger,menu,{gap:8,inset:14});menu.removeAttribute('data-uibms-menu-positioning');focusItem(last);}
+      else menu.removeAttribute('data-uibms-menu-positioning');
       last=false;prefix='';
     };
     const triggerKeys=e=>{if(!['ArrowDown','ArrowUp'].includes(e.key)||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||unavailable(trigger))return;
@@ -50,7 +51,7 @@ export function mountDropdowns(root=document){
     const listeners=[[menu,'beforetoggle',before],[menu,'toggle',toggle],[trigger,'keydown',triggerKeys],[menu,'keydown',keys],[menu,'click',click],[menu,'focusout',focusout]];
     syncItems();trigger.setAttribute('aria-expanded',String(open()));for(const [el,event,fn] of listeners)el.addEventListener(event,fn);
     if(open())stop=trackFloating(trigger,menu,{gap:8,inset:14});
-    return {trigger,syncItems,destroy(){stop?.();for(const [el,event,fn] of listeners)el.removeEventListener(event,fn);if(open())menu.hidePopover();for(const value of saved.values())restore(value);restore(original);}};
+    return {trigger,syncItems,destroy(){stop?.();menu.removeAttribute('data-uibms-menu-positioning');for(const [el,event,fn] of listeners)el.removeEventListener(event,fn);if(open())menu.hidePopover();for(const value of saved.values())restore(value);restore(original);}};
   }
   function refresh(){
     const keep=new Set(),triggers=[...root.querySelectorAll('button[popovertarget][aria-haspopup="menu"]')];
@@ -62,6 +63,10 @@ export function mountDropdowns(root=document){
     }
     for(const [menu,state] of states)if(!keep.has(menu)){state.destroy();states.delete(menu);}
   }
-  const api={refresh,destroy(){for(const state of states.values())state.destroy();states.clear();instances.delete(root);}};
+  // Native light dismissal is primary. A click outside also closes a managed
+  // auto popover if the browser has not already dismissed it.
+  const outside=e=>{const path=e.composedPath();for(const [menu,state] of states)if(menu.matches(':popover-open')&&!path.includes(menu)&&!path.includes(state.trigger))menu.hidePopover();};
+  doc.addEventListener('click',outside,true);
+  const api={refresh,destroy(){doc.removeEventListener('click',outside,true);for(const state of states.values())state.destroy();states.clear();instances.delete(root);}};
   instances.set(root,api);refresh();return api;
 }

@@ -8,6 +8,8 @@
   padding:calc(var(--space) * .35);border-radius:calc(var(--radius) * 1.5);
 }
 .dropdown[role="menu"][popover]:popover-open { display:grid;gap:calc(var(--space) * .15); }
+/* Never expose the initial top-left measurement box to pointer events. */
+.dropdown[data-uibms-menu-positioning] { visibility:hidden;pointer-events:none; }
 @layer defaults {
   :where(.dropdown [role="menuitem"]) {
     display:block;inline-size:100%;min-inline-size:0;min-block-size:var(--target-size);
