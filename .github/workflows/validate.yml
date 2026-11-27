@@ -1,0 +1,125 @@
+name: Validate UIBMS CSS
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validate-uibmscss-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Reproduce distributions and build documentation
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      SITE_BASE: /UIBMSCSS/
+      SITE_PUBLIC: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.16.0'
+      - name: Install distribution tooling
+        working-directory: tools
+        run: npm install --no-audit --no-fund
+      - name: Reproduce committed CSS
+        run: |
+          npm --prefix tools run build
+          git diff --exit-code -- dist/
+          test -z "$(git status --porcelain --untracked-files=all -- dist/)"
+      - name: Install website dependencies
+        working-directory: website
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --no-audit --no-fund
+          else
+            npm install --no-audit --no-fund
+          fi
+      - name: Verify optional engine primitives
+        run: node tests/engines.mjs
+      - name: Verify catalogue and native HTML contract
+        working-directory: website
+        run: npm run check:content
+      - name: Build Astro documentation and demos
+        working-directory: website
+        run: npm run build
+      - name: Verify generated static assets and routes
+        working-directory: website
+        run: node tools/check-build.mjs
+      - name: Preserve generated website for integration checks
+        uses: actions/upload-artifact@v4
+        with:
+          name: validated-website
+          path: website/dist
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
+
+  core:
+    name: Core CSS and table regression (${{ matrix.browser }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, firefox, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test browser
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps ${{ matrix.browser }}
+      - name: Core release regression
+        run: python tests/release.py --browser ${{ matrix.browser }} --report release-${{ matrix.browser }}.json
+      - name: Responsive table regression
+        if: ${{ !cancelled() }}
+        run: python tests/tables.py --browser ${{ matrix.browser }}
+      - name: Preserve release report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-release-${{ matrix.browser }}
+          path: release-${{ matrix.browser }}.json
+          if-no-files-found: warn
+          retention-days: 7
+
+  site:
+    name: Website and dashboard integration (${{ matrix.browser }})
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      SITE_BASE: /UIBMSCSS/
+    strategy:
+      fail-fast: false
+      matrix:
+        browser: [chromium, webkit]
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@v4
+        with:
+          name: validated-website
+          path: website/dist
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test browser
+        run: |
+          python -m pip install playwright
+          python -m playwright install --with-deps ${{ matrix.browser }}
+      - name: Verify real-origin material, controls and standalone demo
+        run: python website/tests/material-review.py --browser ${{ matrix.browser }}
