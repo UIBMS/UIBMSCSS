@@ -1,10 +1,10 @@
 // Standalone application behavior only. CSS owns all presentation and layout.
 const revision=new URL(import.meta.url).search;
+const appearanceModule=import('./appearance-engines.js'+revision);
 const [
-  {mountAppShell},{mountDrawers},{mountDropdowns},{mountTooltips},{mountTabs},{mountStepper},{mountPagination},{mountChips},{mountCommandPalette},{mountToasts},{mountSplitWorkspace},{mountProgressRing}, {loadAppearanceEngines}
+  {mountAppShell},{mountDropdowns},{mountTooltips},{mountTabs},{mountStepper},{mountPagination},{mountChips},{mountCommandPalette},{mountToasts},{mountSplitWorkspace},{mountProgressRing}, {loadAppearanceEngines}
 ]=await Promise.all([
   import('../engines/dashboard/app-shell.mjs'+revision),
-  import('../engines/components/drawer.mjs'+revision),
   import('../engines/components/dropdown.mjs'+revision),
   import('../engines/components/tooltip.mjs'+revision),
   import('../engines/components/tabs.mjs'+revision),
@@ -15,13 +15,14 @@ const [
   import('../engines/components/toast.mjs'+revision),
   import('../engines/dashboard/split-workspace.mjs'+revision),
   import('../engines/dashboard/progress-ring.mjs'+revision),
-  import('./appearance-engines.js'+revision)
+  appearanceModule,
+  appearanceModule.then(({loadDrawerFallback})=>loadDrawerFallback(()=>import('../engines/components/drawer.mjs'+revision)))
 ]);
 const $=(id)=>document.getElementById(id);
 const {profiles,projects}=JSON.parse($('admin-demo-data').textContent);
 const shell=$('admin-shell'),workspace=$('admin-main');
 const layout=mountAppShell(shell);
-mountDrawers(document);mountDropdowns(document);mountTooltips(document);mountTabs(document);
+mountDropdowns(document);mountTooltips(document);mountTabs(document);
 const notifications=mountToasts($('admin-notifications'));
 const split=mountSplitWorkspace($('admin-project-split'));
 for(const ring of document.querySelectorAll('.progress-ring'))mountProgressRing(ring);
@@ -84,30 +85,41 @@ const rowTemplate=$('admin-row-template'),pageSize=5;
 const projectButton='button[name="project"]';
 const rowsById=new Map([...rows.children].map(row=>[Number(row.querySelector(projectButton).value),row]));
 const statusFilter=()=>document.querySelector('input[name="admin-status"]:checked').value;
-const filtered=()=>projects.filter(p=>{
+const filtered=()=>{
   const words=search.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
-  return (statusFilter()==='All'||p.status===statusFilter())&&(!priority.checked||p.priority)&&words.every(word=>(p.name+' '+p.team+' '+p.owner).toLocaleLowerCase().includes(word));
-});
+  const status=statusFilter(),priorityOnly=priority.checked;
+  return projects.filter(p=>{
+    if((status!=='All'&&p.status!==status)||(priorityOnly&&!p.priority))return false;
+    if(!words.length)return true;
+    const haystack=(p.name+' '+p.team+' '+p.owner).toLocaleLowerCase();
+    return words.every(word=>haystack.includes(word));
+  });
+};
 const tone=s=>s==='Completed'?'success':s==='Active'?'info':'warning';
 let selected=projects[0]?.id;
 const project=()=>projects.find(p=>p.id===selected);
-const pagination=mountPagination($('admin-pagination'),{total:Math.ceil(projects.length/pageSize),onChange:renderRows});
+const pagination=mountPagination($('admin-pagination'),{total:Math.ceil(projects.length/pageSize),onChange:()=>renderRows()});
 function updateRow(p){
   let r=rowsById.get(p.id);
   if(!r){r=rowTemplate.content.firstElementChild.cloneNode(true);rows.prepend(r);rowsById.set(p.id,r);}
   const b=r.querySelector(projectButton),tag=r.querySelector('.tag');
-  b.value=String(p.id);if(b.textContent!==p.name)b.textContent=p.name;const pressed=String(p.id===selected);if(b.getAttribute('aria-pressed')!==pressed)b.setAttribute('aria-pressed',pressed);if(r.cells[1].textContent!==p.owner)r.cells[1].textContent=p.owner;if(tag.textContent!==p.status)tag.textContent=p.status;if(tag.dataset.tone!==tone(p.status))tag.dataset.tone=tone(p.status);
+  if(b.value!==String(p.id))b.value=String(p.id);if(b.textContent!==p.name)b.textContent=p.name;const pressed=String(p.id===selected);if(b.getAttribute('aria-pressed')!==pressed)b.setAttribute('aria-pressed',pressed);if(r.cells[1].textContent!==p.owner)r.cells[1].textContent=p.owner;if(tag.textContent!==p.status)tag.textContent=p.status;if(tag.dataset.tone!==tone(p.status))tag.dataset.tone=tone(p.status);
 }
-function renderRows(){
-  const list=filtered(),start=(pagination.current-1)*pageSize,visible=new Set(list.slice(start,start+pageSize).map(p=>p.id));
-  for(const p of projects){updateRow(p);rowsById.get(p.id).hidden=!visible.has(p.id);}
-  $('admin-record-count').value=list.length?'Showing '+(start+1)+'–'+Math.min(start+pageSize,list.length)+' of '+list.length+' projects':'0 projects';
-  $('admin-empty').hidden=!!list.length;
+function renderRows(list=filtered()){
+  const start=(pagination.current-1)*pageSize,visible=new Set(list.slice(start,start+pageSize).map(p=>p.id));
+  for(const p of projects){
+    updateRow(p);
+    const row=rowsById.get(p.id),hidden=!visible.has(p.id);
+    if(row.hidden!==hidden)row.hidden=hidden;
+  }
+  const count=$('admin-record-count'),summary=list.length?'Showing '+(start+1)+'–'+Math.min(start+pageSize,list.length)+' of '+list.length+' projects':'0 projects';
+  if(count.value!==summary)count.value=summary;
+  const empty=$('admin-empty');if(empty.hidden!==!!list.length)empty.hidden=!!list.length;
 }
 function applyFilters({first=true}={}){
   const list=filtered();
   pagination.setTotal(Math.max(1,Math.ceil(list.length/pageSize)));
-  if(first)pagination.setPage(1,{notify:false});renderRows();
+  if(first)pagination.setPage(1,{notify:false});renderRows(list);
 }
 search.addEventListener('input',()=>applyFilters());priority.addEventListener('change',()=>applyFilters());
 for(const radio of document.querySelectorAll('input[name="admin-status"]'))radio.addEventListener('change',()=>applyFilters());

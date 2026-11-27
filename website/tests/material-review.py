@@ -258,9 +258,18 @@ try:
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         optional_engines=lambda:[request for request in requests if re.search(r"/engines/(material|forms)\.mjs",request)]
         check(not optional_engines(),"default documentation skips optional appearance scripts")
+        native_drawers=cp.evaluate("()=>{const b=document.createElement('button');return 'commandForElement' in b&&'command' in b&&'closedBy' in document.createElement('dialog')}")
+        drawer_requests=[request for request in requests if re.search(r"/engines/components/drawer\.mjs",request)]
+        check(len(drawer_requests)==(0 if native_drawers else 1),"drawer adapter is requested only for missing native capabilities")
+        other_controllers=[request for request in requests if re.search(r"/engines/(components|dashboard)/",request) and request not in drawer_requests]
+        check(not other_controllers,"plain native controls do not request unrelated component adapters")
         set_profile(cp,material="liquid-silicone")
         cp.locator("[data-site-demo-content] button[data-uibms-material-host]").first.wait_for(state="attached")
         check(len(optional_engines())==2,"selecting Silicone loads both appearance engines once")
+        set_profile(cp,material="default")
+        set_profile(cp,material="liquid-silicone")
+        cp.locator("[data-site-demo-content] button[data-uibms-material-host]").first.wait_for(state="attached")
+        check(len(optional_engines())==2,"re-enabling appearance does not request duplicate engines")
         cp.remove_listener("request",capture)
         cp.goto(url+"docs/dialogs/",wait_until="load")
         example=cp.locator("[data-site-example]").first
@@ -548,6 +557,17 @@ try:
         pagination.get_by_role("button",name="Next",exact=True).click()
         check(pagination.locator('[aria-current=page]').inner_text()=="6" and summary.inner_text()=="Showing records 51–60 of 100","pagination updates actual content")
         check(pagination.get_by_role("button",name="Next",exact=True).evaluate("e=>document.activeElement===e"),"paging preserves focus")
+        check(cp.evaluate("""async()=>{
+          const entry=[...document.scripts].find(s=>s.src.includes('/assets/engines.js'));
+          const moduleUrl=new URL('../engines/components/pagination.mjs'+new URL(entry.src).search,entry.src);
+          const {mountPagination}=await import(moduleUrl.href);
+          const nav=document.querySelector('#records-pagination'),api=mountPagination(nav);
+          const next=nav.querySelector('[aria-label="Next"]');
+          let mutations=0;const observer=new MutationObserver(records=>mutations+=records.length);
+          observer.observe(nav,{childList:true,subtree:true,attributes:true});
+          api.setTotal(api.total);await Promise.resolve();observer.disconnect();
+          return mutations===0&&next===nav.querySelector('[aria-label="Next"]')&&document.activeElement===next;
+        }"""),"unchanged total preserves pager DOM and focus")
         pagination.get_by_role("button",name="Page 10",exact=True).click()
         check(pagination.get_by_role("button",name="Next",exact=True).is_disabled(),"last page disables next")
         pagination.get_by_role("button",name="Page 1",exact=True).click()
@@ -679,6 +699,15 @@ try:
             check(native_page.locator("#site-main-menu-drawer").evaluate("e=>e.matches(':modal')"),"native command drawer works without site JS")
             native_page.get_by_role("button",name="Close main menu",exact=True).click()
             native_page.locator("#site-main-menu-drawer").wait_for(state="hidden")
+            for slug,opener,dialog_id in [("dialogs","open-native-dialog","native-dialog"),("exit","open-exit-dialog","exit-dialog")]:
+                native_page.goto(url+"docs/"+slug+"/",wait_until="load")
+                native_page.locator("#"+opener).click()
+                dialog=native_page.locator("#"+dialog_id)
+                dialog.wait_for(state="visible")
+                check(dialog.evaluate("e=>e.matches(':modal')"),"native example opens without site JavaScript "+slug)
+                dialog.get_by_role("button",name="Close",exact=True).click()
+                dialog.wait_for(state="hidden")
+                check(not dialog.evaluate("e=>e.open"),"native example closes without site JavaScript "+slug)
             native_context.close()
         noscript_context=browser.new_context(java_script_enabled=False,viewport={"width":390,"height":844})
         noscript_page=noscript_context.new_page()

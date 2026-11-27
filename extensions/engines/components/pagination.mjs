@@ -44,7 +44,7 @@ export function mountPagination(nav,{current=1,total=1,siblings=1,onChange=null,
   }
   const click=e=>{const b=e.target.closest?.('button');if(b&&ul.contains(b)&&!b.disabled)setPage(Number(b.value));};
   ul.addEventListener('click',click);
-  const api={setPage,setTotal(n){if(dead)return;total=integer(n,total,1,Number.MAX_SAFE_INTEGER);current=Math.min(current,total);render();},
+  const api={setPage,setTotal(n){if(dead)return;const next=integer(n,total,1,Number.MAX_SAFE_INTEGER);if(next===total)return;total=next;current=Math.min(current,total);render();},
     get current(){return current;},get total(){return total;},destroy(){if(dead)return;dead=true;ul.removeEventListener('click',click);ul.remove();controls.clear();instances.delete(nav);}};
   instances.set(nav,api);render();return api;
 }
