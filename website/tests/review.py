@@ -64,7 +64,7 @@ def make_inline(f,settings):
    drawer=(site/'engines/components/drawer.mjs').read_text()
    toast=(site/'engines/components/toast.mjs').read_text()
    optional_components=[(name,(site/('engines/components/'+name+'.mjs')).read_text()) for name in ['stepper','pagination','chips','command']]
-   for name in ['app-shell','split-workspace']:
+   for name in ['app-shell','split-workspace','sparkline','progress-ring']:
     component=(site/('engines/dashboard/'+name+'.mjs')).read_text()
     source=source.replace("import('../engines/dashboard/"+name+".mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(component)+'],{type:"text/javascript"})))')
    media=(site/'engines/media-deformation.mjs').read_text()

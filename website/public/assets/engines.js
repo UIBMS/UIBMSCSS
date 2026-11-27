@@ -132,6 +132,15 @@ if(document.querySelector('.app-shell,.split-workspace')){
     mountCommandPalette(shell.querySelector('#dash-commands'));
   }
 }
+// The widget adapters are generic: the native data/progress values are the source.
+if(document.querySelector('figure.sparkline > svg.sparkline-plot:empty')){
+  const {mountSparkline}=await import('../engines/dashboard/sparkline.mjs'+revision);
+  for(const figure of document.querySelectorAll('figure.sparkline:has(> svg.sparkline-plot:empty)'))mountSparkline(figure);
+}
+if(document.querySelector('.progress-ring > progress')){
+  const {mountProgressRing}=await import('../engines/dashboard/progress-ring.mjs'+revision);
+  for(const root of document.querySelectorAll('.progress-ring:has(> progress)'))mountProgressRing(root);
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});

@@ -1,0 +1,23 @@
+/* The native progress remains the accessible source of truth. */
+@layer features {
+  :where(.progress-ring) { min-inline-size:0; }
+  :where(.progress-ring-face) {
+    display:grid;place-items:center;inline-size:min(100%,var(--dashboard-ring-size,7rem));aspect-ratio:1;
+    color:var(--color-text);
+  }
+  :where(.progress-ring-face > *) { grid-area:1/1; }
+  :where(.progress-ring-face > svg) { display:block;inline-size:100%;block-size:auto; }
+  :where(.progress-ring-track,.progress-ring-fill) {
+    fill:none;stroke-width:var(--dashboard-ring-stroke,8); 
+  }
+  :where(.progress-ring-track) { stroke:var(--color-border); }
+  :where(.progress-ring-fill) { stroke:var(--dashboard-ring-ink,var(--color-accent));stroke-linecap:round; }
+  :where(.progress-ring-value) { font-weight:650;font-variant-numeric:tabular-nums;font-size:var(--dashboard-ring-value-size,1.15em); }
+  :where(.progress-ring-face[hidden]) { display:none !important; }
+}
+@layer preferences {
+  @media (forced-colors:active) {
+    :where(.progress-ring-track) { stroke:GrayText; }
+    :where(.progress-ring-fill) { stroke:Highlight; }
+  }
+}

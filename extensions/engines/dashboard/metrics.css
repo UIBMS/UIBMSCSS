@@ -1,0 +1,15 @@
+/* Metric content only: compose with the existing .card/.panel and .stack. */
+@layer features {
+  :where(.metric-card) { min-inline-size:0;overflow-wrap:anywhere; }
+  :where(.metric-value) {
+    display:block;font-size:var(--dashboard-metric-size,1.75em);
+    line-height:var(--heading-line-height);font-variant-numeric:tabular-nums;
+  }
+  :where(.metric-label,.metric-context) { color:var(--color-text-muted); }
+  :where(.metric-change) { font-variant-numeric:tabular-nums;font-weight:600;color:var(--color-text); }
+  :where(.metric-change[data-tone="success"]) { color:var(--color-success); }
+  :where(.metric-change[data-tone="warning"]) { color:var(--color-warning); }
+  :where(.metric-change[data-tone="danger"]) { color:var(--color-danger); }
+  :where(.metric-change[data-tone="info"]) { color:var(--color-info); }
+  :where(.metric-card progress,.metric-card meter) { inline-size:100%; }
+}

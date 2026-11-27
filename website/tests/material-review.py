@@ -635,6 +635,15 @@ try:
         cp.wait_for_function("()=>document.querySelector('#dashboard-demo-shell .sidebar-toggle').getAttribute('aria-expanded')==='true'")
         check(side.is_visible(),"desktop preference restored after mobile layout")
         check(not shell.evaluate("e=>e.hasAttribute('data-uibms-material-host')"),"material does not deform layout boundary")
+        # The composed dashboard uses the same widgets as the individual pages.
+        if not shell.locator("#dash-overview").is_visible():
+            if toggle.get_attribute("aria-expanded")=="false" and not side.is_visible():
+                toggle.click()
+            side.get_by_role("link",name="Overview",exact=True).click()
+        check(shell.locator("#dash-overview .metric-card").count()==3,"dashboard uses shared metric cards")
+        check(shell.locator("#dash-overview .sparkline-plot polyline").count()==1,"dashboard renders native SVG trend")
+        check(shell.locator("#dash-overview .progress-ring-value").inner_text()=="78%","dashboard uses actual native completion ratio")
+        check(shell.locator("#dash-overview .quick-actions").get_by_role("link",name="Open projects").count()==1,"dashboard reuses native quick actions")
 
         cp.goto(url+"docs/app-shell/",wait_until="load")
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
@@ -682,6 +691,95 @@ try:
         check(notes.input_value()=="Preserve my notes","wide split restores ratio and values")
         set_profile(cp,material="liquid-silicone",theme="dark",palette="graphite-punch")
         check(split.evaluate("e=>!e.hasAttribute('data-uibms-material-host')"),"split geometry remains stable under material")
+        # Dashboard widgets reuse native HTML, core surfaces and theme roles.
+        cp.set_viewport_size({"width":1800,"height":1000})
+        cp.goto(url+"docs/kpi-cards/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(cp,theme="light",palette="natural",material="default",effects="none",density="default")
+        metrics=cp.locator("[data-site-demo-content] .metric-card")
+        check(metrics.count()==3 and metrics.first.evaluate("e=>e.classList.contains('card')&&e.classList.contains('stack')"),"KPI reuses core card and stack")
+        check(metrics.first.locator(".metric-value").inner_text()=="€48,250","KPI preserves application-formatted value")
+        change=metrics.first.locator(".metric-change")
+        check(change.evaluate("""e=>{
+          const probe=document.createElement('span');probe.style.color='var(--color-success)';e.append(probe);
+          const ok=getComputedStyle(e).color===getComputedStyle(probe).color;probe.remove();return ok;
+        }"""),"metric change uses existing semantic success role")
+        cp.goto(url+"docs/statistic-cards/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        check(cp.locator("[data-site-demo-content] progress").evaluate("e=>e.value===28&&e.max===36"),"statistics retain native progress")
+        check(cp.locator("[data-site-demo-content] meter").evaluate("e=>e.value===81&&e.max===100"),"statistics retain native meter")
+
+        cp.goto(url+"docs/sparklines/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(cp,theme="light",palette="natural",material="default",effects="none")
+        spark=cp.locator("#demo-revenue-trend")
+        line=spark.locator("polyline")
+        check(line.count()==1 and line.evaluate("e=>e.points.numberOfItems===7"),"sparkline draws one vertex per native data value")
+        flat=cp.locator("#demo-flat-trend polyline")
+        check(flat.evaluate("e=>Array.from(e.points).every(p=>p.y===20)"),"constant series produces a flat line")
+        check(spark.locator("svg").get_attribute("aria-hidden")=="true" and spark.locator("data").count()==7,"decorative graph preserves accessible source values")
+        points=line.get_attribute("points")
+        cp.evaluate("""async()=>{
+          const revision=new URL(document.querySelector('script[src*="/assets/engines.js"]').src).search;
+          const {mountSparkline}=await import(new URL('../../engines/dashboard/sparkline.mjs'+revision,location.href).href);
+          const figure=document.querySelector('#demo-revenue-trend');
+          const datum=figure.querySelector('.sparkline-values data');datum.value='55';datum.textContent='55';
+          mountSparkline(figure).refresh();
+        }""")
+        check(line.get_attribute("points")!=points,"sparkline refresh derives geometry from changed data")
+        old_ink=line.evaluate("e=>getComputedStyle(e).stroke")
+        set_profile(cp,theme="dark",palette="graphite-punch")
+        check(line.evaluate("e=>getComputedStyle(e).stroke")!=old_ink,"sparkline inherits theme and palette ink")
+        cp.set_viewport_size({"width":320,"height":844})
+        set_profile(cp,material="liquid-silicone")
+        check_width(cp,"sparkline mobile")
+        check(spark.locator("svg").evaluate("e=>e.getBoundingClientRect().width<=e.parentElement.getBoundingClientRect().width+1"),"sparkline stays within card")
+
+        cp.goto(url+"docs/progress-rings/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(cp,material="default")
+        ring=cp.locator("#demo-project-ring")
+        native=ring.locator("progress")
+        readout=ring.locator(".progress-ring-value")
+        check(readout.inner_text()=="78%" and native.evaluate("e=>e.value===28&&e.max===36"),"ring derives localized percentage from native progress")
+        check(ring.get_by_role("progressbar",name="Completed projects").count()==1 and ring.locator(".progress-ring-face").get_attribute("aria-hidden")=="true","ring retains a single accessible progress indicator")
+        native.evaluate("e=>{e.max=200;e.value=100}")
+        cp.wait_for_function("()=>document.querySelector('#demo-project-ring .progress-ring-value').textContent==='50%'")
+        check(ring.locator(".progress-ring-fill").get_attribute("stroke-dasharray")=="50 100","ring geometry follows value and max")
+        native.evaluate("e=>e.value=0")
+        cp.wait_for_function("()=>document.querySelector('#demo-project-ring .progress-ring-fill').getAttribute('visibility')==='hidden'")
+        check(readout.inner_text()=="0%","zero progress has no false filled arc")
+        native.evaluate("e=>e.removeAttribute('value')")
+        ring.locator(".progress-ring-face").wait_for(state="hidden")
+        check(not native.evaluate("e=>e.classList.contains('visually-hidden')"),"indeterminate progress uses native fallback")
+        native.evaluate("e=>e.value=150")
+        ring.locator(".progress-ring-face").wait_for(state="visible")
+        check(readout.inner_text()=="75%","determinate progress enhancement resumes")
+        check(cp.locator("#demo-indeterminate-ring .progress-ring-face").is_hidden(),"authored indeterminate progress remains native")
+        set_profile(cp,theme="dark",palette="graphite-punch",material="liquid-silicone")
+        check_width(cp,"progress rings mobile")
+
+        cp.set_viewport_size({"width":1800,"height":1000})
+        cp.goto(url+"docs/widget-grid/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        set_profile(cp,material="default",density="default")
+        grid=cp.locator("[data-site-demo-content] .widget-grid")
+        check(grid.evaluate("e=>e.classList.contains('grid')&&getComputedStyle(e).display==='grid'"),"widget grid extends core grid")
+        wide=grid.evaluate("e=>getComputedStyle(e).gridTemplateColumns.split(' ').length")
+        check(wide>1,"widget grid has multiple desktop columns",wide)
+        for width in [320,390,430]:
+            cp.set_viewport_size({"width":width,"height":844})
+            frame(cp)
+            check_width(cp,"widget grid "+str(width))
+            check(grid.evaluate("""e=>{
+              const box=e.getBoundingClientRect();
+              return [...e.children].every(c=>{const r=c.getBoundingClientRect();return r.left>=box.left-1&&r.right<=box.right+1});
+            }"""),"widget children fit "+str(width))
+        cp.goto(url+"docs/quick-actions/",wait_until="load")
+        cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
+        actions=cp.locator("[data-site-demo-content] .quick-actions")
+        check(actions.get_by_role("link").count()==3 and actions.evaluate("e=>e.classList.contains('cluster')"),"quick actions preserve native links and core cluster")
+        check_width(cp,"quick actions mobile")
         component_context.close()
         check(not errors,"no component runtime errors",errors)
         # Use an actual touch-capable, mobile context, with motion permitted.

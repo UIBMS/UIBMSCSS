@@ -1,0 +1,8 @@
+/* Extend the existing intrinsic .grid; do not duplicate its layout. */
+@layer features {
+  :where(.grid.widget-grid:not(.flex,.stack,.cluster,.sidebar,.split)) {
+    grid-template-columns:repeat(auto-fit,minmax(min(100%,var(--dashboard-widget-min,16rem)),1fr));
+    gap:var(--dashboard-widget-gap,var(--space));
+  }
+  :where(.grid.widget-grid > *) { min-inline-size:0; }
+}

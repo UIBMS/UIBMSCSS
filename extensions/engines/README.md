@@ -65,3 +65,5 @@ The complete initial component collection now includes tabs, segmented controls,
 ## Optional dashboard layouts
 
 The dashboard/ directory provides independently loadable App Shell, Sidebar, Topbar, Page Header and Split Workspace styles, plus small optional shell and splitter controllers. See dashboard/README.md for the structural contracts. Layout boundaries stay stable under material feedback; nested native controls remain interactive. Neither the core CSS nor the general component library requires these modules.
+
+Dashboard widgets are optional additions in dashboard/: shared KPI/statistic metrics, intrinsic widget grid, quick actions, native SVG sparklines and native-progress-driven rings. See dashboard/README.md for the loading contract and engineering conventions. The core distributions remain unchanged.
