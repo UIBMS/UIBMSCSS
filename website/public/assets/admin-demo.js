@@ -1,7 +1,7 @@
 // Standalone application behavior only. CSS owns all presentation and layout.
 const revision=new URL(import.meta.url).search;
 const [
-  {mountAppShell},{mountDrawers},{mountDropdowns},{mountTooltips},{mountTabs},{mountStepper},{mountPagination},{mountChips},{mountCommandPalette},{mountToasts},{mountSplitWorkspace},{mountSparkline},{mountProgressRing},{mountMaterial},{mountForms}
+  {mountAppShell},{mountDrawers},{mountDropdowns},{mountTooltips},{mountTabs},{mountStepper},{mountPagination},{mountChips},{mountCommandPalette},{mountToasts},{mountSplitWorkspace},{mountProgressRing}, {loadAppearanceEngines}
 ]=await Promise.all([
   import('../engines/dashboard/app-shell.mjs'+revision),
   import('../engines/components/drawer.mjs'+revision),
@@ -14,10 +14,8 @@ const [
   import('../engines/components/command.mjs'+revision),
   import('../engines/components/toast.mjs'+revision),
   import('../engines/dashboard/split-workspace.mjs'+revision),
-  import('../engines/dashboard/sparkline.mjs'+revision),
   import('../engines/dashboard/progress-ring.mjs'+revision),
-  import('../engines/material.mjs'+revision),
-  import('../engines/forms.mjs'+revision)
+  import('./appearance-engines.js'+revision)
 ]);
 const $=(id)=>document.getElementById(id);
 const {profiles,projects}=JSON.parse($('admin-demo-data').textContent);
@@ -26,7 +24,6 @@ const layout=mountAppShell(shell);
 mountDrawers(document);mountDropdowns(document);mountTooltips(document);mountTabs(document);
 const notifications=mountToasts($('admin-notifications'));
 const split=mountSplitWorkspace($('admin-project-split'));
-for(const figure of document.querySelectorAll('figure.sparkline'))mountSparkline(figure);
 for(const ring of document.querySelectorAll('.progress-ring'))mountProgressRing(ring);
 mountCommandPalette($('admin-commands'),{shortcut:true});
 const wizard=mountStepper($('admin-create-steps'));
@@ -202,6 +199,10 @@ $('admin-reset-session').addEventListener('click',()=>{if(window.confirm('Reset 
 renderDetail();applyFilters();updateMetrics();updateWizard();routeFromLocation();
 // Optional visual adapters consume native controls and authored tokens;
 // they do not own any application data or responsive geometry.
-mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
-mountForms(document,{filter:el=>!!el.closest('#admin-create-form,#admin-settings-form')});
+await loadAppearanceEngines({
+  loadMaterial:()=>import('../engines/material.mjs'+revision),
+  loadForms:()=>import('../engines/forms.mjs'+revision),
+  loadMedia:()=>import('../engines/media-deformation.mjs'+revision),
+  filter:el=>!!el.closest('#admin-create-form,#admin-settings-form')
+});
 settings.querySelector('button[type="submit"]').disabled=false;

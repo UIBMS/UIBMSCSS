@@ -23,10 +23,18 @@ export function placeFloating(trigger,popup,options={}){
   set('--_uibms-floating-left',placed.left+'px');set('--_uibms-floating-top',placed.top+'px');
   return f;
 }
+export function canAnchor(popup){
+  const win=popup.ownerDocument.defaultView;
+  return win.CSS?.supports('position-area: block-end span-inline-end')&&
+    win.CSS.supports('position-try-fallbacks: flip-block')&&
+    win.getComputedStyle(popup).positionArea!=='none';
+}
 export function trackFloating(trigger,popup,options={}){
   const win=trigger.ownerDocument.defaultView;let pending=0,stopped=false;
-  const names=['left','top','max-width','max-height'].map(k=>'--_uibms-floating-'+k);
+  const names=['left','top','max-width','max-height','area','gap'].map(k=>'--_uibms-floating-'+k);
   const original=names.map(k=>[k,popup.style.getPropertyValue(k),popup.style.getPropertyPriority(k)]);
+  popup.style.setProperty('--_uibms-floating-area','none');
+  popup.style.setProperty('--_uibms-floating-gap','0px');
   const update=()=>{pending=0;if(!stopped&&trigger.isConnected&&popup.isConnected&&popup.matches(':popover-open'))placeFloating(trigger,popup,options);};
   const schedule=()=>{if(!stopped&&!pending)pending=win.requestAnimationFrame(update);};
   win.addEventListener('resize',schedule);win.addEventListener('scroll',schedule,true);

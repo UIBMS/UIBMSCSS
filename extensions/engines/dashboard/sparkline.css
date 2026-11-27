@@ -1,21 +1,21 @@
 /* Native SVG graph: theme-aware ink, no palette or layout engine. */
 @layer features {
   :where(.sparkline) { margin:0;min-inline-size:0; }
-  :where(.sparkline-plot) {
+  :where(.sparkline-plot,.sparkline > svg) {
     display:block;inline-size:100%;block-size:var(--dashboard-sparkline-height,3.5rem);
     color:var(--dashboard-sparkline-ink,var(--color-accent));overflow:visible;
   }
-  :where(.sparkline-plot polyline) {
+  :where(:is(.sparkline-plot,.sparkline > svg) polyline) {
     fill:none;stroke:currentColor;stroke-width:var(--dashboard-chart-stroke,2px);
     vector-effect:non-scaling-stroke;stroke-linecap:round;stroke-linejoin:round;
   }
-  :where(.sparkline-plot circle) { fill:currentColor; }
+  :where(:is(.sparkline-plot,.sparkline > svg) circle) { fill:currentColor; }
   :where(.sparkline figcaption) { color:var(--color-text-muted); }
-  :where(.sparkline-values) { font-variant-numeric:tabular-nums; }
-  :where(.sparkline-plot:empty) { display:none; }
+  :where(.sparkline-values,.sparkline details > ol) { font-variant-numeric:tabular-nums; }
+  :where(.sparkline-plot,.sparkline > svg):where(:empty) { display:none; }
 }
 @layer preferences {
   @media (forced-colors:active) {
-    :where(.sparkline-plot) { color:CanvasText; }
+    :where(.sparkline-plot,.sparkline > svg) { color:CanvasText; }
   }
 }

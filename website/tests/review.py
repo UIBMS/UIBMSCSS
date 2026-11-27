@@ -71,6 +71,8 @@ def make_inline(f,settings):
    material=(site/'engines/material.mjs').read_text()
    forms=(site/'engines/forms.mjs').read_text()
    source=source.replace("const revision=new URL(import.meta.url).search;",'')
+   appearance=(site/'assets/appearance-engines.js').read_text()
+   source=source.replace("import('./appearance-engines.js'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(appearance)+'],{type:"text/javascript"})))')
    for name,component in [('material',material),('forms',forms)]:
     source=source.replace("import('../engines/"+name+".mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(component)+'],{type:"text/javascript"})))')
    source=source.replace("import('../engines/components/tabs.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(tabs)+'],{type:"text/javascript"})))')

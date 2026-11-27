@@ -18,7 +18,7 @@ Both stylesheets inherit palette, theme, density, shape, typography, border and 
 
 ## Dropdown menus
 
-Load dropdown.css and import mountDropdowns from dropdown.mjs (keep floating.mjs beside it). Use one button with aria-haspopup="menu" and popovertarget per .dropdown[role="menu"][popover="auto"]. The menu has a unique ID, tabindex="-1", an accessible name and native buttons or anchors with role="menuitem". Native popover handles outside dismissal. The controller manages focus, arrow keys, Home/End, typeahead, Escape, selection dismissal and viewport placement. Native button/link actions are not replaced. Single-level menus only. Use refresh() after DOM changes and destroy() for cleanup. Modern Popover API required.
+Load dropdown.css and import mountDropdowns from dropdown.mjs (keep floating.mjs beside it). Use one button with aria-haspopup="menu" and popovertarget per .dropdown[role="menu"][popover="auto"]. The menu has a unique ID, tabindex="-1", an accessible name and native buttons or anchors with role="menuitem". Native popover handles outside dismissal. CSS anchors position the menu next to its invoker where supported. The shared geometry module supplies fallback placement. The controller manages focus, arrow keys, Home/End, typeahead, Escape, selection dismissal and viewport placement. Native button/link actions are not replaced. Single-level menus only. Use refresh() after DOM changes and destroy() for cleanup. Modern Popover API required.
 
 ## Tooltips
 

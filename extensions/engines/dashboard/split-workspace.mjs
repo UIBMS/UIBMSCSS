@@ -11,8 +11,14 @@ export function clampSplit(ratio,available,minStart=160,minEnd=220){
 }
 export function mountSplitWorkspace(root,{ratio,minStart=160,minEnd=220,keyboardStep=.05}={}){
   if(instances.has(root))return instances.get(root);
-  const grid=root?.querySelector(':scope > .split-workspace-grid'),start=grid?.querySelector(':scope > .split-pane:first-child'),handle=grid?.querySelector(':scope > .split-handle[role=separator]'),end=grid?.querySelector(':scope > .split-pane:last-child');
-  if(!root?.matches('.split-workspace')||!grid||!start||!end||!handle||start===end)throw new TypeError('Expected two panes with a labelled separator between them');
+  const grid=root?.querySelector(':scope > .split-workspace-grid');
+  const start=grid?.firstElementChild,end=grid?.lastElementChild;
+  const legacy=grid?.querySelector(':scope > .split-handle[role=separator]');
+  const handle=legacy??start?.nextElementSibling;
+  const valid=legacy
+    ?start?.matches('.split-pane')&&end?.matches('.split-pane')&&start!==end
+    :handle?.matches('[role=separator][aria-controls]')&&handle.nextElementSibling===end&&start.id===handle.getAttribute('aria-controls');
+  if(!root?.matches('.split-workspace')||!valid)throw new TypeError('Expected two panes with a labelled separator between them');
   const win=root.ownerDocument.defaultView;
   const key='--_uibms-split-ratio',originalStyle=root.style.getPropertyValue(key),priority=root.style.getPropertyPriority(key);
   const originalReady=root.getAttribute('data-uibms-split-ready'),attrs=['tabindex','aria-valuemin','aria-valuemax','aria-valuenow','aria-orientation'];

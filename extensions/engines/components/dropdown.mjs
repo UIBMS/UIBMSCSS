@@ -1,4 +1,4 @@
-import {trackFloating} from './floating.mjs';
+import {canAnchor,trackFloating} from './floating.mjs';
 const instances=new WeakMap(),selector='.dropdown[role="menu"][popover]',itemSelector=':is(button,a[href])[role="menuitem"]';
 const unavailable=el=>el.disabled||el.matches('[aria-disabled="true"],[hidden]')||!!el.closest('[hidden],[inert]');
 export function menuDestination(index,count,key){
@@ -14,7 +14,7 @@ export function mountDropdowns(root=document){
   const restore=([el,name,value])=>value===null?el.removeAttribute(name):el.setAttribute(name,value);
   function attach(menu,trigger){
     const original=remember(trigger,'aria-expanded'),saved=new Map();
-    let stop=null,last=false,prefix='',lastKey=0;
+    let stop=null,last=false,prefix='',lastKey=0,implicitAnchor=true;
     const all=()=>[...menu.querySelectorAll(itemSelector)].filter(e=>e.closest(selector)===menu);
     const items=()=>all().filter(e=>!unavailable(e));
     const syncItems=()=>{const current=new Set(all());for(const [el,value] of saved)if(!current.has(el)){restore(value);saved.delete(el);}for(const el of current){if(!saved.has(el))saved.set(el,remember(el,'tabindex'));el.tabIndex=-1;}};
@@ -23,12 +23,12 @@ export function mountDropdowns(root=document){
     const close=(returnFocus=false)=>{if(open())menu.hidePopover();if(returnFocus&&trigger.isConnected&&!unavailable(trigger))trigger.focus({preventScroll:true});};
     const before=e=>{if(e.target!==menu)return;trigger.setAttribute('aria-expanded',String(e.newState==='open'));menu.toggleAttribute('data-uibms-menu-positioning',e.newState==='open');};
     const toggle=e=>{if(e.target!==menu)return;stop?.();stop=null;trigger.setAttribute('aria-expanded',String(open()));
-      if(open()){syncItems();stop=trackFloating(trigger,menu,{gap:8,inset:14});menu.removeAttribute('data-uibms-menu-positioning');focusItem(last);}
-      else menu.removeAttribute('data-uibms-menu-positioning');
+      if(open()){syncItems();if(!implicitAnchor||!canAnchor(menu))stop=trackFloating(trigger,menu,{gap:8,inset:14});menu.removeAttribute('data-uibms-menu-positioning');focusItem(last);}
+      else {implicitAnchor=true;menu.removeAttribute('data-uibms-menu-positioning');}
       last=false;prefix='';
     };
     const triggerKeys=e=>{if(!['ArrowDown','ArrowUp'].includes(e.key)||e.altKey||e.ctrlKey||e.metaKey||e.shiftKey||unavailable(trigger))return;
-      e.preventDefault();last=e.key==='ArrowUp';if(open())focusItem(last);else{try{menu.showPopover({source:trigger});}catch{menu.showPopover();}}};
+      e.preventDefault();last=e.key==='ArrowUp';if(open())focusItem(last);else{implicitAnchor=false;try{menu.showPopover({get source(){implicitAnchor=true;return trigger;}});}catch{implicitAnchor=false;menu.showPopover();}}};
     const keys=e=>{if(!open()||e.altKey||e.ctrlKey||e.metaKey)return;
       if(e.key==='Escape'){e.preventDefault();e.stopPropagation();close(true);return;}
       if(e.key==='Tab'){close(true);return;}
@@ -50,7 +50,7 @@ export function mountDropdowns(root=document){
     const focusout=e=>{if(open()&&e.relatedTarget&&!menu.contains(e.relatedTarget)&&e.relatedTarget!==trigger)close(false);};
     const listeners=[[menu,'beforetoggle',before],[menu,'toggle',toggle],[trigger,'keydown',triggerKeys],[menu,'keydown',keys],[menu,'click',click],[menu,'focusout',focusout]];
     syncItems();trigger.setAttribute('aria-expanded',String(open()));for(const [el,event,fn] of listeners)el.addEventListener(event,fn);
-    if(open())stop=trackFloating(trigger,menu,{gap:8,inset:14});
+    if(open()&&!canAnchor(menu))stop=trackFloating(trigger,menu,{gap:8,inset:14});
     return {trigger,syncItems,destroy(){stop?.();menu.removeAttribute('data-uibms-menu-positioning');for(const [el,event,fn] of listeners)el.removeEventListener(event,fn);if(open())menu.hidePopover();for(const value of saved.values())restore(value);restore(original);}};
   }
   function refresh(){

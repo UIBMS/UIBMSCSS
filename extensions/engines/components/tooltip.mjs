@@ -1,4 +1,4 @@
-import {trackFloating} from './floating.mjs';
+import {canAnchor,trackFloating} from './floating.mjs';
 const instances=new WeakMap(),selector='.tooltip[role="tooltip"][popover="manual"]';
 export function mountTooltips(root=document,{delay=300,leaveDelay=160}={}){
   if(instances.has(root))return instances.get(root);
@@ -11,8 +11,13 @@ export function mountTooltips(root=document,{delay=300,leaveDelay=160}={}){
       if(active===state)active=null;dismissed=suppress&&(pointer||focused);}
     function show(){showTimer=0;if(dismissed||!trigger.isConnected||!tip.isConnected||!wants())return;
       if(active&&active!==state)active.hide(true);
-      if(!open()){try{tip.showPopover({source:trigger});}catch{tip.showPopover();}}
-      if(open()){stop?.();stop=trackFloating(trigger,tip,{align:'center',prefer:'above',gap:5,inset:12});active=state;}
+      if(!open()){
+        let implicitAnchor=false;
+        try{tip.showPopover({get source(){implicitAnchor=true;return trigger;}});}
+        catch{implicitAnchor=false;tip.showPopover();}
+        if(open()&&(!implicitAnchor||!canAnchor(tip)))stop=trackFloating(trigger,tip,{align:'center',prefer:'above',gap:5,inset:12});
+      }
+      if(open())active=state;
     }
     function sync(immediate=false){clear();if(!wants()){dismissed=false;hideTimer=win.setTimeout(()=>hide(),Math.max(0,leaveDelay));}
       else if(!dismissed&&!open()){if(immediate)show();else showTimer=win.setTimeout(show,Math.max(0,delay));}}

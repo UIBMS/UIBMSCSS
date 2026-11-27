@@ -464,7 +464,7 @@ const engine = (function materialEngine() {
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
-      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip],.toasts,input[type=color][data-uibms-form-source],.app-shell,.app-shell-grid,.app-shell > :is(header,nav,main,section),.app-shell .dashboard-nav-drawer > nav,.dashboard-sidebar,.dashboard-topbar,.dashboard-workspace,.split-workspace,.split-workspace-grid,.split-pane,.split-handle')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
+      if(el.matches(tableParts+',picture,source,track,.tooltip[role=tooltip],.toasts,input[type=color][data-uibms-form-source],.app-shell,.app-shell-grid,.app-shell > :is(header,nav,main,section),.app-shell .dashboard-nav-drawer > nav,.dashboard-sidebar,.dashboard-topbar,.dashboard-workspace,.split-workspace,.split-workspace-grid,.split-workspace-grid > :is(:first-child,:last-child,[role=separator][aria-controls]),.split-pane,.split-handle')||!inOpenOverlays(el)||el.matches(mediaElements)&&fullscreenMedia(el))return false;
       const overlay=overlayOwner(el);
       // Ordinary nested content is flat by default. Actual controls, nested
       // overlays/tables and an explicit local material opt-in remain independent.
