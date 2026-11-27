@@ -1,6 +1,7 @@
 import {profiles,configDetails,titleCase} from '../lib/config.mjs';
 import {framework} from '../lib/contract.mjs';
 import {expressivePalettes,oklch,paletteRoles} from '../lib/expressive-palettes.mjs';
+import {demos} from './demos.mjs';
 // A single authoritative navigation/content catalog. Trusted authored HTML only.
 const section=(title,body,examples=[],extra={})=>({title,body,examples,...extra});
 const example=(label,html,extra={})=>({label,html,code:html,lang:'html',...extra});
@@ -377,7 +378,7 @@ group('Dashboard',[
  doc("dashboard","Dashboard overview","Responsive administration workspace assembled from independent layout and widget components.",[
   {
     "title": "Administration structure",
-    "body": "<p>This demonstration composes the five administration structures with the optional dashboard widgets and the existing dropdown and command palette. Data is illustrative. Application routes, network requests, authentication and business logic belong to the application.</p>",
+    "body": "<p><a data-site-primary href=\"{{base}}demos/admin/\">Launch the complete administration dashboard</a> · <a href=\"{{base}}demos/\">All standalone demos</a></p><p>The smaller composition below documents the five administration structures with optional dashboard widgets, dropdown and command palette. The full-page demo is independent of the documentation layout. Data is illustrative.</p>",
     "examples": [
       {
         "label": "Load the dashboard styles",
@@ -387,7 +388,7 @@ group('Dashboard',[
     ]
   },
   {
-    "title": "Interactive administration demo",
+    "title": "Component composition example",
     "body": "<p>Resize the viewport or collapse navigation. Desktop uses an icon rail; compact mode opens a native navigation drawer. The sidebar and workspace scroll independently. In Projects, a wide split workspace resizes by pointer or keyboard, then stacks on narrow screens. Change the site Appearance configuration to explore the inherited theme and material.</p>",
     "examples": [
       {
@@ -761,8 +762,12 @@ group('Dashboard',[
 ],{stylesheets:["dashboard/quick-actions.css"]})
 ]);
 
+const demoGallery=page('demos','Demos','Explore complete standalone applications built using UIBMSCSS.',[
+ section('Available applications','<p>Open a complete working interface directly in your browser. These are independent full-page applications, not embedded previews or iframes. Each uses the same framework and appearance settings as the documentation.</p><div class="grid">'+demos.map(d=>'<article class="card stack"><small>Standalone application</small><h3>'+d.title+'</h3><p>'+d.description+'</p><ul>'+d.features.map(f=>'<li>'+f+'</li>').join('')+'</ul><div class="cluster"><a data-site-primary href="{{base}}'+d.slug+'/">Launch demo</a><a href="{{base}}'+d.documentation+'/">Implementation reference</a></div></article>').join('')+'</div>'),
+ section('About the demos','<p>Demo data is illustrative and local. These interfaces demonstrate composition of the actual framework components and optional engines; they are not production services. Additional dashboard styles and full-page applications will be added to this catalogue as they are developed.</p>')
+]);
 const showcase=page('examples','Examples','Complete interface compositions built with the implemented UIBMS API.',[
- section('Dashboard','<p>A responsive workspace built entirely from native HTML and approved classes. It inherits your header appearance settings.</p>',[example('Workspace dashboard',`<section class="stack">\n  <header class="cluster">\n    <h2>Workspace</h2>\n    <button type="button">New project</button>\n  </header>\n  <div class="grid">\n    <article class="card stack"><small>Active projects</small><h3>24</h3><progress value="24" max="40" aria-label="24 active of 40"></progress></article>\n    <article class="card stack"><small>Completed</small><h3>108</h3><meter min="0" max="120" value="108" aria-label="108 completed of 120"></meter></article>\n    <article class="card stack"><small>Next milestone</small><h3>Documentation</h3><button type="button">Review</button></article>\n  </div>\n</section>`)]),
+ section('Dashboard','<p>A responsive workspace built entirely from native HTML and approved classes. It inherits your header appearance settings. For complete standalone applications, open the <a href="{{base}}demos/">Demos catalogue</a>.</p>',[example('Workspace dashboard',`<section class="stack">\n  <header class="cluster">\n    <h2>Workspace</h2>\n    <button type="button">New project</button>\n  </header>\n  <div class="grid">\n    <article class="card stack"><small>Active projects</small><h3>24</h3><progress value="24" max="40" aria-label="24 active of 40"></progress></article>\n    <article class="card stack"><small>Completed</small><h3>108</h3><meter min="0" max="120" value="108" aria-label="108 completed of 120"></meter></article>\n    <article class="card stack"><small>Next milestone</small><h3>Documentation</h3><button type="button">Review</button></article>\n  </div>\n</section>`)]),
  section('Account settings','<p>Native fields, checkbox, selection and browser validation, without component-specific classes.</p>',[example('Settings form',`<form class="card stack">\n  <h3>Profile</h3>\n  <label for="account-name">Name</label>\n  <input id="account-name" type="text" required autocomplete="name">\n  <label for="account-email">Email</label>\n  <input id="account-email" type="email" required autocomplete="email">\n  <label><input type="checkbox" checked> Receive updates</label>\n  <div class="cluster">\n    <button type="submit">Validate settings</button>\n    <button type="reset">Reset</button>\n  </div>\n</form>`,{note:'Local demonstration only; no data is sent.'})]),
  section('Product cards','<p>Use independent surface, layout and material choices. No card-specific markup contract is imposed.</p>',[example('Product surfaces',`<div class="grid">\n  <article class="card stack" data-effect="glass">\n    <h3>Standard</h3>\n    <p>Core interface capabilities.</p>\n    <button type="button">Explore</button>\n  </article>\n  <article class="card stack" data-effect="frosted">\n    <h3>Full</h3>\n    <p>All available palettes and profiles.</p>\n    <button type="button">Explore</button>\n  </article>\n</div>`)]),
  section('Editorial content','<p>Contextual typography and density are local and inherit independently.</p>',[example('Editorial article',`<article class="card" data-typography="editorial" data-density="spacious">\n  <h2>Design with purpose</h2>\n  <p class="lead">A framework should make native HTML easier to use.</p>\n  <p>Meaningful typography and generous whitespace can emerge from a small set of inherited tokens.</p>\n  <blockquote>Keep the platform native.</blockquote>\n</article>`)]),
@@ -785,5 +790,6 @@ const home=page('','UIBMS CSS','Native CSS. Meaningful HTML. Living interfaces.'
 ],{home:true});
 export const groups=docs;
 export const docPages=docs.flatMap(g=>g.pages.map(p=>({...p,group:g.title})));
-export const pages=[home,...docPages,showcase,laboratory,downloads];
-export const topLinks=[['Documentation','docs/introduction'],['Examples','examples'],['Laboratory','laboratory'],['Downloads','downloads']];
+export const pages=[home,...docPages,showcase,demoGallery,laboratory,downloads];
+export const allPages=[...pages,...demos];
+export const topLinks=[['Documentation','docs/introduction'],['Examples','examples'],['Demos','demos'],['Laboratory','laboratory'],['Downloads','downloads']];

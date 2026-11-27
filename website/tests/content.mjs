@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {pages,docPages,groups} from '../src/content/catalog.mjs';
+import {pages,docPages,groups,allPages,topLinks} from '../src/content/catalog.mjs';
+import {demos} from '../src/content/demos.mjs';
 import {profiles,basePath,configDetails} from '../src/lib/config.mjs';
 import {framework} from '../src/lib/contract.mjs';
 import {expressivePalettes,expressiveStyles,paletteRoles,oklch} from '../src/lib/expressive-palettes.mjs';
@@ -54,6 +55,27 @@ for(const p of pages){
   const html=renderHtml(p,'/UIBMSCSS/');
   const actual=[...html.matchAll(/href="[^"]*\/engines\/(dashboard\/[a-z-]+\.css)\?v=/g)].map(m=>m[1]).sort();
   assert.deepEqual(actual,(p.stylesheets||[]).filter(s=>s.startsWith('dashboard/')).sort(),p.slug+' dashboard asset scope');
+}
+// Standalone applications have independent layouts and a shared registry.
+assert.equal(new Set(allPages.map(p=>p.slug)).size,allPages.length);
+assert(topLinks.some(([name,slug])=>name==='Demos'&&slug==='demos'));
+const gallery=pages.find(p=>p.slug==='demos');assert(gallery);
+for(const demo of demos){
+ assert(demo.standalone&&demo.slug.startsWith('demos/')&&demo.features.length);
+ assert(pages.some(p=>p.slug===demo.documentation));
+ assert(gallery.sections.some(s=>s.body.includes('{{base}}'+demo.slug+'/')));
+ for(const name of demo.stylesheets)await readFile(new URL('../../extensions/engines/'+name,import.meta.url),'utf8');
+ for(const ext of ['css','js'])await readFile(new URL('../public/assets/'+demo.entry+'.'+ext,import.meta.url),'utf8');
+ for(const base of ['/','/UIBMSCSS/']){
+  const html=renderHtml(demo,base),ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);
+  assert.equal(new Set(ids).size,ids.length,'Duplicate demo ID '+demo.slug);
+  assert(!/<iframe\b/i.test(html)&&!html.includes('id="site-doc-nav"')&&!html.includes('id="site-header"')&&!html.includes('assets/site.js?v='));
+  assert.equal((html.match(/<main\b/g)||[]).length,1);
+  assert(html.includes('href="'+basePath(base)+'demos/"'));
+  for(const a of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(a[1]),'Missing demo anchor '+a[1]);
+  for(const a of html.matchAll(/\b(?:commandfor|popovertarget|aria-controls)="([^"]+)"/g))assert(ids.includes(a[1]),'Missing demo control target '+a[1]);
+  for(const stylesheet of demo.stylesheets)assert(html.includes('engines/'+stylesheet+'?v='));
+ }
 }
 assert(codeBlock('<button>Copy</button>').includes('token tag'));
 console.log(JSON.stringify({pages:pages.length,documentationPages:docPages.length,groups:groups.length,codeExamples,liveExamples,checks},null,2));

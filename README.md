@@ -30,3 +30,7 @@ See [Architecture and foundational principles](docs/ARCHITECTURE.md).
 ## Optional physical interfaces
 
 [Liquid Silicone Material Engine and Form Engine](extensions/engines/README.md) are opt-in, unbundled development candidates. The core CSS distributions remain unchanged. Native controls stay authoritative; optional pickers and elastic contour rendering are separate. Full browser and accessibility verification is pending.
+
+## Standalone demos
+
+[Open the Demos catalogue](https://uibms.github.io/UIBMSCSS/demos/) for full-page applications. The first is the [Administration dashboard](https://uibms.github.io/UIBMSCSS/demos/admin/), a local sample project workspace. Demos share the framework and appearance profiles, not the documentation shell. New applications are registered in `website/src/content/demos.mjs`; the catalogue, static routes and build checks consume that registry. Sample application state is separate from the reusable engines.

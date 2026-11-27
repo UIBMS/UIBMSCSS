@@ -3,7 +3,7 @@ import {readFile,stat} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
-import {pages} from '../src/content/catalog.mjs';
+import {allPages as pages} from '../src/content/catalog.mjs';
 import {basePath} from '../src/lib/config.mjs';
 import {expressiveStyles} from '../src/lib/expressive-palettes.mjs';
 const root=path.resolve(fileURLToPath(new URL('../dist/',import.meta.url)));
@@ -21,8 +21,14 @@ for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdow
 for(const file of ['app-shell.css','app-shell.mjs','sidebar.css','topbar.css','page-header.css','split-workspace.css','split-workspace.mjs','metrics.css','widget-grid.css','quick-actions.css','sparkline.css','sparkline.mjs','progress-ring.css','progress-ring.mjs','README.md'])await stat(path.join(root,'engines/dashboard',file));
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
- assert(html.includes('id="site-appearance"'),p.slug);
- assert(html.includes('id="site-doc-nav"'),p.slug);
+ if(p.standalone){
+  assert(!/<iframe\b/i.test(html),p.slug+' must not embed an iframe');
+  assert(!html.includes('id="site-doc-nav"')&&!html.includes('id="site-header"'),p.slug+' must not include the documentation shell');
+  assert(html.includes('/assets/'+p.entry+'.js?v=')&&html.includes('/assets/'+p.entry+'.css?v='),p.slug+' missing application assets');
+ }else{
+  assert(html.includes('id="site-appearance"'),p.slug);
+  assert(html.includes('id="site-doc-nav"'),p.slug);
+ }
  assert(html.includes(`${base}framework/uibms.full.min.css`),p.slug);
  assert(!html.includes('{{base}}'),p.slug);
  if(process.env.SITE_PUBLIC==='1')assert(!html.includes('noindex, nofollow'),p.slug);

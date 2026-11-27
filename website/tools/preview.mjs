@@ -4,7 +4,7 @@ import {mkdir,cp,writeFile,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {stageAssets} from './stage-assets.mjs';
-import {pages} from '../src/content/catalog.mjs';
+import {allPages as pages} from '../src/content/catalog.mjs';
 import {renderHtml,renderScopedFrame} from '../src/lib/render.mjs';
 import {basePath} from '../src/lib/config.mjs';
 const root=fileURLToPath(new URL('../',import.meta.url));

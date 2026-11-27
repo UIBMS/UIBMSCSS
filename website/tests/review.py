@@ -56,7 +56,7 @@ def make_inline(f,settings):
  for script in soup.select('script[src]'):
   asset_path=urlsplit(script['src']).path
   source=(root/unquote(asset_path.lstrip('/'))).read_text()
-  if asset_path.endswith('/assets/engines.js'):
+  if asset_path.endswith(('/assets/engines.js','/assets/admin-demo.js')):
    tabs=(site/'engines/components/tabs.mjs').read_text()
    floating=(site/'engines/components/floating.mjs').read_text()
    dropdown=(site/'engines/components/dropdown.mjs').read_text()
@@ -71,7 +71,8 @@ def make_inline(f,settings):
    material=(site/'engines/material.mjs').read_text()
    forms=(site/'engines/forms.mjs').read_text()
    source=source.replace("const revision=new URL(import.meta.url).search;",'')
-   source=source.replace("import('../engines/material.mjs'+revision),import('../engines/forms.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(material)+'],{type:"text/javascript"}))),import(URL.createObjectURL(new Blob(['+json.dumps(forms)+'],{type:"text/javascript"})))')
+   for name,component in [('material',material),('forms',forms)]:
+    source=source.replace("import('../engines/"+name+".mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(component)+'],{type:"text/javascript"})))')
    source=source.replace("import('../engines/components/tabs.mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(tabs)+'],{type:"text/javascript"})))')
    for name,component in [('drawer',drawer),('toast',toast)]+optional_components:
     source=source.replace("import('../engines/components/"+name+".mjs'+revision)",'import(URL.createObjectURL(new Blob(['+json.dumps(component)+'],{type:"text/javascript"})))')
@@ -98,7 +99,8 @@ try:
    f=site/slug/'index.html';errors.clear();
    if args.inline:page.set_content(make_inline(f,settings or {}),wait_until='load',timeout=10000)
    else:page.goto('http://127.0.0.1:8765'+base+(slug+'/' if slug else ''),wait_until='load',timeout=10000)
-   page.wait_for_selector('html[data-site-ready][data-site-engines-ready]',state='attached',timeout=10000)
+   ready='html[data-demo-ready]' if slug.startswith('demos/') else 'html[data-site-ready][data-site-engines-ready]'
+   page.wait_for_selector(ready,state='attached',timeout=10000)
    page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
   def width_check():return page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')
   # All pages across four widths. Check JS errors and responsive overflow.
