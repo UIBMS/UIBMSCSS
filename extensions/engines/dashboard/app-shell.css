@@ -1,7 +1,6 @@
-/* Optional responsive administration shell. Structure only; no app routing. */
+/* Optional responsive shell. Native regions can opt in with one class. */
 .app-shell {
-  container: uibms-shell / inline-size;
-  /* Keep positioned descendants within the shell even when materials unmount. */
+  container:uibms-shell / inline-size;
   position:relative;
   inline-size:100%;min-inline-size:0;max-inline-size:100%;
   block-size:var(--dashboard-height,100dvh);min-block-size:0;
@@ -9,67 +8,61 @@
   border:var(--border-width) solid var(--color-border);border-radius:var(--radius);
   overflow:hidden;
 }
-.app-shell > .app-shell-grid {
-  --_uibms-shell-mode:wide;
-  display:grid;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
+:is(.app-shell:has(> header), .app-shell > .app-shell-grid) {
+  display:grid;
   grid-template-columns:minmax(0,var(--dashboard-sidebar-width,15rem)) minmax(0,1fr);
-  grid-template-rows:auto minmax(0,1fr);
-  grid-template-areas:"top top" "side content";
+  /* The optional in-flow mobile navigation uses the middle auto track. */
+  grid-template-rows:auto auto minmax(0,1fr);
 }
-.app-shell-grid > .dashboard-topbar { grid-area:top;min-inline-size:0; }
-.app-shell-grid > .dashboard-sidebar { grid-area:side;min-inline-size:0;min-block-size:0;overflow:auto;overscroll-behavior:contain; }
-.app-shell-grid > .dashboard-workspace {
-  grid-area:content;position:relative;min-inline-size:0;min-block-size:0;overflow:auto;
+.app-shell > .app-shell-grid { --_uibms-shell-mode:wide;block-size:100%;min-inline-size:0;min-block-size:0; }
+:is(.app-shell > header,.app-shell-grid > .dashboard-topbar) { grid-area:1 / 1 / 2 / -1;min-inline-size:0; }
+:is(.app-shell > nav,.app-shell-grid > .dashboard-sidebar) {
+  grid-area:2 / 1 / -1 / 2;min-inline-size:0;min-block-size:0;overflow:auto;overscroll-behavior:contain;
+}
+:is(.app-shell > :where(main,section),.app-shell-grid > .dashboard-workspace) {
+  --_uibms-shell-mode:wide;
+  grid-area:2 / 2 / -1 / -1;position:relative;min-inline-size:0;min-block-size:0;overflow:auto;
   overscroll-behavior:contain;padding:var(--dashboard-content-padding,var(--space));
 }
 .app-shell :is(.sidebar-toggle,.sidebar-drawer-toggle) { display:none; }
 .app-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
-.app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
+:is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) {
   grid-template-columns:minmax(0,var(--dashboard-rail-width,4rem)) minmax(0,1fr);
 }
-/* The accessible link name stays in the DOM in a compact icon rail. */
 @container uibms-shell (min-width:42rem) {
-  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar .sidebar-label {
-    position:absolute;inline-size:1px;block-size:1px;margin:-1px;padding:0;
-    overflow:hidden;clip-path:inset(50%);white-space:nowrap;
-  }
-  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar :is(.sidebar-nav a,.sidebar-nav summary) {
-    justify-content:center;padding-inline:calc(var(--space)*.25);
-  }
-  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar .sidebar-nav ul ul {
-    padding-inline-start:0;
+  :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) > :is(nav,.dashboard-sidebar) {
+    /* Keep text available to assistive technology in the icon rail. */
+    & .sidebar-label, & :where(a,summary):has(> svg[aria-hidden=true]) > span {
+      position:absolute;inline-size:1px;block-size:1px;margin:-1px;padding:0;
+      overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+    }
+    & :where(a,summary):has(.sidebar-icon,> svg[aria-hidden=true]) {
+      justify-content:center;padding-inline:calc(var(--space)*.25);
+    }
+    & ul ul { padding-inline-start:0; }
+    & summary:has(.sidebar-icon,> svg[aria-hidden=true])::after { display:none; }
   }
 }
 @container uibms-shell (width < 42rem) {
-  .app-shell > .app-shell-grid,.app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
-    --_uibms-shell-mode:compact;
-    grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);
-    grid-template-areas:"top" "side" "content";
-  }
-  .app-shell-grid > .dashboard-sidebar {
+  .app-shell > .app-shell-grid { --_uibms-shell-mode:compact; }
+  :is(.app-shell > nav,.app-shell-grid > .dashboard-sidebar) {
+    grid-area:2 / 1 / 3 / -1;
     max-block-size:min(var(--dashboard-mobile-nav-height,14rem),40dvh);
     border-inline-end:0;border-block-end:var(--border-width) solid var(--color-border);
   }
-  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
-    grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top" "content";
+  :is(.app-shell > :where(main,section),.app-shell-grid > .dashboard-workspace) {
+    --_uibms-shell-mode:compact;
+    grid-area:3 / 1 / -1 / -1;
   }
-  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar { display:none; }
-}
-
-/* The authored mobile drawer receives the existing navigation tree.
-   Desktop and mobile triggers are selected by CSS, not a JS breakpoint. */
-@container uibms-shell (width < 42rem) {
-  .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] > .app-shell-grid {
-    grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top" "content";
-  }
+  :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) > :is(nav,.dashboard-sidebar) { display:none; }
   .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-toggle { display:none; }
   .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-drawer-toggle { display:inline-flex; }
 }
 .app-shell dialog.dashboard-nav-drawer {
   --drawer-width:var(--dashboard-mobile-drawer-width,24rem);
 }
-.dashboard-nav-drawer > .dashboard-sidebar { border:0;padding:0;background:transparent; }
+.dashboard-nav-drawer > :is(nav,.dashboard-sidebar) { border:0;padding:0;background:transparent; }
 .dashboard-nav-drawer > header { margin-block-end:var(--space);justify-content:space-between; }
 .dashboard-nav-drawer > header :is(h2,h3,form) { margin:0; }
-/* Hidden application views are absent even when a layout class sets display. */
+/* Hidden application views remain absent when a layout class sets display. */
 :where(.app-shell) [hidden] { display:none !important; }

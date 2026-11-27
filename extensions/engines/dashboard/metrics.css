@@ -1,11 +1,13 @@
 /* Metric content only: compose with the existing .card/.panel and .stack. */
 @layer features {
   :where(.metric-card) { min-inline-size:0;overflow-wrap:anywhere; }
-  :where(.metric-value) {
+  :where(.metric-value,dl.metric-card > dd:not(:has(> *)),dl.metric-card > dd > strong) {
     display:block;font-size:var(--dashboard-metric-size,1.75em);
     line-height:var(--heading-line-height);font-variant-numeric:tabular-nums;
   }
-  :where(.metric-label,.metric-context) { color:var(--color-text-muted); }
+  :where(dl.metric-card > dd) { margin:0; }
+  :where(dl.metric-card > dd > small) { display:block; }
+  :where(.metric-label,.metric-context,dl.metric-card > dt,dl.metric-card > dd > small) { color:var(--color-text-muted); }
   :where(.metric-change) { font-variant-numeric:tabular-nums;font-weight:600;color:var(--color-text); }
   :where(.metric-change[data-tone="success"]) { color:var(--color-success); }
   :where(.metric-change[data-tone="warning"]) { color:var(--color-warning); }

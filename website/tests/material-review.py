@@ -678,10 +678,10 @@ try:
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         set_profile(cp,theme="light",palette="natural",material="default",effects="none",density="default")
         shell=cp.locator("#dashboard-demo-shell")
-        side=shell.locator(".dashboard-sidebar")
-        workspace=shell.locator(".dashboard-workspace")
+        side=shell.locator("#dash-sidebar")
+        workspace=shell.locator("#dash-workspace")
         toggle=shell.get_by_role("button",name="Toggle navigation",exact=True)
-        cp.wait_for_function("()=>getComputedStyle(document.querySelector('#dashboard-demo-shell > .app-shell-grid')).getPropertyValue('--_uibms-shell-mode').trim()==='wide'")
+        cp.wait_for_function("()=>getComputedStyle(document.querySelector('#dash-workspace')).getPropertyValue('--_uibms-shell-mode').trim()==='wide'")
         full=side.evaluate("e=>e.getBoundingClientRect().width")
         check(toggle.get_attribute("aria-expanded")=="true" and side.is_visible(),"wide shell opens with expanded navigation")
         toggle.click()
@@ -733,12 +733,12 @@ try:
             cp.set_viewport_size({"width":width,"height":844})
             set_profile(cp,material="liquid-silicone",theme="dark",palette="graphite-punch")
             check_width(cp,"dashboard "+str(width))
-            check(shell.evaluate("""e=>{const r=e.getBoundingClientRect(),s=e.querySelector('.dashboard-workspace');return r.width>0&&r.right<=innerWidth+1&&s.clientWidth>0&&s.clientHeight>0}"""),"dashboard shell and workspace fit "+str(width))
+            check(shell.evaluate("""e=>{const r=e.getBoundingClientRect(),s=e.querySelector('#dash-workspace');return r.width>0&&r.right<=innerWidth+1&&s.clientWidth>0&&s.clientHeight>0}"""),"dashboard shell and workspace fit "+str(width))
         mobile_toggle.click()
         mobile_drawer.wait_for(state="visible")
         cp.set_viewport_size({"width":1800,"height":1000})
         cp.wait_for_function("()=>document.querySelector('#dashboard-demo-shell .sidebar-toggle').getAttribute('aria-expanded')==='true'&&!document.querySelector('#dash-sidebar-drawer').open")
-        check(side.is_visible() and side.evaluate("e=>e.parentElement.matches('.app-shell-grid')"),"desktop preference and original sidebar restored after mobile modal")
+        check(side.is_visible() and side.evaluate("e=>e.parentElement.matches('.app-shell')"),"desktop preference and original sidebar restored after mobile modal")
         check(not shell.evaluate("e=>e.hasAttribute('data-uibms-material-host')"),"material does not deform layout boundary")
         # The composed dashboard uses the same widgets as the individual pages.
         if not shell.locator("#dash-overview").is_visible():
@@ -803,7 +803,7 @@ try:
         set_profile(cp,theme="light",palette="natural",material="default",effects="none",density="default")
         metrics=cp.locator("[data-site-demo-content] .metric-card")
         check(metrics.count()==3 and metrics.first.evaluate("e=>e.classList.contains('card')&&e.classList.contains('stack')"),"KPI reuses core card and stack")
-        check(metrics.first.locator(".metric-value").inner_text()=="€48,250","KPI preserves application-formatted value")
+        check(metrics.first.locator("dd > strong").inner_text()=="€48,250","KPI preserves application-formatted value")
         change=metrics.first.locator(".metric-change")
         check(change.evaluate("""e=>{
           const probe=document.createElement('span');probe.style.color='var(--color-success)';e.append(probe);
@@ -896,7 +896,7 @@ try:
         admin=cp.locator("#admin-shell")
 
         def check_admin_icons(label):
-            icons=admin.locator(".dashboard-topbar button, #admin-overview button[aria-describedby]").locator('svg[stroke="currentColor"]:visible')
+            icons=admin.locator(":scope > header button, #admin-overview button[aria-describedby]").locator('svg[stroke="currentColor"]:visible')
             sizes=icons.evaluate_all(
                 "icons => icons.map(icon => { const {width,height}=icon.getBoundingClientRect(); return [width,height]; })"
             )

@@ -102,9 +102,9 @@ if(document.querySelector('.app-shell,.split-workspace')){
     const {mountCommandPalette}=await import('../engines/components/command.mjs'+revision);
     const shell = document.querySelector('#dashboard-demo-shell');
     const layout = mountAppShell(shell);
-    const workspace = shell.querySelector('.dashboard-workspace');
+    const workspace = shell.querySelector('#dash-workspace');
     const views = [...workspace.querySelectorAll(':scope > .dashboard-view')];
-    const links = [...shell.querySelectorAll('.sidebar-nav a[href]')];
+    const links = [...shell.querySelectorAll('#dash-sidebar a[href]')];
     function showView(id, focus = false) {
       const view = views.find(v => v.id === id);
       if (!view) return false;

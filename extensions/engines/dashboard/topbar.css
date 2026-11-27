@@ -1,5 +1,5 @@
 /* Optional topbar, with flexible groups instead of compulsory slots. */
-.dashboard-topbar {
+:is(.dashboard-topbar,.app-shell > header) {
   box-sizing:border-box;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;
   gap:calc(var(--space)*.5);padding:calc(var(--space)*.65);
   min-inline-size:0;color:var(--color-text);background-color:var(--color-surface);
@@ -10,8 +10,8 @@
 }
 :where(.topbar-brand) { flex:1 1 auto;overflow-wrap:anywhere; }
 :where(.topbar-actions) { flex:0 1 auto;justify-content:flex-end; }
-:where(.dashboard-topbar) :where(button,a[href],input,select) { max-inline-size:100%;min-inline-size:0; }
-:where(.dashboard-topbar .sidebar-toggle) { align-items:center;justify-content:center; }
+:where(.dashboard-topbar,.app-shell > header) :where(button,a[href],input,select) { max-inline-size:100%;min-inline-size:0; }
+:where(:is(.dashboard-topbar,.app-shell > header) .sidebar-toggle) { align-items:center;justify-content:center; }
 @container uibms-shell (width < 24rem) {
   :where(.topbar-brand,.topbar-actions) { flex:1 1 100%;justify-content:flex-start; }
 }

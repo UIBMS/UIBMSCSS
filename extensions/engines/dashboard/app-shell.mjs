@@ -3,9 +3,12 @@
 const instances=new WeakMap();
 export function mountAppShell(shell,{expanded=true,mobileExpanded=false}={}){
   if(instances.has(shell))return instances.get(shell);
-  const grid=shell?.querySelector(':scope > .app-shell-grid'),bar=grid?.querySelector(':scope > .dashboard-topbar');
-  const sidebar=grid?.querySelector(':scope > .dashboard-sidebar'),toggle=bar?.querySelector('.sidebar-toggle');
-  if(!shell?.matches('.app-shell')||!grid||!sidebar?.id||!toggle?.matches('button[aria-controls]')||toggle.getAttribute('aria-controls')!==sidebar.id)throw new TypeError('Expected a shell, sidebar and labelled native toggle');
+  const grid=shell?.querySelector(':scope > .app-shell-grid')??shell;
+  const bar=grid?.querySelector(':scope > :is(header,.dashboard-topbar)');
+  const sidebar=grid?.querySelector(':scope > :is(nav,.dashboard-sidebar)');
+  const viewport=grid===shell?grid?.querySelector(':scope > :is(main,section)'):grid;
+  const toggle=bar?.querySelector('.sidebar-toggle');
+  if(!shell?.matches('.app-shell')||!viewport||!sidebar?.id||!toggle?.matches('button[aria-controls]')||toggle.getAttribute('aria-controls')!==sidebar.id)throw new TypeError('Expected a shell, workspace, navigation and labelled native toggle');
   const win=shell.ownerDocument.defaultView,doc=shell.ownerDocument;
   const drawer=grid.querySelector(':scope > dialog.dashboard-nav-drawer.drawer'),mobileToggle=bar.querySelector('.sidebar-drawer-toggle');
   const modal=drawer&&mobileToggle?.matches('button[commandfor]')&&drawer.id&&mobileToggle.getAttribute('commandfor')===drawer.id&&typeof drawer.showModal==='function'?drawer:null;
@@ -13,7 +16,7 @@ export function mountAppShell(shell,{expanded=true,mobileExpanded=false}={}){
   const choices={wide:!!expanded,compact:!!mobileExpanded};let mode=null,dead=false;
   // The placeholder preserves the author's exact DOM order on restoration.
   const marker=doc.createComment('sidebar position');sidebar.before(marker);
-  const getMode=()=>win.getComputedStyle(grid).getPropertyValue('--_uibms-shell-mode').trim()==='compact'?'compact':'wide';
+  const getMode=()=>win.getComputedStyle(viewport).getPropertyValue('--_uibms-shell-mode').trim()==='compact'?'compact':'wide';
   const compactModal=()=>modal&&mode==='compact';
   function render(){
     const moveFocus=mode==='compact'&&!choices.compact&&sidebar.contains(doc.activeElement);

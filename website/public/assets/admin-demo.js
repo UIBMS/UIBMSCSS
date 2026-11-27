@@ -54,8 +54,8 @@ window.addEventListener('storage',e=>{
 
 // Native links supply real fragment destinations. Only application view
 // selection, history and focus require the controller.
-const views=[...workspace.querySelectorAll(':scope > .dashboard-view')];
-const links=[...shell.querySelectorAll('.sidebar-nav a[href^="#"]')];
+const views=[...workspace.querySelectorAll(':scope > section[id]')];
+const links=[...$('admin-sidebar').querySelectorAll('a[href^="#"]')];
 const viewFor=id=>views.find(v=>v.id===id);
 function showView(id,{focus=false,history=false}={}){
   const view=viewFor(id);if(!view)return false;
