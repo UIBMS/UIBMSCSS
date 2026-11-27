@@ -130,7 +130,7 @@ mountChips(tags);
 function renderTags(){
   const p=project();if(!p)return;
   tags.replaceChildren(...p.tags.map(label=>{
-    const chip=document.createElement('span'),remove=document.createElement('button');chip.className='chip';chip.append(document.createTextNode(label+' '));
+    const chip=document.createElement('li'),remove=document.createElement('button');chip.append(document.createTextNode(label+' '));
     remove.type='button';remove.name='remove-chip';remove.value=label;remove.setAttribute('aria-label','Remove '+label);remove.textContent='×';chip.append(remove);return chip;
   }));
 }

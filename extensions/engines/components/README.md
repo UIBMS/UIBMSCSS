@@ -1,6 +1,6 @@
 # Optional UIBMS components
 
-Components are separately loadable, HTML-first extensions. Neither the standard nor full core CSS bundles include them. They consume the existing contextual tokens and need no external library. Copy only the files you use.
+Components are separately loadable, HTML-first extensions. Prefer a single meaningful component class, native child elements and contextual CSS nesting. Legacy descendant classes remain supported during migration. Neither the standard nor full core CSS bundles include them. They consume the existing contextual tokens and need no external library. Copy only the files you use.
 
 ## Tabs
 
@@ -38,7 +38,7 @@ Load toast.css and import mountToasts(container,{maxVisible:3,labels:{}}) from t
 
 Load stepper.css and import mountStepper from stepper.mjs when necessary. Use an ordered list with native links, spans or buttons. Mark the active step with aria-current="step". The optional controller maps native buttons to labelled panels, preserves DOM nodes and values, and leaves authored panels readable without scripting. The application owns validation, eligibility, completion and final submission.
 
-mountStepper(list,{scope:list.parentElement}) provides current (zero-based), go(index,{focus:false}), next(), previous(), refresh() and destroy(). Each button has a unique ID and aria-controls; each .stepper-panel has aria-labelledby pointing back to its button. Disabled steps cannot be selected. Cancel beforestepchange to enforce application rules; stepchange reports successful navigation. This is panel navigation, not automatic form validation.
+mountStepper(list,{scope:list.parentElement}) provides current (zero-based), go(index,{focus:false}), next(), previous(), refresh() and destroy(). Each button has a unique ID and aria-controls pointing to a native section with aria-labelledby pointing back to its button. The legacy .stepper-panel class remains supported. Disabled steps cannot be selected. Cancel beforestepchange to enforce application rules; stepchange reports successful navigation. This is panel navigation, not automatic form validation.
 
 ## Pagination
 
@@ -48,12 +48,12 @@ mountPagination(nav,{current:1,total:1,siblings:1,onChange,labels}) expects an e
 
 ## Tags and chips
 
-Load chips.css and import mountChips from chips.mjs when necessary. Tags are descriptive text. Selectable chips contain native checkboxes; removable chips use a separate native button. data-tone optionally supplies a semantic colour. The delegated removal helper reports the removed value, supports cancelation and transfers focus to a neighbouring remove button. Restore belongs to this demo, not the library.
+Load chips.css and import mountChips from chips.mjs when necessary. Tags are descriptive text: use a ul.tags with native li children. Selectable chips use .chips with direct labels containing native checkboxes; removable chips use ul.chips with direct li children and separate native buttons. Standalone .tag and .chip classes remain available when there is no group. data-tone optionally supplies a semantic colour. The delegated removal helper reports the removed value, supports cancelation and transfers focus to a neighbouring remove button. Restore belongs to this demo, not the library.
 
-mountChips(container) expects .chips with direct .chip children and a separate button named remove-chip. remove(button) dispatches cancelable beforechipremove, removes the chip, then dispatches chipremove with detail.value and detail.chip. destroy() removes listeners and restores the original container tabindex. Removal changes the DOM and is not undone by form reset.
+mountChips(container) expects .chips with direct list items containing a separate button named remove-chip. Legacy direct .chip children remain supported. remove(button) dispatches cancelable beforechipremove, removes the chip, then dispatches chipremove with detail.value and detail.chip. destroy() removes listeners and restores the original container tabindex. Removal changes the DOM and is not undone by form reset.
 
 ## Command palette
 
-Load command.css and import mountCommandPalette from command.mjs when necessary. Open the native modal and search its real buttons or links. Matching is case- and accent-insensitive; every word must match. Arrow keys move between the search field and enabled results, Home and End navigate results, and Enter activates a result. Escape and the close button use native dialog dismissal. The component inherits contextual styles and existing Liquid Silicone overlays.
+Load command.css and import mountCommandPalette from command.mjs when necessary. Open the native modal and search its real buttons or links. Give the search input aria-controls pointing to a uniquely identified ul inside the dialog (directly or in its immediate .stack). No results class is needed; legacy .command-results remains supported. Matching is case- and accent-insensitive; every word must match. Arrow keys move between the search field and enabled results, Home and End navigate results, and Enter activates a result. Escape and the close button use native dialog dismissal. The component inherits contextual styles and existing Liquid Silicone overlays.
 
 mountCommandPalette(dialog,{shortcut:true}) optionally enables Ctrl/Cmd+K outside editable fields and other modals. The docs demo keeps the existing site search shortcut, so use its open button. open(), close(), refresh() and destroy() manage lifecycle. commandselect is cancelable to keep the palette open without suppressing the actual application action. The application owns its command registry, routing and remote data.

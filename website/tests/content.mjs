@@ -35,6 +35,16 @@ for(const slug of ['dashboard','kpi-cards','statistic-cards','sparklines','progr
     }
   }
 }
+// Preferred interactive examples use native child markup, not legacy child hooks.
+for(const [slug,classes] of [['stepper',['stepper-panel']],['command-palette',['command-results']],['chips',['tag','chip']],['dashboard',['command-results']]]){
+  const page=docPages.find(p=>p.slug==='docs/'+slug);
+  assert(page,slug);
+  for(const example of page.sections.flatMap(s=>s.examples).filter(e=>e.html)){
+    for(const match of example.html.matchAll(/\bclass="([^"]+)"/g)){
+      assert(!match[1].split(/\s+/).some(cls=>classes.includes(cls)),slug+' contains a redundant interactive child class');
+    }
+  }
+}
 // Widgets must not introduce a private fixed palette or duplicate card surfaces.
 for(const file of ['metrics','widget-grid','quick-actions','sparkline','progress-ring']){
   const source=await readFile(new URL('../../extensions/engines/dashboard/'+file+'.css',import.meta.url),'utf8');

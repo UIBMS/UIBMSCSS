@@ -34,7 +34,7 @@
     & > :where(li) > :where(:is(:disabled,[aria-disabled="true"])) { color:var(--color-text-muted);cursor:not-allowed; }
     & > :where(li) > :where(:is(button,a[href]):focus-visible) { outline:2px solid var(--color-focus);outline-offset:2px; }
   }
-  :where(.stepper-panel[hidden]) { display:none !important; }
+  :where(.stepper-panel[hidden],:has(> ol.stepper) > section[aria-labelledby][hidden]) { display:none !important; }
 }
 @media (forced-colors:active) {
   :where(ol.stepper > li > [aria-current="step"]) { border-color:Highlight; }
