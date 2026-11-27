@@ -251,6 +251,25 @@ try:
         cp=component_context.new_page()
         cp.set_default_timeout(10000)
         cp.on("pageerror",lambda error:errors.append(str(error)))
+        cp.goto(url+"docs/dialogs/",wait_until="load")
+        example=cp.locator("[data-site-example]").first
+        disclosure=example.locator("[data-site-preview] + details")
+        source=disclosure.locator("[data-site-code]")
+        check(example.locator("[data-site-demo-content]").is_visible() and
+              source.count()==2 and source.first.is_hidden(),"documentation shows the demo before its source")
+        disclosure.locator("summary").focus()
+        cp.keyboard.press("Enter")
+        check(disclosure.get_by_text("Hide code",exact=True).is_visible() and
+              source.nth(0).locator("code").is_visible() and source.nth(1).locator("code").is_visible(),
+              "one native disclosure reveals example markup and script")
+        check(cp.locator("[data-site-preview] + details[open]").count()==1,
+              "code disclosures open independently")
+        cp.keyboard.press("Space")
+        check(disclosure.get_by_text("Show code",exact=True).is_visible() and source.first.is_hidden(),
+              "code can be collapsed with the keyboard")
+        cp.goto(url+"docs/installation/",wait_until="load")
+        check(cp.locator("[data-site-example] > [data-site-code]").first.is_visible(),
+              "installation snippets are directly readable")
         cp.goto(url+"docs/tabs/",wait_until="load")
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         tabs=cp.locator(".tabs[role=tablist]").first

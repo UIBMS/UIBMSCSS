@@ -142,7 +142,9 @@ try:
   print('next page/reset done',flush=True)
   # Search, copy exact text, active category, responsive menu.
   page.locator('#site-search-open').click();page.locator('#site-search-input').fill('materials');check('search results',page.locator('#site-search-results a').count()>0 and 'Materials' in page.locator('#site-search-results').inner_text());page.keyboard.press('Escape');page.wait_for_timeout(100);check('escape search',not page.locator('#site-search').evaluate('(e)=>e.open'))
-  block=page.locator('[data-site-code]').first;source=block.locator('code').text_content();block.locator('[data-site-copy]').click();page.wait_for_timeout(150)
+  disclosure=page.locator('[data-site-preview] + details').first
+  disclosure.get_by_text('Show code',exact=True).click()
+  block=disclosure.locator('[data-site-code]').first;source=block.locator('code').text_content();block.locator('[data-site-copy]').click();page.wait_for_timeout(150)
   copied=page.evaluate('window.__copied' if args.inline else 'navigator.clipboard.readText()');check('copy exact source without line numbers',source==copied);check('copy feedback','Copied!' in block.locator('output').inner_text())
   check('active navigation',page.locator('#site-doc-nav a[aria-current="page"]').inner_text()=='grid')
   page.set_viewport_size({'width':375,'height':812});page.wait_for_timeout(100);check('mobile navigation collapsed',not page.locator('#site-doc-nav').is_visible());page.locator('#site-nav-toggle').click();page.locator('#site-doc-drawer').wait_for(state='visible');check('mobile navigation opens natively',page.locator('#site-doc-drawer').evaluate('e=>e.matches(":modal")'));page.keyboard.press('Escape');page.locator('#site-doc-drawer').wait_for(state='hidden')
