@@ -1,19 +1,19 @@
 @layer configuration {
 
     :where([data-palette="default"], [data-palette="natural"]) {
-        --color-background: light-dark(#fafaf9, #181a18);
+        --color-background: light-dark(#f3f6fb, #181a18);
         --color-surface: light-dark(#ffffff, #222522);
-        --color-surface-subtle: light-dark(#efeeeb, #2d302d);
-        --color-accent: light-dark(#343b35, #d8dfd6);
+        --color-surface-subtle: light-dark(#eaf0f8, #2d302d);
+        --color-accent: light-dark(#315f9d, #d8dfd6);
         --color-on-accent: light-dark(#ffffff, #242522);
-        --color-text: light-dark(#242522, #f4f5f2);
-        --color-text-muted: light-dark(#494b46, #c4c8c0);
-        --color-border-strong: light-dark(#767871, #939a90);
-        --color-focus: light-dark(#234f76, #b9d9f7);
+        --color-text: light-dark(#202c43, #f4f5f2);
+        --color-text-muted: light-dark(#4b5b73, #c4c8c0);
+        --color-border-strong: light-dark(#7b899f, #939a90);
+        --color-focus: light-dark(#2d63ad, #b9d9f7);
         --color-success: light-dark(#205433, #b9e1c3);
         --color-warning: light-dark(#704500, #f5d59b);
         --color-danger: light-dark(#8f2929, #ffbbbb);
-        --color-info: light-dark(#234f76, #b9d9f7);
+        --color-info: light-dark(#315f9d, #b9d9f7);
     }
 
 }

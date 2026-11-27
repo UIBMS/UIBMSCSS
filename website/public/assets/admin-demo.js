@@ -64,7 +64,7 @@ function showView(id,{focus=false,history=false}={}){
   for(const link of links){if(link.getAttribute('href')==='#'+id)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');}
   if(history&&location.hash!=='#'+id)window.history.pushState(null,'','#'+id);
   workspace.scrollTop=0;
-  if(focus)view.focus({preventScroll:true});
+  if(focus)view.querySelector('h1').focus({preventScroll:true});
   if(id==='admin-projects')split.refresh();
   if(id==='admin-create')updateWizard();
   return true;

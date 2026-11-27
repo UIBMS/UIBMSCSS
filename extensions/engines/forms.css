@@ -6,7 +6,7 @@
   display:flex;flex-direction:column;align-items:stretch;gap:calc(var(--space,1rem)*.25);min-inline-size:0;max-inline-size:100%;
 }
 :where(.stack > label > :is(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="button"],[type="submit"],[type="reset"],[type="image"],[type="color"]),select,textarea,[data-uibms-form-control])) {
-  display:block;box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;
+  box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;
 }
 /* Enhanced inputs share a single visual field rather than two separate layout items. */
 :where([data-uibms-form-control]) { position:relative;display:inline-flex;align-items:center;box-sizing:border-box;max-inline-size:100%;min-inline-size:0;vertical-align:middle; }

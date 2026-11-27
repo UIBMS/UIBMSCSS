@@ -2,9 +2,9 @@
 
     :where(button, input:is([type="button"], [type="submit"], [type="reset"])),
     :where(input[type="file"])::file-selector-button {
-        background-color: var(--color-accent);
-        color: var(--color-on-accent);
-        border: var(--border-width) solid transparent;
+        background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 9%);
+        color: var(--color-text);
+        border: var(--border-width) solid var(--color-border);
         border-radius: var(--radius);
         padding: calc(var(--space) * 0.5) var(--space);
         min-block-size: var(--target-size);
@@ -12,6 +12,13 @@
         max-inline-size: 100%;
         font-weight: 600;
         cursor: pointer;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+        :where(button, input:is([type="button"], [type="submit"], [type="reset"])),
+        :where(input[type="file"])::file-selector-button {
+            transition: background-color var(--signature-time, var(--motion-duration)) var(--motion-easing);
+        }
     }
 
     :where(input[type="file"])::file-selector-button {
@@ -23,18 +30,14 @@
         :where(button:not(:disabled, [aria-disabled="true"]):hover,
             input:is([type="button"], [type="submit"], [type="reset"]):not(:disabled, [aria-disabled="true"]):hover),
         :where(input[type="file"]:not(:disabled):hover)::file-selector-button {
-            background-color: var(--color-surface-subtle);
-            color: var(--color-text);
-            border-color: var(--color-border-strong);
+            background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 16%);
         }
     }
 
     :where(button:not(:disabled, [aria-disabled="true"]):active,
         input:is([type="button"], [type="submit"], [type="reset"]):not(:disabled, [aria-disabled="true"]):active) {
-        background-color: var(--color-surface-subtle);
-        color: var(--color-text);
-        border-color: currentColor;
-        box-shadow: inset 0 0 0 1px currentColor;
+        background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 23%);
+        box-shadow: inset 0 1px 2px color-mix(in oklab, var(--color-text) 14%, transparent);
     }
 
     :where(button:is(:disabled, [aria-disabled="true"]),

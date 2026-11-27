@@ -3,44 +3,44 @@
   "optionalModules": 10,
   "files": {
     "uibms.css": {
-      "bytes": 36191,
-      "gzip": 5410,
-      "sha256": "a4132e7cb0d29a87e4d4fe8dcea2ac44913f0752744426a8f95f2479f062b8b4"
+      "bytes": 40134,
+      "gzip": 5932,
+      "sha256": "0b256f313042ddd576217ee97af53437ff2d75a79def8f60502d98f3fda43349"
     },
     "uibms.min.css": {
-      "bytes": 27539,
-      "gzip": 5073,
-      "sha256": "b1b9227b39efc7eb4fde565083c2738bfbae505e45e3c811f13fb6ea54c17a72"
+      "bytes": 30426,
+      "gzip": 5504,
+      "sha256": "bc33d1738c3d0a0d1ddf45ca190819cb0289a95adbcf41afa64cd8fc22047de5"
     },
     "uibms.full.css": {
-      "bytes": 43755,
-      "gzip": 6113,
-      "sha256": "bec0a55801edb8b2379d90ffd38ad42814cbe587844f99349eda1b4530e3b028"
+      "bytes": 47698,
+      "gzip": 6655,
+      "sha256": "457287e01809576b0c7fdea3bf9a5a147e0ad3bd86357861ad8739bf1a1e9b99"
     },
     "uibms.full.min.css": {
-      "bytes": 33635,
-      "gzip": 5579,
-      "sha256": "22989932768b343728eb017521a92754888d979e2fcfa7dd93beae6212330ce5"
+      "bytes": 36522,
+      "gzip": 6043,
+      "sha256": "d0789bbf3c53b1ddb068890e66cbe9bd0f40ca47751b6b8a57d59295d24f8971"
     },
     "uibms.scoped.css": {
-      "bytes": 46612,
-      "gzip": 5619,
-      "sha256": "c52613c9ea5b6598d6df7115b715c7055f7863f3dcf7caf6e8a41b66c613d18f"
+      "bytes": 51124,
+      "gzip": 6163,
+      "sha256": "9ec0d8e9aa28dc903031c462ceced1219b298f4e715fee133ffe54a3f6758295"
     },
     "uibms.scoped.min.css": {
-      "bytes": 34039,
-      "gzip": 5199,
-      "sha256": "4514b42bcd98bfaa82f45dcf4c6780e786560c9fb79a1668cd3d4239df945fba"
+      "bytes": 37227,
+      "gzip": 5634,
+      "sha256": "99f77edc3c9e76d207f050cbbe74ecc01f575666785e21f922ced3b162becb27"
     },
     "uibms.scoped.full.css": {
-      "bytes": 56436,
-      "gzip": 6360,
-      "sha256": "4016aee960d52b24abb24ff7a350f642e47db7b2884159393b1e07408ba1ceee"
+      "bytes": 60948,
+      "gzip": 6906,
+      "sha256": "2c27c70d8512a94d0228e3e33120f533987fce9d54a605215b11f35d7262fa18"
     },
     "uibms.scoped.full.min.css": {
-      "bytes": 41580,
-      "gzip": 5722,
-      "sha256": "8ad7cd25f2834c7fca8a8ccc83610f791c23e77b24fdde70757446657baee59d"
+      "bytes": 44768,
+      "gzip": 6325,
+      "sha256": "778d1db241cc5e5e72f6448ff6fbe7e946e1f6caa000ca5cfbefe829b46d6f95"
     },
     "extensions/palettes/ocean.css": {
       "bytes": 1105,

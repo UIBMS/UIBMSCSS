@@ -10,20 +10,37 @@
     :where(summary) {
         cursor: pointer;
         min-block-size: var(--target-size);
-        padding-block: calc(var(--space) * 0.5);
+        padding: calc(var(--space) * 0.5);
+        border-radius: var(--radius);
         font-weight: 600;
     }
 
     @media (hover: hover) {
         :where(summary:hover) {
-            text-decoration: underline;
-            text-underline-offset: 0.15em;
+            background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 7%);
         }
     }
 
     :where(details[open] > summary) {
         border-block-end: var(--border-width) solid var(--color-border);
-        margin-block-end: calc(var(--space) * 0.75);
+        color: var(--color-accent);
+    }
+
+    @supports (interpolate-size: allow-keywords) and selector(::details-content) {
+        @media (prefers-reduced-motion: no-preference) {
+            :where(details)::details-content {
+                display: flow-root;
+                interpolate-size: allow-keywords;
+                block-size: 0;
+                overflow: clip;
+                transition: block-size var(--signature-time, var(--motion-duration)) var(--motion-easing),
+                            content-visibility var(--signature-time, var(--motion-duration)) allow-discrete;
+            }
+
+            :where(details[open])::details-content {
+                block-size: auto;
+            }
+        }
     }
 
 }

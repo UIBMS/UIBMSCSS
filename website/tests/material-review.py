@@ -959,6 +959,69 @@ try:
         check(cp.locator("#admin-overview").is_visible() and cp.locator("#admin-total").inner_text()=="13","mobile navigation retains application data")
         check_width(cp,"standalone overview mobile material")
         check_admin_icons("mobile with Liquid Silicone")
+
+        cp.set_viewport_size({"width":1440,"height":960})
+        cp.emulate_media(reduced_motion="no-preference")
+        set_profile(cp,material="default",theme="light",palette="natural",effects="default")
+        cp.evaluate("document.documentElement.style.setProperty('--motion-duration','450ms')")
+        account=cp.locator("#admin-account")
+        button_color="""e=>{
+          const ctx=document.createElement('canvas').getContext('2d');
+          ctx.fillStyle=getComputedStyle(e).backgroundColor;ctx.fillRect(0,0,1,1);
+          return [...ctx.getImageData(0,0,1,1).data].slice(0,3);
+        }"""
+        rest=account.evaluate(button_color)
+        account.hover()
+        hover=account.evaluate(button_color)
+        check(min(rest)>200 and max(abs(a-b) for a,b in zip(rest,hover)) in range(1,25),
+              "light buttons use close surface tints",[rest,hover])
+
+        account.click()
+        menu=cp.locator("#admin-account-menu")
+        menu.wait_for(state="visible")
+        check(menu.evaluate("e=>e.getAnimations().some(a=>a.transitionProperty==='opacity')"),
+              "account popover animates in")
+        cp.keyboard.press("Escape")
+        menu.wait_for(state="hidden")
+
+        summary=cp.locator("#admin-overview .sparkline summary")
+        if cp.evaluate("CSS.supports('selector(::details-content)') && CSS.supports('interpolate-size: allow-keywords')"):
+            summary.click()
+            cp.wait_for_function("""()=>{
+              const detail=document.querySelector('#admin-overview .sparkline details');
+              const height=parseFloat(getComputedStyle(detail,'::details-content').blockSize);
+              const full=detail.querySelector('ol').getBoundingClientRect().height;
+              return detail.open && height>0 && height<full;
+            }""")
+            summary.click()
+            cp.wait_for_function("""()=>{
+              const detail=document.querySelector('#admin-overview .sparkline details');
+              return !detail.open && getComputedStyle(detail,'::details-content').blockSize==='0px';
+            }""")
+            check(True,"native disclosure animates open and settles closed")
+
+        cp.locator("#admin-sidebar a[href='#admin-create']").click()
+        project_name=cp.locator("#admin-create-form input[name=name]")
+        project_name.focus()
+        check(project_name.evaluate("""e=>{
+          const s=getComputedStyle(e);
+          return s.outlineStyle==='solid' && parseFloat(s.outlineOffset)<0 && s.boxShadow.includes('inset');
+        }"""),"editable fields retain a visible inset focus indicator")
+        if cp.evaluate("CSS.supports('appearance: base-select') && CSS.supports('selector(::picker(select))')"):
+            owner=cp.locator("#admin-create-form select[name=owner]")
+            check(owner.evaluate("e=>getComputedStyle(e).appearance==='base-select'"),
+                  "default form uses the browser's customizable select")
+            owner.click()
+            cp.wait_for_function("""()=>{
+              const select=document.querySelector('#admin-create-form select[name=owner]');
+              const opacity=Number(getComputedStyle(select,'::picker(select)').opacity);
+              return select.matches(':open') && opacity>0 && opacity<1;
+            }""")
+            cp.get_by_role("option",name="Jordan Lee",exact=True).click()
+            check(owner.input_value()=="Jordan Lee","animated picker updates the native value")
+            cp.emulate_media(reduced_motion="reduce")
+            check(owner.evaluate("e=>getComputedStyle(e,'::picker(select)').transitionDuration==='0s'"),
+                  "native picker honors reduced motion")
         component_context.close()
         check(not errors,"no component runtime errors",errors)
         # Use an actual touch-capable, mobile context, with motion permitted.
