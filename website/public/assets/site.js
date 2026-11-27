@@ -115,7 +115,7 @@ function setupDemos(){
  }
 }
 function setupLiveContext(){
- const frames=$('[data-site-scope-frame]'),swatches=$('[data-site-swatch]');
+ const frames=$$('[data-site-scope-frame]'),swatches=$$('[data-site-swatch]');
  if(!frames.length&&!swatches.length)return;
  function syncFrame(frame){
    try{const region=frame.contentDocument?.querySelector('[data-uibms]');if(!region)return;for(const p of data.profiles){if(p.key!=='material')region.setAttribute('data-'+p.key,root.getAttribute('data-'+p.key)||p.default);}}catch{/* Cross-origin frames cannot be synchronized. */}
