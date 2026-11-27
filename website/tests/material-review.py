@@ -875,6 +875,15 @@ try:
         cp.wait_for_selector("#admin-settings-form button[type=submit]:enabled",state="attached")
         set_profile(cp,material="default",theme="light",palette="natural",effects="none",density="default")
         admin=cp.locator("#admin-shell")
+
+        def check_admin_icons(label):
+            icons=admin.locator(".dashboard-topbar button, #admin-overview button[aria-describedby]").locator('svg[stroke="currentColor"]:visible')
+            sizes=icons.evaluate_all(
+                "icons => icons.map(icon => { const {width,height}=icon.getBoundingClientRect(); return [width,height]; })"
+            )
+            check(len(sizes)==4 and all(0<w<=24 and 0<h<=24 for w,h in sizes),"standalone control icons fit "+label,sizes)
+
+        check_admin_icons("desktop")
         check(cp.locator("iframe,#site-header,#site-doc-nav").count()==0,"standalone admin has no embedded documentation")
         check(admin.evaluate("e=>{const r=e.getBoundingClientRect();return Math.abs(r.width-innerWidth)<2&&Math.abs(r.height-innerHeight)<2}"),"standalone fills browser viewport")
         check(cp.locator("#admin-total").inner_text()=="12","overview metric derives from dataset")
@@ -949,6 +958,7 @@ try:
         nav.wait_for(state="hidden")
         check(cp.locator("#admin-overview").is_visible() and cp.locator("#admin-total").inner_text()=="13","mobile navigation retains application data")
         check_width(cp,"standalone overview mobile material")
+        check_admin_icons("mobile with Liquid Silicone")
         component_context.close()
         check(not errors,"no component runtime errors",errors)
         # Use an actual touch-capable, mobile context, with motion permitted.

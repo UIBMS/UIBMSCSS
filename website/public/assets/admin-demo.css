@@ -7,7 +7,7 @@
 #admin-shell .dashboard-topbar .topbar-actions { gap:calc(var(--space)*.25); }
 #admin-shell .dashboard-topbar button:not(.sidebar-toggle,.sidebar-drawer-toggle) { display:inline-flex;align-items:center;gap:calc(var(--space)*.25); }
 @container uibms-shell (width < 42rem) {
-  #admin-shell .dashboard-topbar .topbar-actions button > span:not(.sidebar-icon) { display:none; }
+  #admin-shell .dashboard-topbar .topbar-actions button > span { display:none; }
 }
 .demo-brand { display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:calc(var(--space)*.4);color:var(--color-text);text-decoration:none;line-height:1.2; }
 .demo-brand img { grid-row:1/3; }
