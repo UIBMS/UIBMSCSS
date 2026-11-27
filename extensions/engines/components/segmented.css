@@ -15,7 +15,7 @@
     }
     /* The native input covers its label, preserving its full hit area, focus,
        radio keyboard behaviour, checked state and form serialization. */
-    & > :where(label > input[type="radio"]) {
+    & > :where(label) > :where(input[type="radio"]) {
       position:absolute;inset:0;margin:0;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
       max-inline-size:none;max-block-size:none;opacity:0;cursor:pointer;z-index:1;
     }
@@ -36,7 +36,7 @@
     & > :where(label:has(> input[type="radio"]:disabled)) {
       cursor:not-allowed;color:var(--color-text-muted);
     }
-    & > :where(label > input[type="radio"]:disabled) { cursor:not-allowed; }
+    & > :where(label) > :where(input[type="radio"]:disabled) { cursor:not-allowed; }
     & > :where(label:has(> input[type="radio"]:focus-visible)) {
       outline:2px solid var(--color-focus);outline-offset:2px;
     }
