@@ -1241,3 +1241,7 @@ The ordering is a proposed discussion sequence, not an approved implementation p
 - WCAG 2.2: https://www.w3.org/TR/WCAG22/
 
 Only explicitly approved public contracts and implementations are authorized. Historical examples and unapproved proposals do not establish additional contracts; browser version policy and unresolved implementation details remain open.
+
+### Native-first responsive navigation and behavior
+
+Use CSS media/container queries for responsive layout, CSS transitions for appearance, and native details/summary, popover and dialog commands for navigation. Reuse the optional Drawer component for narrow primary and sidebar navigation. Keep one authored navigation model: server-rendered variants must derive from the same catalogue, and an embedded App Shell may move one live sidebar into an authored dialog when its container becomes compact. Do not implement custom modal focus traps, manually position regular layouts with JavaScript, or recreate native controls solely for visual styling. JavaScript is justified for native compatibility where required, responsive modal lifecycle (closing a modal when its invoker becomes unavailable), explicit application state, persistence, data transformation, and genuinely non-CSS interactions. Prefer browser-owned semantics and progressive enhancement. Keep the core CSS runtime-free and test both CSS/native operation and enhanced behavior.

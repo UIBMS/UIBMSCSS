@@ -22,7 +22,7 @@
   grid-area:content;position:relative;min-inline-size:0;min-block-size:0;overflow:auto;
   overscroll-behavior:contain;padding:var(--dashboard-content-padding,var(--space));
 }
-.app-shell .sidebar-toggle { display:none; }
+.app-shell :is(.sidebar-toggle,.sidebar-drawer-toggle) { display:none; }
 .app-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
 .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
   grid-template-columns:minmax(0,var(--dashboard-rail-width,4rem)) minmax(0,1fr);
@@ -56,5 +56,20 @@
   .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar { display:none; }
 }
 
+/* The authored mobile drawer receives the existing navigation tree.
+   Desktop and mobile triggers are selected by CSS, not a JS breakpoint. */
+@container uibms-shell (width < 42rem) {
+  .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] > .app-shell-grid {
+    grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top" "content";
+  }
+  .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-toggle { display:none; }
+  .app-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-drawer-toggle { display:inline-flex; }
+}
+.app-shell dialog.dashboard-nav-drawer {
+  --drawer-width:var(--dashboard-mobile-drawer-width,24rem);
+}
+.dashboard-nav-drawer > .dashboard-sidebar { border:0;padding:0;background:transparent; }
+.dashboard-nav-drawer > header { margin-block-end:var(--space);justify-content:space-between; }
+.dashboard-nav-drawer > header :is(h2,h3,form) { margin:0; }
 /* Hidden application views are absent even when a layout class sets display. */
 :where(.app-shell) [hidden] { display:none !important; }

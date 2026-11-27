@@ -8,7 +8,7 @@ import {renderHtml,slugify} from '../src/lib/render.mjs';
 import {codeBlock} from '../src/lib/code.mjs';
 const allowedClasses=new Set(framework.classes);
 const componentClasses=new Set(["tabs","segmented","dropdown","tooltip","drawer","drawer-start","drawer-bottom","toasts","toast","stepper","stepper-vertical","stepper-panel","pagination","tags","tag","chips","chip","command-palette","command-results"]);
-const dashboardClasses=new Set(["app-shell","app-shell-grid","dashboard-topbar","dashboard-sidebar","dashboard-workspace","sidebar-toggle","sidebar-nav","sidebar-icon","sidebar-label","topbar-brand","topbar-actions","dashboard-page-header","page-heading","page-actions","dashboard-breadcrumb","split-workspace","split-workspace-grid","split-pane","split-handle","dashboard-view","metric-card","metric-label","metric-value","metric-change","metric-context","widget-grid","sparkline","sparkline-plot","sparkline-values","progress-ring","quick-actions"]);
+const dashboardClasses=new Set(["app-shell","app-shell-grid","dashboard-topbar","dashboard-sidebar","dashboard-workspace","sidebar-toggle","sidebar-drawer-toggle","dashboard-nav-drawer","sidebar-nav","sidebar-icon","sidebar-label","topbar-brand","topbar-actions","dashboard-page-header","page-heading","page-actions","dashboard-breadcrumb","split-workspace","split-workspace-grid","split-pane","split-handle","dashboard-view","metric-card","metric-label","metric-value","metric-change","metric-context","widget-grid","sparkline","sparkline-plot","sparkline-values","progress-ring","quick-actions"]);
 const attrs=new Set([...profiles.map(p=>'data-'+p.key),'data-uibms',...framework.effectAttributes]);
 const css=await readFile(new URL('../../dist/uibms.full.css',import.meta.url),'utf8')+'\n'+expressiveStyles();
 assert.equal(expressivePalettes.length,5);
@@ -48,7 +48,7 @@ for(const p of pages){
       }
     }
   }
-  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));assert(html.includes('id="site-appearance"'));assert(!html.includes('{{base}}'));const ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,`Duplicate IDs ${p.slug}`);for(const a of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(a[1]),`Missing anchor ${p.slug}#${a[1]}`);checks+=6;}
+  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));for(const id of ['site-main-menu-drawer','site-doc-drawer','site-toc-drawer']){assert(html.includes('id="'+id+'" class="drawer'));assert(html.includes('commandfor="'+id+'" command="show-modal"'));}assert(!html.includes('data-site-menu-open')&&!html.includes('data-site-mobile-open'));assert(html.includes('id="site-appearance"'));assert(!html.includes('{{base}}'));const ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,`Duplicate IDs ${p.slug}`);for(const a of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(a[1]),`Missing anchor ${p.slug}#${a[1]}`);checks+=6;}
 }
 for(const p of pages){
   const html=renderHtml(p,'/UIBMSCSS/');

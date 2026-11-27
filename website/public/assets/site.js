@@ -21,45 +21,43 @@ function setupAppearance(){
   document.addEventListener('keydown',e=>{if(e.key==='Escape'&&details.open){details.open=false;details.querySelector('summary').focus();}});
   window.addEventListener('storage',e=>{if(e.key===appearanceKey||e.key===null){const next=load(appearanceKey,{})||{};for(const p of data.profiles)root.setAttribute('data-'+p.key,p.values.includes(next[p.key])?next[p.key]:p.default);sync();}});
 }
-function setupTopNavigation(){
-  const header=$('#site-header'), nav=$('#site-top'), toggle=$('#site-menu-toggle');
-  const narrow=matchMedia('(max-width:64rem)');
-  const isOpen=()=>header.hasAttribute('data-site-menu-open');
-  function close(restoreFocus=false){
-    header.removeAttribute('data-site-menu-open');toggle.setAttribute('aria-expanded','false');
-    if(restoreFocus&&narrow.matches)toggle.focus();
-  }
-  toggle.addEventListener('click',()=>{
-    if(isOpen()){close(true);return;}
-    if(!narrow.matches)return;
-    $('#site-appearance').open=false;
-    header.setAttribute('data-site-menu-open','');toggle.setAttribute('aria-expanded','true');
-    $('a',nav)?.focus();
-  });
-  function dismissOutside(e){if(isOpen()&&!nav.contains(e.target)&&!toggle.contains(e.target))close();}
-  document.addEventListener('pointerdown',dismissOutside);
-  document.addEventListener('focusin',dismissOutside);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&isOpen()){e.preventDefault();close(true);}});
-  nav.addEventListener('click',e=>{if(e.target.closest('a'))close();});
-  narrow.addEventListener?.('change',()=>close());
-}
 function setupNavigation(){
-  const sidebar=$('#site-sidebar'), toggle=$('#site-nav-toggle'), nav=$('#site-doc-nav');
+  // Native details supplies disclosure; JavaScript only persists its state.
+  // Both authored navigation trees use the same catalogue and group keys.
+  const sidebar=$('#site-sidebar'), nav=$('#site-doc-nav'), mobile=$('#site-mobile-doc-nav');
+  const groups=$$('[data-site-nav-group]',nav).concat($$('[data-site-nav-group]',mobile));
   const saved=load(navKey,{});
-  for(const group of $$('[data-site-nav-group]',nav)){
+  for(const group of groups){
+    const key=group.dataset.siteNavGroup;
     const active=!!$('a[aria-current="page"]',group);
-    if(active)group.open=true;else if(typeof saved[group.dataset.siteNavGroup]==='boolean')group.open=saved[group.dataset.siteNavGroup];
-    group.addEventListener('toggle',()=>{const states=load(navKey,{});states[group.dataset.siteNavGroup]=group.open;save(navKey,states);});
+    if(active)group.open=true;else if(typeof saved[key]==='boolean')group.open=saved[key];
+    group.addEventListener('toggle',()=>{
+      const states=load(navKey,{});states[key]=group.open;save(navKey,states);
+      for(const peer of groups)if(peer!==group&&peer.dataset.siteNavGroup===key&&peer.open!==group.open)peer.open=group.open;
+    });
   }
-  const narrow=matchMedia('(max-width:54rem)');
-  function collapse(){sidebar.removeAttribute('data-site-mobile-open');toggle.setAttribute('aria-expanded','false');}
-  toggle.addEventListener('click',()=>{const open=!sidebar.hasAttribute('data-site-mobile-open');sidebar.toggleAttribute('data-site-mobile-open',open);toggle.setAttribute('aria-expanded',String(open));});
-  narrow.addEventListener?.('change',collapse);
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&narrow.matches&&sidebar.hasAttribute('data-site-mobile-open')){collapse();toggle.focus();}});
+  // CSS controls all breakpoint visibility. Close an active native modal if
+  // its invoker disappears after rotation/resizing, otherwise it stays modal.
+  const drawers=$$('#site-main-menu-drawer,#site-doc-drawer,#site-toc-drawer');
+  const invoker=dialog=>$('button[commandfor="'+dialog.id+'"]');
+  const reconcile=()=>{for(const drawer of drawers)if(drawer.open&&!invoker(drawer)?.getClientRects().length)drawer.close();};
+  window.addEventListener('resize',reconcile,{passive:true});
+  for(const drawer of drawers){
+    drawer.addEventListener('beforetoggle',event=>{if(event.newState==='open')$('#site-appearance').open=false;});
+    drawer.addEventListener('click',event=>{
+      const link=event.target.closest('a[href^="#"]');
+      if(link&&drawer.contains(link)&&!event.metaKey&&!event.ctrlKey&&!event.altKey&&!event.shiftKey){
+        drawer.close();
+        const target=document.getElementById(link.getAttribute('href').slice(1));
+        if(target){target.setAttribute('tabindex','-1');target.focus({preventScroll:true});}
+      }
+    });
+  }
   let restoring=true;
-  if(!narrow.matches){sidebar.scrollTop=Number(load(scrollKey,0))||0;const active=$('a[aria-current="page"]',nav);if(active){const a=active.getBoundingClientRect(),b=sidebar.getBoundingClientRect();if(a.bottom>b.bottom||a.top<b.top)sidebar.scrollTop+=a.top-b.top-60;}}
+  const visible=()=>!!sidebar.getClientRects().length;
+  if(visible()){sidebar.scrollTop=Number(load(scrollKey,0))||0;const active=$('a[aria-current="page"]',nav);if(active){const a=active.getBoundingClientRect(),b=sidebar.getBoundingClientRect();if(a.bottom>b.bottom||a.top<b.top)sidebar.scrollTop+=a.top-b.top-60;}}
   requestAnimationFrame(()=>{restoring=false;});
-  sidebar.addEventListener('scroll',()=>{if(!restoring&&!narrow.matches)save(scrollKey,sidebar.scrollTop);},{passive:true});
+  sidebar.addEventListener('scroll',()=>{if(!restoring&&visible())save(scrollKey,sidebar.scrollTop);},{passive:true});
 }
 function setupSearch(){
   const dialog=$('#site-search'), input=$('#site-search-input'), results=$('#site-search-results'), count=$('#site-search-count');
@@ -72,11 +70,9 @@ function setupSearch(){
     count.textContent=q?(hits.length?`${hits.length} matching page${hits.length===1?'':'s'}${hits.length>25?' (first 25 shown)':''}.`:'No matches. Try another term.'): 'Popular reference pages. Type to search.';
   };
   const open=()=>{if(!dialog.open){$('#site-appearance').open=false;dialog.showModal();render();input.focus();}};
-  dialog.addEventListener('close',()=>$('#site-search-open').focus());
   $('#site-search-open').addEventListener('click',open);
   input.addEventListener('input',render);
-  dialog.addEventListener('keydown',e=>{if(e.key==='Escape'){e.preventDefault();dialog.close();$('#site-search-open').focus();}});
-  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'){e.preventDefault();open();}});
+  document.addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key.toLowerCase()==='k'&&!document.querySelector('dialog:modal')){e.preventDefault();open();}});
 }
 function setupCopy(){
  document.addEventListener('click',async e=>{
@@ -122,7 +118,7 @@ function setupLiveContext(){
  new MutationObserver(update).observe(root,{attributes:true,attributeFilter:data.profiles.map(p=>'data-'+p.key)});
  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',update);update();
 }
-setupAppearance();setupTopNavigation();setupNavigation();setupSearch();setupCopy();setupDemos();setupLiveContext();
+setupAppearance();setupNavigation();setupSearch();setupCopy();setupDemos();setupLiveContext();
 const header=$('#site-header');
 function resizeHeader(){root.style.setProperty('--site-header-size',header.getBoundingClientRect().height+'px');}
 resizeHeader();if('ResizeObserver' in window)new ResizeObserver(resizeHeader).observe(header);else window.addEventListener('resize',resizeHeader);
