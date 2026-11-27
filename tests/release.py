@@ -66,6 +66,18 @@ with sync_playwright() as p:
             markup = markup.replace(link, '<style>'+ (DIST / name).read_text() +'</style>')
         page.set_content(markup, wait_until='load')
     def css(selector, prop): return page.locator(selector).first.evaluate('(e,p)=>getComputedStyle(e).getPropertyValue(p)', prop).strip()
+    def resolved_color(selector, expression):
+        # Resolve light-dark() and color-mix() in the same inherited context as the control.
+        return page.locator(selector).first.evaluate('''(e,value)=>{
+            const probe=document.createElement('span');
+            probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none';
+            probe.style.backgroundColor=value;
+            e.parentElement.append(probe);
+            try{return getComputedStyle(probe).backgroundColor}finally{probe.remove()}
+        }''', expression)
+    def accent_color(selector): return resolved_color(selector, 'var(--color-accent)')
+    def resting_button_color(selector):
+        return resolved_color(selector, 'color-mix(in oklab, var(--color-surface), var(--color-accent) 9%)')
     def set_attr(selector,key,val): page.locator(selector).first.evaluate('(e,p)=>e.setAttribute(p[0],p[1])',[key,val])
     def hover(selector): page.locator(selector).hover();page.wait_for_timeout(320)
     def rect(selector): return page.locator(selector).bounding_box()
@@ -74,14 +86,17 @@ with sync_playwright() as p:
             for minified in (False,True):
                 name='uibms'+('.scoped' if scoped else '')+('.full' if full else '')+('.min' if minified else '')+'.css'
                 pre=name+' / '
-                page.set_viewport_size({'width':1280,'height':900});page.emulate_media(reduced_motion='no-preference',forced_colors='none');load([name],scoped)
+                page.set_viewport_size({'width':1280,'height':900});page.mouse.move(1279,899);page.emulate_media(reduced_motion='no-preference',forced_colors='none');load([name],scoped)
                 check(pre+'actual stylesheet loaded',page.evaluate('document.styleSheets[0].cssRules.length > 20'))
                 check(pre+'dark foreground',css('#app','color'),'rgb(244, 245, 242)')
-                check(pre+'dark palette background',css('#button','background-color'),'rgb(172, 221, 245)' if full else 'rgb(216, 223, 214)')
+                check(pre+'dark palette accent',accent_color('#button'),'rgb(172, 221, 245)' if full else 'rgb(216, 223, 214)')
+                check(pre+'dark palette button surface',css('#button','background-color'),resting_button_color('#button'))
                 check(pre+'nested marker inherits',css('#nested-button','background-color'),css('#button','background-color'))
-                check(pre+'nested light independently',css('#light-button','background-color'),'rgb(23, 78, 105)' if full else 'rgb(52, 59, 53)')
+                check(pre+'nested light accent independently',accent_color('#light-button'),'rgb(23, 78, 105)' if full else 'rgb(49, 95, 157)')
+                check(pre+'nested light button surface',css('#light-button','background-color'),resting_button_color('#light-button'))
                 check(pre+'unknown palette inherits',css('#unknown-button','background-color'),css('#button','background-color'))
-                check(pre+'palette restore',css('#restore','background-color'),'rgb(216, 223, 214)')
+                check(pre+'palette accent restore',accent_color('#restore'),'rgb(216, 223, 214)')
+                check(pre+'palette restored button surface',css('#restore','background-color'),resting_button_color('#restore'))
                 check(pre+'compact token',css('#app','--space'),'0.75rem')
                 check(pre+'restore density',css('#restore','--space'),'1rem')
                 check(pre+'shape radius',css('#button','border-radius'),'16px')
@@ -130,8 +145,15 @@ with sync_playwright() as p:
                 check(pre+'unknown typography inherits width',css('#unknown-typography','--reading-width'),'72ch')
                 check(pre+'default typography restores width',css('#default-typography','--reading-width'),'65ch')
                 check(pre+'profile duration',css('#button','transition-duration'),'0.22s' if full else '0.18s')
-                hover('#lift');check(pre+'explicit lift',css('#lift','translate'),'0px -4px');page.mouse.down();page.wait_for_timeout(330)
-                check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px');page.mouse.up()
+                hover('#lift');check(pre+'explicit lift',css('#lift','translate'),'0px -4px')
+                # Hit-test the translated button after the hover transition, not its old coordinates.
+                hit=rect('#lift');page.mouse.move(hit['x']+hit['width']/2,hit['y']+hit['height']/2)
+                page.mouse.down()
+                try:
+                    check(pre+'press reaches intended button',page.locator('#lift').evaluate('e=>e.matches(":active")'))
+                    page.wait_for_timeout(330)
+                    check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px')
+                finally:page.mouse.up()
                 hover('#none-hover');check(pre+'individual none wins',css('#none-hover','translate'),'none')
                 hover('#none-default');check(pre+'context none',css('#none-default','translate'),'none')
                 hover('#none-explicit');check(pre+'explicit inside none',css('#none-explicit','translate'),'0px -4px')
@@ -163,7 +185,10 @@ with sync_playwright() as p:
             for name,color in accent.items():
                 ext='extensions/palettes/'+name+mode
                 markup='<!doctype html><link rel="stylesheet" href="/dist/'+core+'"><link rel="stylesheet" href="/dist/'+ext+'"><div '+marker+' data-theme="light" data-palette="'+name+'"><button id="ext">Inside</button></div><div data-palette="'+name+'" id="host">Outside</div>'
-                load([core,ext],scoped,markup);check(ext+' separate palette',css('#ext','background-color'),color)
+                load([core,ext],scoped,markup)
+                check(ext+' separate palette accent',accent_color('#ext'),color)
+                page.mouse.move(1279,899);page.wait_for_timeout(320)
+                check(ext+' separate palette button surface',css('#ext','background-color'),resting_button_color('#ext'))
                 if scoped: check(ext+' host unaffected',css('#host','--color-accent'),'')
             for name,t in [('minimal','0.1s'),('fluid','0.28s'),('dynamic','0.22s')]:
                 ext='extensions/profiles/effects-'+name+mode

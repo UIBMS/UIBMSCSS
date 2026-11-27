@@ -22,9 +22,9 @@ The six initial implementation checkpoints have produced a development release c
 
 Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). Exact distribution sizes and hashes are recorded in [the generated manifest](dist/manifest.json). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
 
-The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation and version approval remain release gates. The repository is licensed under MIT. No public release or full WCAG certification is claimed.
+The regenerated semantic-first candidate passed 704 core release checks and 120 responsive-table cases in Chromium 144. The earlier 556-check record describes the initial candidate, not the current source. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation and version approval remain release gates. The repository is licensed under MIT. No public release or full WCAG certification is claimed.
 
-During the CLS-004 contextual refactoring, core source modules on the development branch may be ahead of the checked-in release candidate distributions. The generated `dist/` files and manifest retain the prior candidate until the distribution regeneration and full regression checkpoint. Do not treat the previous release test results as certification of the refactored source.
+The CLS-004 refactoring milestone regenerated all 48 stylesheet variants and their manifest using the pinned packager. The eight principal files changed; the 40 independent extension variants are identical to the previous candidate. See the [refactoring verification record](docs/VERIFICATION.md) for measurements and remaining integration gates.
 
 Explore the [native HTML](examples/native-html.html), [reusable classes](examples/classes.html), [configuration](examples/profiles.html), [signature experience](examples/effects.html) and [scoped adoption](examples/scoped.html) showcases from a local checkout.
 
