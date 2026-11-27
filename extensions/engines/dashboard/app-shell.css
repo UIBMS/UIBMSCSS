@@ -1,6 +1,8 @@
 /* Optional responsive administration shell. Structure only; no app routing. */
 .app-shell {
   container: uibms-shell / inline-size;
+  /* Keep positioned descendants within the shell even when materials unmount. */
+  position:relative;
   inline-size:100%;min-inline-size:0;max-inline-size:100%;
   block-size:var(--dashboard-height,100dvh);min-block-size:0;
   box-sizing:border-box;color:var(--color-text);background-color:var(--color-background);
@@ -17,7 +19,7 @@
 .app-shell-grid > .dashboard-topbar { grid-area:top;min-inline-size:0; }
 .app-shell-grid > .dashboard-sidebar { grid-area:side;min-inline-size:0;min-block-size:0;overflow:auto;overscroll-behavior:contain; }
 .app-shell-grid > .dashboard-workspace {
-  grid-area:content;min-inline-size:0;min-block-size:0;overflow:auto;
+  grid-area:content;position:relative;min-inline-size:0;min-block-size:0;overflow:auto;
   overscroll-behavior:contain;padding:var(--dashboard-content-padding,var(--space));
 }
 .app-shell .sidebar-toggle { display:none; }

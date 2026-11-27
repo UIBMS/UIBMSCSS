@@ -1,6 +1,6 @@
 /* The native progress remains the accessible source of truth. */
 @layer features {
-  :where(.progress-ring) { min-inline-size:0; }
+  :where(.progress-ring) { position:relative;min-inline-size:0; }
   :where(.progress-ring-face) {
     display:grid;place-items:center;inline-size:min(100%,var(--dashboard-ring-size,7rem));aspect-ratio:1;
     color:var(--color-text);

@@ -69,6 +69,21 @@ def wait_surface(page, selector, color):
 
 def check_width(page, label):
     sizes=page.evaluate("()=>({scroll:document.documentElement.scrollWidth,width:innerWidth})")
+    if sizes["scroll"] > sizes["width"] + 1:
+        # Report real geometry without masking any overflow or relaxing the gate.
+        sizes["offenders"] = page.evaluate("""()=>{
+          const root=document.documentElement;
+          return [...document.querySelectorAll('body *')].flatMap(e=>{
+            const r=e.getBoundingClientRect(),cs=getComputedStyle(e);
+            if(!e.getClientRects().length||r.right+scrollX<=innerWidth+1&&e.scrollWidth<=e.clientWidth+1)return [];
+            const ancestry=[];for(let p=e;p&&p!==root;p=p.parentElement){
+              const s=getComputedStyle(p),b=p.getBoundingClientRect();
+              ancestry.push({tag:p.tagName,id:p.id,cls:p.getAttribute('class'),left:Math.round(b.left),right:Math.round(b.right),overflow:s.overflowX,position:s.position,clip:s.clipPath});
+              if(ancestry.length>=7)break;
+            }
+            return [{tag:e.tagName,id:e.id,cls:e.getAttribute('class'),right:Math.round(r.right+scrollX),width:Math.round(r.width),scroll:e.scrollWidth,client:e.clientWidth,position:cs.position,offset:e.offsetParent?.id||e.offsetParent?.className||null,ancestry}];
+          }).sort((a,b)=>Math.max(b.right,b.scroll)-Math.max(a.right,a.scroll)).slice(0,12);
+        }""")
     check(sizes["scroll"]<=sizes["width"]+1,"no horizontal overflow "+label,sizes)
 
 try:

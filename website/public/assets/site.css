@@ -137,7 +137,7 @@
 
 /* Decorative overscan must not create a horizontal scrollable page. */
 html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
-#site-main { overflow-x:clip; }
+#site-main { position:relative; overflow-x:clip; }
 [data-site-section] { scroll-margin-block-start:.75rem; }
 #site-stats > *,[data-site-swatches] > * { min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere; }
 [data-site-swatches] code { display:block;max-inline-size:100%;white-space:normal;overflow-wrap:anywhere; }
