@@ -40,7 +40,8 @@ FIXTURE = '''<section id="app" {marker} data-theme="dark" data-palette="ocean" d
   <button id="open-dialog" onclick="document.getElementById('dialog').showModal()">Dialog</button><dialog id="dialog" class="stack" data-entrance="fade rise" data-exit="fade rise" aria-label="Dialog"><p>Dialog content</p><form method="dialog"><button>Close</button></form></dialog>
   <button id="open-popover" popovertarget="popover">Popover</button><div id="popover" popover class="stack" data-entrance="fade rise" data-exit="fade rise">Popover content<button popovertarget="popover" popovertargetaction="hide">Close</button></div>
   <div data-effects="none"><button id="none-default">No default effects</button><button id="none-explicit" data-hover="lift">Explicit</button></div>
-  <button id="none-hover" data-hover="none lift">No lift</button><article class="card" data-effect="glass matte" id="material-conflict">Conflict</article>
+  <button id="none-hover" data-hover="none lift">No lift</button><article class="card" data-effect="glass matte" id="material-conflict">Conflict</article><article class="card" data-effect="glass none" id="material-none">None wins</article><article class="card" data-effect="glass unknown" id="material-unknown">Known effect</article>
+  <div data-typography="expressive"><section id="technical-profile" data-typography="technical"><p id="unknown-typography" data-typography="unknown">Inherited</p><p id="default-typography" data-typography="default">Reset</p></section></div>
   <article class="card" data-scroll="reveal progress" id="scroll" style="margin-block-start: 120vh">Scroll linked <a href="#heading">Top</a></article>
 </section>'''
 
@@ -122,6 +123,12 @@ with sync_playwright() as p:
                 if page.evaluate('CSS.supports("backdrop-filter", "blur(12px)")'):
                     check(pre+'glass filter',css('#glass','backdrop-filter')!='none')
                 check(pre+'conflicting materials',css('#material-conflict','backdrop-filter'),'none')
+                check(pre+'none wins over material',css('#material-none','backdrop-filter'),'none')
+                check(pre+'unknown material token does not cancel known effect',css('#material-unknown','backdrop-filter'),css('#glass','backdrop-filter'))
+                check(pre+'nested technical resets scale',css('#technical-profile','--heading-scale'),'1')
+                check(pre+'nested technical sets reading width',css('#technical-profile','--reading-width'),'72ch')
+                check(pre+'unknown typography inherits width',css('#unknown-typography','--reading-width'),'72ch')
+                check(pre+'default typography restores width',css('#default-typography','--reading-width'),'65ch')
                 check(pre+'profile duration',css('#button','transition-duration'),'0.22s' if full else '0.18s')
                 hover('#lift');check(pre+'explicit lift',css('#lift','translate'),'0px -4px');page.mouse.down();page.wait_for_timeout(330)
                 check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px');page.mouse.up()

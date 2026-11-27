@@ -9,19 +9,19 @@
                         box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing);
         }
 
-        &:where([data-entrance~="fade"]:not([data-entrance~="none"]), [data-exit~="fade"]:not([data-exit~="none"]))::before {
-            content: "";
-            position: absolute;
-            inset: 0;
-            border-radius: inherit;
-            pointer-events: none;
-            box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-focus) 25%, transparent);
-            opacity: 0;
-            transition: opacity var(--explicit-time, var(--motion-duration)) var(--motion-easing);
-        }
+        &:where([data-entrance~="fade"]:not([data-entrance~="none"]), [data-exit~="fade"]:not([data-exit~="none"])) {
+            &::before {
+                content: "";
+                position: absolute;
+                inset: 0;
+                border-radius: inherit;
+                pointer-events: none;
+                box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-focus) 25%, transparent);
+                opacity: 0;
+                transition: opacity var(--explicit-time, var(--motion-duration)) var(--motion-easing);
+            }
 
-        &:where(dialog[open], :popover-open):where([data-entrance~="fade"]:not([data-entrance~="none"]), [data-exit~="fade"]:not([data-exit~="none"]))::before {
-            opacity: 1;
+            &:where(dialog[open], :popover-open)::before { opacity: 1; }
         }
 
         @starting-style {
@@ -34,20 +34,18 @@
         }
 
         @supports (overlay: auto) and (transition-behavior: allow-discrete) {
-            &:where([data-exit~="rise"]:not([data-exit~="none"]), [data-exit~="fade"]:not([data-exit~="none"])) {
+            &:where(:is([data-exit~="rise"], [data-exit~="fade"]):not([data-exit~="none"])) {
                 transition: transform var(--explicit-time, var(--motion-duration)) var(--motion-easing),
                             translate var(--explicit-time, var(--motion-duration)) var(--motion-easing),
-                                box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing),
+                            box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing),
                             display var(--explicit-time, var(--motion-duration)) allow-discrete,
                             overlay var(--explicit-time, var(--motion-duration)) allow-discrete;
 
                 &:where(:not(dialog[open], :popover-open)) {
                     pointer-events: none;
-                }
-            }
 
-            &:where([data-exit~="rise"]:not([data-exit~="none"])):where(:not(dialog[open], :popover-open)) {
-                transform: translateY(var(--motion-distance));
+                    &:where([data-exit~="rise"]) { transform: translateY(var(--motion-distance)); }
+                }
             }
         }
     }

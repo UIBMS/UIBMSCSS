@@ -2,19 +2,16 @@
 
     :where(:not(:disabled, [aria-disabled="true"], [hidden], .visually-hidden)) {
 
-        &:where([data-hover~="lift"]:not([data-hover~="none"]), [data-hover~="glow"]:not([data-hover~="none"]),
+        &:where(:is([data-hover~="lift"], [data-hover~="glow"]):not([data-hover~="none"]),
             [data-active~="press"]:not([data-active~="none"]), [data-focus~="glow"]:not([data-focus~="none"])) {
             transition: translate var(--explicit-time, var(--motion-duration)) var(--motion-easing),
                         box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing);
         }
 
         @media (hover: hover) and (pointer: fine) {
-            &:where([data-hover~="lift"]:not([data-hover~="none"]):hover) {
-                translate: 0 calc(-1 * var(--motion-distance));
-            }
-
-            &:where([data-hover~="glow"]:not([data-hover~="none"]):hover) {
-                box-shadow: var(--_effect-depth), var(--_effect-halo);
+            &:where(:hover:not([data-hover~="none"])) {
+                &:where([data-hover~="lift"]) { translate: 0 calc(-1 * var(--motion-distance)); }
+                &:where([data-hover~="glow"]) { box-shadow: var(--_effect-depth), var(--_effect-halo); }
             }
         }
 
