@@ -449,6 +449,11 @@ group('Dashboard',[
         "label": "Shell styles",
         "code": "<link rel=\"stylesheet\" href=\"engines/dashboard/app-shell.css\">\n<link rel=\"stylesheet\" href=\"engines/dashboard/sidebar.css\">\n<link rel=\"stylesheet\" href=\"engines/dashboard/topbar.css\">\n<link rel=\"stylesheet\" href=\"engines/components/drawer.css\">",
         "lang": "html"
+      },
+      {
+        "label": "Native shell structure",
+        "code": "<div class=\"app-shell\">\n  <header><h2>Project workspace</h2></header>\n  <nav aria-label=\"Workspace\">\n    <ul><li><a href=\"#projects\">Projects</a></li></ul>\n  </nav>\n  <main id=\"projects\"><h1>Projects</h1></main>\n</div>",
+        "lang": "html"
       }
     ]
   },
