@@ -99,7 +99,7 @@ try:
    f=site/slug/'index.html';errors.clear();
    if args.inline:page.set_content(make_inline(f,settings or {}),wait_until='load',timeout=10000)
    else:page.goto('http://127.0.0.1:8765'+base+(slug+'/' if slug else ''),wait_until='load',timeout=10000)
-   ready='html[data-demo-ready]' if slug.startswith('demos/') else 'html[data-site-ready][data-site-engines-ready]'
+   ready='#admin-settings-form button[type=submit]:enabled' if slug.startswith('demos/') else 'html[data-site-ready][data-site-engines-ready]'
    page.wait_for_selector(ready,state='attached',timeout=10000)
    page.evaluate('window.scrollTo({top:0,left:0,behavior:"instant"})')
   def width_check():return page.evaluate('({width:innerWidth,scroll:document.documentElement.scrollWidth})')

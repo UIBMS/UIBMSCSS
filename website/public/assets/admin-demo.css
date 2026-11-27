@@ -1,19 +1,12 @@
 /* Standalone example application only. Reuse framework components/tokens. */
-#admin-shell { border:0;border-radius:0;--dashboard-sidebar-width:15rem; }
+#admin-shell { border:0;border-radius:0; }
 #admin-shell .dashboard-workspace { display:block; }
 #admin-shell .dashboard-view { max-inline-size:90rem;margin-inline:auto;min-inline-size:0; }
 #admin-shell .dashboard-view + .dashboard-view { margin-block-start:var(--space); }
-#admin-shell .dashboard-view[hidden] { margin:0; }
-#admin-shell .dashboard-page-header h1 { margin:0; }
 #admin-shell .dashboard-page-header .page-heading { gap:calc(var(--space)*.25); }
-#admin-shell .metric-card > :is(meter,progress) { inline-size:100%; }
 #admin-shell .dashboard-topbar .topbar-actions { gap:calc(var(--space)*.25); }
 #admin-shell .dashboard-topbar button:not(.sidebar-toggle,.sidebar-drawer-toggle) { display:inline-flex;align-items:center;gap:calc(var(--space)*.25); }
-#admin-shell .sidebar-drawer-toggle { display:none; }
-#admin-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
 @container uibms-shell (width < 42rem) {
-  #admin-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-toggle { display:none; }
-  #admin-shell[data-uibms-shell-ready][data-uibms-shell-drawer] .sidebar-drawer-toggle { display:inline-flex; }
   #admin-shell .dashboard-topbar .topbar-actions button > span:not(.sidebar-icon) { display:none; }
 }
 .demo-brand { display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:calc(var(--space)*.4);color:var(--color-text);text-decoration:none;line-height:1.2; }
@@ -30,6 +23,5 @@
 #admin-shell #admin-create-form { max-inline-size:48rem; }
 #admin-shell #admin-settings-form { min-inline-size:0; }
 #admin-shell #admin-project-tags:empty { display:none; }
-#admin-shell #admin-create-form > .cluster { flex-wrap:wrap; }
 /* Native skip link is visible on keyboard focus. */
 a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) auto auto var(--space);inline-size:auto;block-size:auto;clip-path:none;overflow:visible;margin:0;padding:var(--space);z-index:20;background:var(--color-surface); }

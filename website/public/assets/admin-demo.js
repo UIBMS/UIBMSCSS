@@ -84,7 +84,8 @@ window.addEventListener('hashchange',routeFromLocation);
 // Records, filters, and pagination all use one local in-memory dataset.
 const search=$('admin-project-search'),priority=$('admin-priority-filter'),rows=$('admin-project-rows');
 const rowTemplate=$('admin-row-template'),pageSize=5;
-const rowsById=new Map([...rows.children].map(r=>[Number(r.dataset.demoProject),r]));
+const projectButton='button[name="project"]';
+const rowsById=new Map([...rows.children].map(row=>[Number(row.querySelector(projectButton).value),row]));
 const statusFilter=()=>document.querySelector('input[name="admin-status"]:checked').value;
 const filtered=()=>projects.filter(p=>{
   const words=search.value.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
@@ -97,8 +98,7 @@ const pagination=mountPagination($('admin-pagination'),{total:Math.ceil(projects
 function updateRow(p){
   let r=rowsById.get(p.id);
   if(!r){r=rowTemplate.content.firstElementChild.cloneNode(true);rows.prepend(r);rowsById.set(p.id,r);}
-  r.dataset.demoProject=String(p.id);r.dataset.demoStatus=p.status;r.dataset.demoPriority=String(p.priority);
-  const b=r.querySelector('[data-demo-select-project]'),tag=r.querySelector('.tag');
+  const b=r.querySelector(projectButton),tag=r.querySelector('.tag');
   b.value=String(p.id);if(b.textContent!==p.name)b.textContent=p.name;const pressed=String(p.id===selected);if(b.getAttribute('aria-pressed')!==pressed)b.setAttribute('aria-pressed',pressed);if(r.cells[1].textContent!==p.owner)r.cells[1].textContent=p.owner;if(tag.textContent!==p.status)tag.textContent=p.status;if(tag.dataset.tone!==tone(p.status))tag.dataset.tone=tone(p.status);
 }
 function renderRows(){
@@ -147,7 +147,7 @@ function renderDetail(){
   renderTags();
 }
 function selectRecord(id){if(!projects.some(p=>p.id===id))return;selected=id;renderDetail();renderRows();}
-rows.addEventListener('click',e=>{const button=e.target.closest?.('[data-demo-select-project]');if(button)selectRecord(Number(button.value));});
+rows.addEventListener('click',e=>{const button=e.target.closest?.(projectButton);if(button)selectRecord(Number(button.value));});
 tags.addEventListener('chipremove',e=>{const p=project();if(p)p.tags=p.tags.filter(label=>label!==e.detail.value);notify('Label removed',e.detail.value);});
 $('admin-tag-form').addEventListener('submit',e=>{
   e.preventDefault();const p=project(),field=e.target.elements.namedItem('label'),label=field.value.trim();
@@ -196,7 +196,6 @@ function exportRecords(){
 }
 $('admin-export').addEventListener('click',exportRecords);$('admin-report-export').addEventListener('click',exportRecords);
 const settings=$('admin-settings-form');
-settings.querySelector('button[type="submit"]').disabled=false;
 settings.addEventListener('submit',e=>{e.preventDefault();text('admin-workspace-brand',settings.elements.namedItem('workspace').value.trim()||'Workspace');notify('Workspace preferences saved','Changes apply to this demonstration session.');});
 $('admin-reset-session').addEventListener('click',()=>{if(window.confirm('Reset local demonstration data? Appearance preferences will remain.'))location.reload();});
 
@@ -205,4 +204,4 @@ renderDetail();applyFilters();updateMetrics();updateWizard();routeFromLocation()
 // they do not own any application data or responsive geometry.
 mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 mountForms(document,{filter:el=>!!el.closest('#admin-create-form,#admin-settings-form')});
-root.setAttribute('data-demo-ready','');
+settings.querySelector('button[type="submit"]').disabled=false;
