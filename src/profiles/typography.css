@@ -1,6 +1,7 @@
 @layer configuration {
 
-    :where([data-typography="default"]) {
+    :where([data-typography="default"], [data-typography="editorial"],
+        [data-typography="technical"], [data-typography="expressive"]) {
         --font-family: system-ui, sans-serif;
         --font-size: 1rem;
         --line-height: 1.6;
@@ -8,36 +9,26 @@
         --reading-width: 65ch;
         --heading-weight: 650;
         --heading-scale: 1;
-    }
 
-    :where([data-typography="editorial"]) {
-        --font-family: Georgia, "Times New Roman", serif;
-        --font-size: 1.125rem;
-        --line-height: 1.75;
-        --heading-line-height: 1.25;
-        --reading-width: 65ch;
-        --heading-weight: 600;
-        --heading-scale: 1;
-    }
+        &:where([data-typography="editorial"]) {
+            --font-family: Georgia, "Times New Roman", serif;
+            --font-size: 1.125rem;
+            --line-height: 1.75;
+            --heading-line-height: 1.25;
+            --heading-weight: 600;
+        }
 
-    :where([data-typography="technical"]) {
-        --font-family: var(--font-family-mono);
-        --font-size: 1rem;
-        --line-height: 1.55;
-        --heading-line-height: 1.2;
-        --reading-width: 72ch;
-        --heading-weight: 650;
-        --heading-scale: 1;
-    }
+        &:where([data-typography="technical"]) {
+            --font-family: var(--font-family-mono);
+            --line-height: 1.55;
+            --reading-width: 72ch;
+        }
 
-    :where([data-typography="expressive"]) {
-        --font-family: system-ui, sans-serif;
-        --font-size: 1rem;
-        --line-height: 1.6;
-        --heading-line-height: 1.15;
-        --reading-width: 65ch;
-        --heading-weight: 750;
-        --heading-scale: 1.125;
+        &:where([data-typography="expressive"]) {
+            --heading-line-height: 1.15;
+            --heading-weight: 750;
+            --heading-scale: 1.125;
+        }
     }
 
 }

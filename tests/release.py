@@ -35,11 +35,13 @@ FIXTURE = '''<section id="app" {marker} data-theme="dark" data-palette="ocean" d
   <button id="named"><span aria-hidden="true">+</span><span class="visually-hidden">Add item</span></button><a id="skip" class="visually-hidden" href="#heading">Skip to heading</a>
   <form id="form"><label for="email">Email</label><input id="email" type="email" required><button type="submit" id="submit">Save</button></form>
   <label id="check-label"><input type="checkbox" id="check"> Checkbox</label><input id="disabled" disabled><input id="readonly" readonly value="read only"><input id="hidden" hidden>
+  <input id="aria-invalid" aria-invalid="true" value="Invalid"><input id="aria-disabled" aria-disabled="true"><label>File <input type="file" id="file-input"></label><label>Category <select id="native-select"><option value="a">Alpha</option><option value="b">Beta</option></select></label><a id="disabled-link" href="#heading" aria-disabled="true">Unavailable</a>
   <details id="details"><summary>More information</summary><p>Content</p></details>
   <button id="open-dialog" onclick="document.getElementById('dialog').showModal()">Dialog</button><dialog id="dialog" class="stack" data-entrance="fade rise" data-exit="fade rise" aria-label="Dialog"><p>Dialog content</p><form method="dialog"><button>Close</button></form></dialog>
   <button id="open-popover" popovertarget="popover">Popover</button><div id="popover" popover class="stack" data-entrance="fade rise" data-exit="fade rise">Popover content<button popovertarget="popover" popovertargetaction="hide">Close</button></div>
   <div data-effects="none"><button id="none-default">No default effects</button><button id="none-explicit" data-hover="lift">Explicit</button></div>
-  <button id="none-hover" data-hover="none lift">No lift</button><article class="card" data-effect="glass matte" id="material-conflict">Conflict</article>
+  <button id="none-hover" data-hover="none lift">No lift</button><article class="card" data-effect="glass matte" id="material-conflict">Conflict</article><article class="card" data-effect="glass none" id="material-none">None wins</article><article class="card" data-effect="glass unknown" id="material-unknown">Known effect</article>
+  <div data-typography="expressive"><section id="technical-profile" data-typography="technical"><p id="unknown-typography" data-typography="unknown">Inherited</p><p id="default-typography" data-typography="default">Reset</p></section></div>
   <article class="card" data-scroll="reveal progress" id="scroll" style="margin-block-start: 120vh">Scroll linked <a href="#heading">Top</a></article>
 </section>'''
 
@@ -64,22 +66,40 @@ with sync_playwright() as p:
             markup = markup.replace(link, '<style>'+ (DIST / name).read_text() +'</style>')
         page.set_content(markup, wait_until='load')
     def css(selector, prop): return page.locator(selector).first.evaluate('(e,p)=>getComputedStyle(e).getPropertyValue(p)', prop).strip()
+    def resolved_color(selector, expression):
+        # Resolve light-dark() and color-mix() in the same inherited context as the control.
+        return page.locator(selector).first.evaluate('''(e,value)=>{
+            const probe=document.createElement('span');
+            probe.style.cssText='position:absolute;visibility:hidden;pointer-events:none';
+            probe.style.backgroundColor=value;
+            e.parentElement.append(probe);
+            try{return getComputedStyle(probe).backgroundColor}finally{probe.remove()}
+        }''', expression)
+    def accent_color(selector): return resolved_color(selector, 'var(--color-accent)')
+    def resting_button_color(selector):
+        return resolved_color(selector, 'color-mix(in oklab, var(--color-surface), var(--color-accent) 9%)')
     def set_attr(selector,key,val): page.locator(selector).first.evaluate('(e,p)=>e.setAttribute(p[0],p[1])',[key,val])
-    def hover(selector): page.locator(selector).hover();page.wait_for_timeout(320)
+    def hover(selector, expected_translate):
+        page.locator(selector).hover()
+        page.wait_for_function('([sel,expected])=>getComputedStyle(document.querySelector(sel)).translate===expected', arg=[selector,expected_translate],timeout=3000)
+
     def rect(selector): return page.locator(selector).bounding_box()
     for scoped in (False, True):
         for full in (False,True):
             for minified in (False,True):
                 name='uibms'+('.scoped' if scoped else '')+('.full' if full else '')+('.min' if minified else '')+'.css'
                 pre=name+' / '
-                page.set_viewport_size({'width':1280,'height':900});page.emulate_media(reduced_motion='no-preference',forced_colors='none');load([name],scoped)
+                page.set_viewport_size({'width':1280,'height':900});page.mouse.move(1279,899);page.emulate_media(reduced_motion='no-preference',forced_colors='none');load([name],scoped)
                 check(pre+'actual stylesheet loaded',page.evaluate('document.styleSheets[0].cssRules.length > 20'))
                 check(pre+'dark foreground',css('#app','color'),'rgb(244, 245, 242)')
-                check(pre+'dark palette background',css('#button','background-color'),'rgb(172, 221, 245)' if full else 'rgb(216, 223, 214)')
+                check(pre+'dark palette accent',accent_color('#button'),'rgb(172, 221, 245)' if full else 'rgb(216, 223, 214)')
+                check(pre+'dark palette button surface',css('#button','background-color'),resting_button_color('#button'))
                 check(pre+'nested marker inherits',css('#nested-button','background-color'),css('#button','background-color'))
-                check(pre+'nested light independently',css('#light-button','background-color'),'rgb(23, 78, 105)' if full else 'rgb(52, 59, 53)')
+                check(pre+'nested light accent independently',accent_color('#light-button'),'rgb(23, 78, 105)' if full else 'rgb(49, 95, 157)')
+                check(pre+'nested light button surface',css('#light-button','background-color'),resting_button_color('#light-button'))
                 check(pre+'unknown palette inherits',css('#unknown-button','background-color'),css('#button','background-color'))
-                check(pre+'palette restore',css('#restore','background-color'),'rgb(216, 223, 214)')
+                check(pre+'palette accent restore',accent_color('#restore'),'rgb(216, 223, 214)')
+                check(pre+'palette restored button surface',css('#restore','background-color'),resting_button_color('#restore'))
                 check(pre+'compact token',css('#app','--space'),'0.75rem')
                 check(pre+'restore density',css('#restore','--space'),'1rem')
                 check(pre+'shape radius',css('#button','border-radius'),'16px')
@@ -93,6 +113,13 @@ with sync_playwright() as p:
                 check(pre+'native hidden',css('#hidden','display'),'none')
                 check(pre+'native disabled',page.locator('#disabled').is_disabled())
                 check(pre+'native readonly',page.locator('#readonly').evaluate('e=>e.readOnly'))
+                check(pre+'ARIA invalid retains non-colour signal',css('#aria-invalid','border-top-style'),'dashed')
+                check(pre+'ARIA disabled appearance',css('#aria-disabled','cursor'),'not-allowed')
+                check(pre+'ARIA disabled link',css('#disabled-link','text-decoration-style'),'dashed')
+                if page.evaluate('CSS.supports("selector(::file-selector-button)")'):
+                    check(pre+'native file button retains target',page.locator('#file-input').evaluate('e=>parseFloat(getComputedStyle(e,"::file-selector-button").minBlockSize)>=44'))
+                page.locator('#native-select').select_option('b')
+                check(pre+'native select value',page.locator('#native-select').input_value(),'b')
                 check(pre+'closed dialog',css('#dialog','display'),'none')
                 check(pre+'closed popover',css('#popover','display'),'none')
                 check(pre+'layout conflict',css('#conflict','display'),'block')
@@ -114,15 +141,28 @@ with sync_playwright() as p:
                 if page.evaluate('CSS.supports("backdrop-filter", "blur(12px)")'):
                     check(pre+'glass filter',css('#glass','backdrop-filter')!='none')
                 check(pre+'conflicting materials',css('#material-conflict','backdrop-filter'),'none')
+                check(pre+'none wins over material',css('#material-none','backdrop-filter'),'none')
+                check(pre+'unknown material token does not cancel known effect',css('#material-unknown','backdrop-filter'),css('#glass','backdrop-filter'))
+                check(pre+'nested technical resets scale',css('#technical-profile','--heading-scale'),'1')
+                check(pre+'nested technical sets reading width',css('#technical-profile','--reading-width'),'72ch')
+                check(pre+'unknown typography inherits width',css('#unknown-typography','--reading-width'),'72ch')
+                check(pre+'default typography restores width',css('#default-typography','--reading-width'),'65ch')
                 check(pre+'profile duration',css('#button','transition-duration'),'0.22s' if full else '0.18s')
-                hover('#lift');check(pre+'explicit lift',css('#lift','translate'),'0px -4px');page.mouse.down();page.wait_for_timeout(330)
-                check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px');page.mouse.up()
-                hover('#none-hover');check(pre+'individual none wins',css('#none-hover','translate'),'none')
-                hover('#none-default');check(pre+'context none',css('#none-default','translate'),'none')
-                hover('#none-explicit');check(pre+'explicit inside none',css('#none-explicit','translate'),'0px -4px')
+                hover('#lift','0px -4px');check(pre+'explicit lift',css('#lift','translate'),'0px -4px')
+                # Hit-test the translated button after the hover transition, not its old coordinates.
+                hit=rect('#lift');page.mouse.move(hit['x']+hit['width']/2,hit['y']+hit['height']/2)
+                page.mouse.down()
+                try:
+                    check(pre+'press reaches intended button',page.locator('#lift').evaluate('e=>e.matches(":active")'))
+                    page.wait_for_function('expected=>getComputedStyle(document.querySelector("#lift")).translate===expected',arg='0px 2px' if full else '0px 1px',timeout=3000)
+                    check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px')
+                finally:page.mouse.up()
+                hover('#none-hover','none');check(pre+'individual none wins',css('#none-hover','translate'),'none')
+                hover('#none-default','none');check(pre+'context none',css('#none-default','translate'),'none')
+                hover('#none-explicit','0px -4px');check(pre+'explicit inside none',css('#none-explicit','translate'),'0px -4px')
                 if page.evaluate('CSS.supports("animation-timeline", "view(block)") && CSS.supports("animation-timeline", "scroll(root block)") && CSS.supports("animation-range", "entry 0% cover 35%")'):
                     check(pre+'scroll animation',css('#scroll','animation-name'),('uibms-scoped-' if scoped else 'uibms-')+'scroll-reveal, '+('uibms-scoped-' if scoped else 'uibms-')+'scroll-progress')
-                page.emulate_media(reduced_motion='reduce');hover('#lift');check(pre+'reduced movement',css('#lift','translate'),'none');check(pre+'reduced transition',css('#lift','transition-duration'),'0s');check(pre+'reduced scroll',css('#scroll','animation-name'),'none')
+                page.emulate_media(reduced_motion='reduce');hover('#lift','none');check(pre+'reduced movement',css('#lift','translate'),'none');check(pre+'reduced transition',css('#lift','transition-duration'),'0s');check(pre+'reduced scroll',css('#scroll','animation-name'),'none')
                 if args.browser=='chromium':
                     page.emulate_media(forced_colors='active');check(pre+'forced-color material fallback',css('#glass','backdrop-filter'),'none')
                 page.emulate_media(reduced_motion='no-preference',forced_colors='none')
@@ -148,7 +188,10 @@ with sync_playwright() as p:
             for name,color in accent.items():
                 ext='extensions/palettes/'+name+mode
                 markup='<!doctype html><link rel="stylesheet" href="/dist/'+core+'"><link rel="stylesheet" href="/dist/'+ext+'"><div '+marker+' data-theme="light" data-palette="'+name+'"><button id="ext">Inside</button></div><div data-palette="'+name+'" id="host">Outside</div>'
-                load([core,ext],scoped,markup);check(ext+' separate palette',css('#ext','background-color'),color)
+                load([core,ext],scoped,markup)
+                check(ext+' separate palette accent',accent_color('#ext'),color)
+                page.mouse.move(1279,899);page.wait_for_timeout(320)
+                check(ext+' separate palette button surface',css('#ext','background-color'),resting_button_color('#ext'))
                 if scoped: check(ext+' host unaffected',css('#host','--color-accent'),'')
             for name,t in [('minimal','0.1s'),('fluid','0.28s'),('dynamic','0.22s')]:
                 ext='extensions/profiles/effects-'+name+mode

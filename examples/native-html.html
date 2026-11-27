@@ -115,7 +115,7 @@
         <h2>04. Native interactions</h2>
         <details><summary>Expandable information</summary><p>This disclosure uses the browser's native open state and keyboard behavior.</p></details>
         <details open><summary>Initially expanded</summary><p>Open disclosures preserve their native functionality.</p></details>
-        <button type="button" id="open-dialog">Open dialog</button>
+        <button type="button" id="open-dialog" commandfor="demo-dialog" command="show-modal">Open dialog</button>
         <button type="button" popovertarget="demo-popover">Open popover</button>
         <dialog id="demo-dialog" aria-labelledby="dialog-title">
             <h3 id="dialog-title">Native dialog</h3>
@@ -157,16 +157,18 @@
         <p><audio controls aria-label="Audio control example"></audio></p>
         <video controls width="480" height="270" aria-label="Video control example"></video>
     </section>
-    <footer><hr><p><small>Development source, not a production release. Classes, configuration profiles, signature effects and scoped distributions are forthcoming.</small></p></footer>
+    <footer><hr><p><small>Development source, not a production release. This classless example uses the core native HTML defaults; layout patterns, configuration profiles, effects and scoped distributions are documented separately.</small></p></footer>
 </main>
 <script>
     // Demonstration controls only; the framework stylesheet requires no JavaScript.
     document.querySelector('#theme').addEventListener('change', event => {
         document.documentElement.dataset.theme = event.target.value;
     });
-    document.querySelector('#open-dialog').addEventListener('click', () => {
-        document.querySelector('#demo-dialog').showModal();
-    });
+    // Older browsers only: use the native dialog API when commands are unavailable.
+    const invoker = document.querySelector('#open-dialog');
+    if (!('commandForElement' in invoker && 'command' in invoker)) {
+        invoker.addEventListener('click', () => document.querySelector('#demo-dialog').showModal());
+    }
     document.querySelector('#account-form').addEventListener('submit', event => {
         event.preventDefault();
         document.querySelector('#form-result').textContent = 'Demo validation passed. No data was sent.';

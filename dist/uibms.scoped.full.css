@@ -192,7 +192,7 @@
 }
 @layer configuration {
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
-        :where(:scope,:scope *):where([data-typography="default"]) {
+        :where(:scope,:scope *):where([data-typography="default"],[data-typography="editorial"],[data-typography="technical"],[data-typography="expressive"]) {
             --font-family: system-ui, sans-serif;
             --font-size: 1rem;
             --line-height: 1.6;
@@ -200,33 +200,23 @@
             --reading-width: 65ch;
             --heading-weight: 650;
             --heading-scale: 1;
-        }
-        :where(:scope,:scope *):where([data-typography="editorial"]) {
-            --font-family: Georgia, "Times New Roman", serif;
-            --font-size: 1.125rem;
-            --line-height: 1.75;
-            --heading-line-height: 1.25;
-            --reading-width: 65ch;
-            --heading-weight: 600;
-            --heading-scale: 1;
-        }
-        :where(:scope,:scope *):where([data-typography="technical"]) {
-            --font-family: var(--font-family-mono);
-            --font-size: 1rem;
-            --line-height: 1.55;
-            --heading-line-height: 1.2;
-            --reading-width: 72ch;
-            --heading-weight: 650;
-            --heading-scale: 1;
-        }
-        :where(:scope,:scope *):where([data-typography="expressive"]) {
-            --font-family: system-ui, sans-serif;
-            --font-size: 1rem;
-            --line-height: 1.6;
-            --heading-line-height: 1.15;
-            --reading-width: 65ch;
-            --heading-weight: 750;
-            --heading-scale: 1.125;
+            &:where([data-typography="editorial"]) {
+                --font-family: Georgia, "Times New Roman", serif;
+                --font-size: 1.125rem;
+                --line-height: 1.75;
+                --heading-line-height: 1.25;
+                --heading-weight: 600;
+            }
+            &:where([data-typography="technical"]) {
+                --font-family: var(--font-family-mono);
+                --line-height: 1.55;
+                --reading-width: 72ch;
+            }
+            &:where([data-typography="expressive"]) {
+                --heading-line-height: 1.15;
+                --heading-weight: 750;
+                --heading-scale: 1.125;
+            }
         }
     }
 }
@@ -241,19 +231,18 @@
 }
 @layer configuration {
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
-        :where(:scope,:scope *):where([data-effects="default"]) {
-            --signature-time: initial;
+        :where(:scope,:scope *):where([data-effects="default"],[data-effects="none"]) {
             --explicit-time: initial;
+            --signature-time: initial;
             --signature-lift: initial;
             --signature-press: initial;
             --signature-scroll: initial;
-        }
-        :where(:scope,:scope *):where([data-effects="none"]) {
-            --signature-time: 0ms;
-            --explicit-time: initial;
-            --signature-lift: none;
-            --signature-press: none;
-            --signature-scroll: auto;
+            &:where([data-effects="none"]) {
+                --signature-time: 0ms;
+                --signature-lift: none;
+                --signature-press: none;
+                --signature-scroll: auto;
+            }
         }
     }
 }
@@ -346,19 +335,19 @@
             text-decoration: underline;
             text-decoration-thickness: max(1px, 0.08em);
             text-underline-offset: 0.15em;
-        }
-        @media (hover: hover) {
-            :where(:scope,:scope *):where(a[href]:not([aria-disabled="true"]):hover) {
-                text-decoration-thickness: max(2px, 0.14em);
+            @media (hover: hover) {
+                &:where(:not([aria-disabled="true"]):hover) {
+                    text-decoration-thickness: max(2px, 0.14em);
+                }
             }
-        }
-        :where(:scope,:scope *):where(a[href]:active) {
-            text-decoration-style: double;
-        }
-        :where(:scope,:scope *):where(a[href][aria-disabled="true"]) {
-            color: var(--color-text-muted);
-            cursor: not-allowed;
-            text-decoration-style: dashed;
+            &:where(:active) {
+                text-decoration-style: double;
+            }
+            &:where([aria-disabled="true"]) {
+                color: var(--color-text-muted);
+                cursor: not-allowed;
+                text-decoration-style: dashed;
+            }
         }
     }
 }
@@ -386,15 +375,15 @@
             font-weight: 600;
         }
         @media (hover: hover) {
-            :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):hover,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):hover),:where(:scope,:scope *) :where(input[type="file"]:not(:disabled):hover)::file-selector-button {
+            :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])):where(:not(:disabled,[aria-disabled="true"]):hover),:where(:scope,:scope *) :where(input[type="file"]:not(:disabled):hover)::file-selector-button {
                 background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 16%);
             }
         }
-        :where(:scope,:scope *):where(button:not(:disabled,[aria-disabled="true"]):active,input:is([type="button"],[type="submit"],[type="reset"]):not(:disabled,[aria-disabled="true"]):active) {
+        :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])):where(:not(:disabled,[aria-disabled="true"]):active) {
             background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 23%);
             box-shadow: inset 0 1px 2px color-mix(in oklab, var(--color-text) 14%, transparent);
         }
-        :where(:scope,:scope *):where(button:is(:disabled,[aria-disabled="true"]),input:is([type="button"],[type="submit"],[type="reset"]):is(:disabled,[aria-disabled="true"])),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
+        :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])):where(:disabled,[aria-disabled="true"]),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
             background-color: var(--color-surface-subtle);
             color: var(--color-text-muted);
             border-color: var(--color-border-strong);
@@ -412,10 +401,14 @@
             padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
             min-block-size: var(--target-size);
             max-inline-size: 100%;
-        }
-        :where(:scope,:scope *):where(input:not([type="hidden"],[type="button"],[type="submit"],[type="reset"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"]),select,textarea):where(:focus) {
-            outline-offset: -3px;
-            box-shadow: inset 0 1px 3px color-mix(in oklab, var(--color-focus) 19%, transparent);
+            &:where(:focus) {
+                outline-offset: -3px;
+                box-shadow: inset 0 1px 3px color-mix(in oklab, var(--color-focus) 19%, transparent);
+            }
+            &:where(:disabled,[aria-disabled="true"]) {
+                background-color: var(--color-surface-subtle);
+                border-color: var(--color-border-strong);
+            }
         }
         :where(:scope,:scope *):where(textarea) {
             min-block-size: max(var(--target-size), 6em);
@@ -428,34 +421,39 @@
         :where(:scope,:scope *):where(input[readonly],textarea[readonly]) {
             background-color: var(--color-surface-subtle);
         }
-        :where(:scope,:scope *):where(input,select,textarea):where(:disabled,[aria-disabled="true"]) {
-            color: var(--color-text-muted);
-            cursor: not-allowed;
+        :where(:scope,:scope *):where(input,select,textarea) {
+            &:where(:disabled,[aria-disabled="true"]) {
+                color: var(--color-text-muted);
+                cursor: not-allowed;
+            }
+            &:where(:user-invalid,[aria-invalid="true"]) {
+                border-color: var(--color-danger);
+                border-style: dashed;
+            }
+            &:where(:user-valid:not([aria-invalid="true"])) {
+                border-color: var(--color-success);
+            }
         }
-        :where(:scope,:scope *):where(input:not([type="hidden"],[type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"],[type="button"],[type="submit"],[type="reset"]),select,textarea):where(:disabled,[aria-disabled="true"]) {
-            background-color: var(--color-surface-subtle);
-            border-color: var(--color-border-strong);
-        }
-        :where(:scope,:scope *):where(input,select,textarea):where(:user-invalid) {
-            border-color: var(--color-danger);
-            border-style: dashed;
-        }
-        :where(:scope,:scope *):where(input,select,textarea):where([aria-invalid="true"]) {
-            border-color: var(--color-danger);
-            border-style: dashed;
-        }
-        :where(:scope,:scope *):where(input,select,textarea):where(:user-valid:not([aria-invalid="true"])) {
-            border-color: var(--color-success);
-        }
-        :where(:scope,:scope *):where(input:is([type="checkbox"],[type="radio"],[type="range"])) {
-            accent-color: var(--color-accent);
-            vertical-align: middle;
+        :where(:scope,:scope *):where(input:is([type="checkbox"],[type="radio"],[type="range"],[type="color"],[type="file"],[type="image"])) {
             max-inline-size: 100%;
-        }
-        :where(:scope,:scope *):where(input:is([type="checkbox"],[type="radio"],[type="color"])) {
-            inline-size: var(--target-size);
-            block-size: var(--target-size);
-            max-inline-size: 100%;
+            &:where([type="checkbox"],[type="radio"],[type="range"]) {
+                accent-color: var(--color-accent);
+                vertical-align: middle;
+            }
+            &:where([type="checkbox"],[type="radio"],[type="color"]) {
+                inline-size: var(--target-size);
+                block-size: var(--target-size);
+            }
+            &:where([type="range"],[type="file"],[type="image"]) {
+                min-block-size: var(--target-size);
+            }
+            &:where([type="file"])::file-selector-button {
+                margin-inline-end: calc(var(--space) * 0.5);
+            }
+            &:where([type="image"]) {
+                block-size: auto;
+                min-inline-size: var(--target-size);
+            }
         }
         :where(:scope,:scope *):where(label:has(>input:is([type="checkbox"],[type="radio"]))) {
             display: inline-flex;
@@ -470,17 +468,6 @@
             block-size: 1.25em;
             flex: none;
             margin: 0;
-        }
-        :where(:scope,:scope *):where(input[type="range"],input[type="file"],input[type="image"]) {
-            min-block-size: var(--target-size);
-            max-inline-size: 100%;
-        }
-        :where(:scope,:scope *):where(input[type="file"])::file-selector-button {
-            margin-inline-end: calc(var(--space) * 0.5);
-        }
-        :where(:scope,:scope *):where(input[type="image"]) {
-            block-size: auto;
-            min-inline-size: var(--target-size);
         }
         :where(:scope,:scope *):where(fieldset) {
             min-inline-size: 0;
@@ -500,22 +487,41 @@
                 :where(:scope,:scope *):where(select:not([multiple],[size]:not([size="1"]))),:where(:scope,:scope *) :where(select:not([multiple],[size]:not([size="1"])))::picker(select) {
                     appearance: base-select;
                 }
-                :where(:scope,:scope *):where(select)::picker(select) {
-                    color: var(--color-text);
-                    background-color: var(--color-surface);
-                    border: var(--border-width) solid var(--color-border);
-                    border-radius: calc(var(--radius) * 1.5);
-                    padding: calc(var(--space) * 0.25);
-                    max-block-size: min(22rem, 50dvb);
-                    position-area: block-end span-inline-end;
-                    position-try-order: normal;
-                    position-try-fallbacks: flip-block;
-                    margin-block: calc(var(--space) * 0.25);
-                    box-shadow: var(--shadow);
-                    overscroll-behavior: contain;
-                }
-                :where(:scope,:scope *):where(select)::picker-icon {
-                    color: var(--color-text-muted);
+                :where(:scope,:scope *):where(select) {
+                    &::picker(select) {
+                        color: var(--color-text);
+                        background-color: var(--color-surface);
+                        border: var(--border-width) solid var(--color-border);
+                        border-radius: calc(var(--radius) * 1.5);
+                        padding: calc(var(--space) * 0.25);
+                        max-block-size: min(22rem, 50dvb);
+                        position-area: block-end span-inline-end;
+                        position-try-order: normal;
+                        position-try-fallbacks: flip-block;
+                        margin-block: calc(var(--space) * 0.25);
+                        box-shadow: var(--shadow);
+                        overscroll-behavior: contain;
+                    }
+                    &::picker-icon {
+                        color: var(--color-text-muted);
+                    }
+                    @media (prefers-reduced-motion: no-preference) {
+                        &::picker(select) {
+                            opacity: 0;
+                            translate: 0 calc(-1 * var(--motion-distance));
+                            transition: opacity var(--signature-time, var(--motion-duration)) var(--motion-easing), translate var(--signature-time, var(--motion-duration)) var(--motion-easing), display var(--signature-time, var(--motion-duration)) allow-discrete, overlay var(--signature-time, var(--motion-duration)) allow-discrete;
+                        }
+                        &:where(:open)::picker(select) {
+                            opacity: 1;
+                            translate: none;
+                        }
+                        @starting-style {
+                            &:where(:open)::picker(select) {
+                                opacity: 0;
+                                translate: 0 calc(-1 * var(--motion-distance));
+                            }
+                        }
+                    }
                 }
                 :where(:scope,:scope *):where(select:not([multiple],[size]:not([size="1"])) option) {
                     min-block-size: var(--target-size);
@@ -523,25 +529,8 @@
                     border-radius: var(--radius);
                     white-space: normal;
                     overflow-wrap: anywhere;
-                }
-                :where(:scope,:scope *):where(select:not([multiple],[size]:not([size="1"])) option:is(:checked,:not(:disabled):hover)) {
-                    background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 12%);
-                }
-                @media (prefers-reduced-motion: no-preference) {
-                    :where(:scope,:scope *):where(select)::picker(select) {
-                        opacity: 0;
-                        translate: 0 calc(-1 * var(--motion-distance));
-                        transition: opacity var(--signature-time, var(--motion-duration)) var(--motion-easing), translate var(--signature-time, var(--motion-duration)) var(--motion-easing), display var(--signature-time, var(--motion-duration)) allow-discrete, overlay var(--signature-time, var(--motion-duration)) allow-discrete;
-                    }
-                    :where(:scope,:scope *):where(select:open)::picker(select) {
-                        opacity: 1;
-                        translate: none;
-                    }
-                    @starting-style {
-                        :where(:scope,:scope *):where(select:open)::picker(select) {
-                            opacity: 0;
-                            translate: 0 calc(-1 * var(--motion-distance));
-                        }
+                    &:where(:checked,:not(:disabled):hover) {
+                        background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 12%);
                     }
                 }
             }
@@ -590,11 +579,11 @@
             vertical-align: top;
             overflow-wrap: normal;
             word-break: normal;
+            &:where(th) {
+                font-weight: 650;
+            }
         }
-        :where(:scope,:scope *):where(th) {
-            font-weight: 650;
-        }
-        :where(:scope,:scope *):where(th>code:only-child,td>code:only-child) {
+        :where(:scope,:scope *):where(:is(th,td)>code:only-child) {
             white-space: nowrap;
         }
         :where(:scope,:scope *):where(thead,tfoot) {
@@ -617,15 +606,15 @@
             padding: calc(var(--space) * 0.5);
             border-radius: var(--radius);
             font-weight: 600;
-        }
-        @media (hover: hover) {
-            :where(:scope,:scope *):where(summary:hover) {
-                background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 7%);
+            @media (hover: hover) {
+                &:where(:hover) {
+                    background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 7%);
+                }
             }
-        }
-        :where(:scope,:scope *):where(details[open]>summary) {
-            border-block-end: var(--border-width) solid var(--color-border);
-            color: var(--color-accent);
+            &:where(details[open]>*) {
+                border-block-end: var(--border-width) solid var(--color-border);
+                color: var(--color-accent);
+            }
         }
         @supports (interpolate-size: allow-keywords) and selector(::details-content) {
             @media (prefers-reduced-motion: no-preference) {
@@ -677,19 +666,18 @@
             font-family: var(--font-family-mono);
             font-size: 0.9375em;
         }
-        :where(:scope,:scope *):where(code,kbd) {
+        :where(:scope,:scope *):where(code,kbd,pre) {
             background-color: var(--color-surface-subtle);
             color: var(--color-text);
+        }
+        :where(:scope,:scope *):where(code,kbd) {
             padding: 0.125em 0.25em;
             border-radius: calc(var(--radius) * 0.5);
         }
-        :where(:scope,:scope *):where(kbd) {
+        :where(:scope,:scope *):where(kbd,pre) {
             border: var(--border-width) solid var(--color-border);
         }
         :where(:scope,:scope *):where(pre) {
-            background-color: var(--color-surface-subtle);
-            color: var(--color-text);
-            border: var(--border-width) solid var(--color-border);
             border-radius: var(--radius);
             padding: var(--space);
             margin-block: var(--space);
@@ -698,7 +686,7 @@
             white-space: pre;
             overflow-wrap: normal;
         }
-        :where(:scope,:scope *):where(pre code,pre samp) {
+        :where(:scope,:scope *):where(pre :is(code,samp)) {
             font-size: inherit;
             background-color: transparent;
             color: inherit;
@@ -708,12 +696,11 @@
 }
 @layer defaults {
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
-        :where(:scope,:scope *):where(img,video) {
+        :where(:scope,:scope *):where(img,video,audio,iframe,embed,object,canvas,svg) {
             max-inline-size: 100%;
-            block-size: auto;
-        }
-        :where(:scope,:scope *):where(audio,iframe,embed,object,canvas,svg) {
-            max-inline-size: 100%;
+            &:where(img,video) {
+                block-size: auto;
+            }
         }
         :where(:scope,:scope *):where(figure) {
             margin-inline: 0;
@@ -805,13 +792,13 @@
             border: var(--border-width) solid var(--color-border-subtle);
             border-radius: calc(var(--radius) * 2);
             padding: var(--space);
-        }
-        :where(:scope,:scope *):where(.card:not(.panel)) {
-            background-color: var(--color-surface);
-            box-shadow: var(--shadow);
-        }
-        :where(:scope,:scope *):where(.panel:not(.card)) {
-            background-color: var(--color-surface-subtle);
+            &:where(.card) {
+                background-color: var(--color-surface);
+                box-shadow: var(--shadow);
+            }
+            &:where(.panel) {
+                background-color: var(--color-surface-subtle);
+            }
         }
     }
 }
@@ -888,27 +875,27 @@
                     border-radius: calc(var(--radius) * 2);
                     padding: var(--space);
                 }
-            }
-            &:where([data-effect~="glass"]:not([data-effect~="frosted"],[data-effect~="metallic"],[data-effect~="matte"])) {
-                --_effect-depth: var(--shadow), inset 0 1px 1px rgb(255 255 255 / .7), inset 0 -2px 4px rgb(0 0 0 / .08);
-                @supports (backdrop-filter: blur(12px)) {
-                    background-color: color-mix(in srgb, var(--color-surface) 98%, transparent);
-                    backdrop-filter: blur(12px) saturate(130%);
+                &:where([data-effect~="glass"]) {
+                    --_effect-depth: var(--shadow), inset 0 1px 1px rgb(255 255 255 / .7), inset 0 -2px 4px rgb(0 0 0 / .08);
+                    @supports (backdrop-filter: blur(12px)) {
+                        background-color: color-mix(in srgb, var(--color-surface) 98%, transparent);
+                        backdrop-filter: blur(12px) saturate(130%);
+                    }
                 }
-            }
-            &:where([data-effect~="frosted"]:not([data-effect~="glass"],[data-effect~="metallic"],[data-effect~="matte"])) {
-                --_effect-depth: var(--shadow);
-                @supports (backdrop-filter: blur(18px)) {
-                    background-color: color-mix(in srgb, var(--color-surface) 99%, transparent);
-                    backdrop-filter: blur(18px) saturate(110%);
+                &:where([data-effect~="frosted"]) {
+                    --_effect-depth: var(--shadow);
+                    @supports (backdrop-filter: blur(18px)) {
+                        background-color: color-mix(in srgb, var(--color-surface) 99%, transparent);
+                        backdrop-filter: blur(18px) saturate(110%);
+                    }
                 }
-            }
-            &:where([data-effect~="metallic"]:not([data-effect~="glass"],[data-effect~="frosted"],[data-effect~="matte"])) {
-                --_effect-depth: var(--shadow), inset 2px 2px 2px rgb(255 255 255 / .4), inset -2px -2px 3px rgb(0 0 0 / .12);
-            }
-            &:where([data-effect~="matte"]:not([data-effect~="glass"],[data-effect~="frosted"],[data-effect~="metallic"])) {
-                --_effect-depth: 0 0 0 transparent;
-                background-color: var(--color-surface-subtle);
+                &:where([data-effect~="metallic"]) {
+                    --_effect-depth: var(--shadow), inset 2px 2px 2px rgb(255 255 255 / .4), inset -2px -2px 3px rgb(0 0 0 / .12);
+                }
+                &:where([data-effect~="matte"]) {
+                    --_effect-depth: 0 0 0 transparent;
+                    background-color: var(--color-surface-subtle);
+                }
             }
         }
     }
@@ -916,15 +903,17 @@
 @layer features {
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
         :where(:scope,:scope *):where(:not(:disabled,[aria-disabled="true"],[hidden],.visually-hidden)) {
-            &:where([data-hover~="lift"]:not([data-hover~="none"]),[data-hover~="glow"]:not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"]),[data-focus~="glow"]:not([data-focus~="none"])) {
+            &:where(:is([data-hover~="lift"],[data-hover~="glow"]):not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"]),[data-focus~="glow"]:not([data-focus~="none"])) {
                 transition: translate var(--explicit-time, var(--motion-duration)) var(--motion-easing), box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing);
             }
             @media (hover: hover) and (pointer: fine) {
-                &:where([data-hover~="lift"]:not([data-hover~="none"]):hover) {
-                    translate: 0 calc(-1 * var(--motion-distance));
-                }
-                &:where([data-hover~="glow"]:not([data-hover~="none"]):hover) {
-                    box-shadow: var(--_effect-depth), var(--_effect-halo);
+                &:where(:hover:not([data-hover~="none"])) {
+                    &:where([data-hover~="lift"]) {
+                        translate: 0 calc(-1 * var(--motion-distance));
+                    }
+                    &:where([data-hover~="glow"]) {
+                        box-shadow: var(--_effect-depth), var(--_effect-halo);
+                    }
                 }
             }
             &:where(button,input:is([type="button"],[type="submit"],[type="reset"])):where(:active[data-hover~="lift"]:not([data-hover~="none"],[data-active~="none"]):is(:not([data-active~="press"]),[data-active~="default"])) {
@@ -945,18 +934,20 @@
             &:where([data-entrance~="rise"]:not([data-entrance~="none"]),[data-exit~="rise"]:not([data-exit~="none"])) {
                 transition: transform var(--explicit-time, var(--motion-duration)) var(--motion-easing), translate var(--explicit-time, var(--motion-duration)) var(--motion-easing), box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing);
             }
-            &:where([data-entrance~="fade"]:not([data-entrance~="none"]),[data-exit~="fade"]:not([data-exit~="none"]))::before {
-                content: "";
-                position: absolute;
-                inset: 0;
-                border-radius: inherit;
-                pointer-events: none;
-                box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-focus) 25%, transparent);
-                opacity: 0;
-                transition: opacity var(--explicit-time, var(--motion-duration)) var(--motion-easing);
-            }
-            &:where(dialog[open],:popover-open):where([data-entrance~="fade"]:not([data-entrance~="none"]),[data-exit~="fade"]:not([data-exit~="none"]))::before {
-                opacity: 1;
+            &:where([data-entrance~="fade"]:not([data-entrance~="none"]),[data-exit~="fade"]:not([data-exit~="none"])) {
+                &::before {
+                    content: "";
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    pointer-events: none;
+                    box-shadow: inset 0 0 0 2px color-mix(in srgb, var(--color-focus) 25%, transparent);
+                    opacity: 0;
+                    transition: opacity var(--explicit-time, var(--motion-duration)) var(--motion-easing);
+                }
+                &:where(dialog[open],:popover-open)::before {
+                    opacity: 1;
+                }
             }
             @starting-style {
                 &:where(dialog[open],:popover-open):where([data-entrance~="rise"]:not([data-entrance~="none"])) {
@@ -967,14 +958,14 @@
                 }
             }
             @supports (overlay: auto) and (transition-behavior: allow-discrete) {
-                &:where([data-exit~="rise"]:not([data-exit~="none"]),[data-exit~="fade"]:not([data-exit~="none"])) {
+                &:where(:is([data-exit~="rise"],[data-exit~="fade"]):not([data-exit~="none"])) {
                     transition: transform var(--explicit-time, var(--motion-duration)) var(--motion-easing), translate var(--explicit-time, var(--motion-duration)) var(--motion-easing), box-shadow var(--explicit-time, var(--motion-duration)) var(--motion-easing), display var(--explicit-time, var(--motion-duration)) allow-discrete, overlay var(--explicit-time, var(--motion-duration)) allow-discrete;
                     &:where(:not(dialog[open],:popover-open)) {
                         pointer-events: none;
+                        &:where([data-exit~="rise"]) {
+                            transform: translateY(var(--motion-distance));
+                        }
                     }
-                }
-                &:where([data-exit~="rise"]:not([data-exit~="none"])):where(:not(dialog[open],:popover-open)) {
-                    transform: translateY(var(--motion-distance));
                 }
             }
         }
@@ -1061,16 +1052,13 @@
 @layer preferences {
     @scope (:where([data-uibms]:not([data-uibms] [data-uibms]))) {
         @media (forced-colors: active) {
-            :where(:scope,:scope *):where(:focus-visible) {
-                outline-color: Highlight;
-            }
-            :where(:scope,:scope *):where(:target:not(:focus-visible)) {
+            :where(:scope,:scope *):where(:focus-visible,:target:not(:focus-visible)) {
                 outline-color: Highlight;
             }
             :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])),:where(:scope,:scope *) :where(input[type="file"])::file-selector-button {
                 border-color: ButtonText;
             }
-            :where(:scope,:scope *):where(button:is(:disabled,[aria-disabled="true"]),input:is(:disabled,[aria-disabled="true"]),select:is(:disabled,[aria-disabled="true"]),textarea:is(:disabled,[aria-disabled="true"])),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
+            :where(:scope,:scope *):where(button,input,select,textarea):where(:disabled,[aria-disabled="true"]),:where(:scope,:scope *) :where(input[type="file"]:disabled)::file-selector-button {
                 color: GrayText;
                 border-color: GrayText;
             }
@@ -1087,11 +1075,11 @@
             :where(:scope,:scope *):where(:scope,[data-effects="default"],[data-effects="none"],[data-effects="minimal"],[data-effects="fluid"],[data-effects="dynamic"]) {
                 scroll-behavior: auto;
             }
-            :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"]),[data-hover~="lift"]:not([data-hover~="none"]),[data-hover~="glow"]:not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"]),[data-focus~="glow"]:not([data-focus~="none"])) {
+            :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"]),:is([data-hover~="lift"],[data-hover~="glow"]):not([data-hover~="none"]),[data-active~="press"]:not([data-active~="none"]),[data-focus~="glow"]:not([data-focus~="none"])) {
                 transition: none;
                 translate: none;
             }
-            :where(:scope,:scope *):where(dialog,[popover]):where([data-entrance~="rise"]:not([data-entrance~="none"]),[data-exit~="rise"]:not([data-exit~="none"]),[data-exit~="fade"]:not([data-exit~="none"])) {
+            :where(:scope,:scope *):where(dialog,[popover]):where([data-entrance~="rise"]:not([data-entrance~="none"]),:is([data-exit~="rise"],[data-exit~="fade"]):not([data-exit~="none"])) {
                 transition: none;
                 transform: none;
             }

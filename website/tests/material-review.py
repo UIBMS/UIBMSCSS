@@ -93,7 +93,7 @@ try:
         page=context.new_page()
         page.set_default_timeout(10000)
         errors=[]
-        page.on("pageerror",lambda error:errors.append(str(error)))
+        page.on("pageerror",lambda error:(errors.append(str(error)),print("Browser page error:",error,flush=True)))
         page.goto(url,wait_until="load")
         page.wait_for_selector("html[data-site-ready]",state="attached")
         primary="#site-hero [data-site-primary]"
@@ -258,9 +258,18 @@ try:
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         optional_engines=lambda:[request for request in requests if re.search(r"/engines/(material|forms)\.mjs",request)]
         check(not optional_engines(),"default documentation skips optional appearance scripts")
+        native_drawers=cp.evaluate("()=>{const b=document.createElement('button');return 'commandForElement' in b&&'command' in b&&'closedBy' in document.createElement('dialog')}")
+        drawer_requests=[request for request in requests if re.search(r"/engines/components/drawer\.mjs",request)]
+        check(len(drawer_requests)==(0 if native_drawers else 1),"drawer adapter is requested only for missing native capabilities")
+        other_controllers=[request for request in requests if re.search(r"/engines/(components|dashboard)/[^?]+\.mjs(?:\?|$)",request) and request not in drawer_requests]
+        check(not other_controllers,"plain native controls do not request unrelated component adapters")
         set_profile(cp,material="liquid-silicone")
         cp.locator("[data-site-demo-content] button[data-uibms-material-host]").first.wait_for(state="attached")
         check(len(optional_engines())==2,"selecting Silicone loads both appearance engines once")
+        set_profile(cp,material="default")
+        set_profile(cp,material="liquid-silicone")
+        cp.locator("[data-site-demo-content] button[data-uibms-material-host]").first.wait_for(state="attached")
+        check(len(optional_engines())==2,"re-enabling appearance does not request duplicate engines")
         cp.remove_listener("request",capture)
         cp.goto(url+"docs/dialogs/",wait_until="load")
         example=cp.locator("[data-site-example]").first
@@ -519,6 +528,7 @@ try:
         preferences=cp.locator("#step-preferences-panel")
         review=cp.locator("#step-review-panel")
         check(account.is_visible() and preferences.is_hidden() and review.is_hidden(),"stepper starts at current step")
+        check(not account.evaluate("e=>e.classList.contains('stepper-panel')"),"native stepper panels need no panel class")
         check(cp.locator("#stepper-back").is_disabled(),"stepper first boundary")
         account.get_by_role("textbox",name="Workspace name").fill("Custom setup")
         cp.locator("#stepper-next").click()
@@ -547,6 +557,17 @@ try:
         pagination.get_by_role("button",name="Next",exact=True).click()
         check(pagination.locator('[aria-current=page]').inner_text()=="6" and summary.inner_text()=="Showing records 51–60 of 100","pagination updates actual content")
         check(pagination.get_by_role("button",name="Next",exact=True).evaluate("e=>document.activeElement===e"),"paging preserves focus")
+        check(cp.evaluate("""async()=>{
+          const entry=[...document.scripts].find(s=>s.src.includes('/assets/engines.js'));
+          const moduleUrl=new URL('../engines/components/pagination.mjs'+new URL(entry.src).search,entry.src);
+          const {mountPagination}=await import(moduleUrl.href);
+          const nav=document.querySelector('#records-pagination'),api=mountPagination(nav);
+          const next=nav.querySelector('[aria-label="Next"]');
+          let mutations=0;const observer=new MutationObserver(records=>mutations+=records.length);
+          observer.observe(nav,{childList:true,subtree:true,attributes:true});
+          api.setTotal(api.total);await Promise.resolve();observer.disconnect();
+          return mutations===0&&next===nav.querySelector('[aria-label="Next"]')&&document.activeElement===next;
+        }"""),"unchanged total preserves pager DOM and focus")
         pagination.get_by_role("button",name="Page 10",exact=True).click()
         check(pagination.get_by_role("button",name="Next",exact=True).is_disabled(),"last page disables next")
         pagination.get_by_role("button",name="Page 1",exact=True).click()
@@ -570,17 +591,18 @@ try:
         check(not filters.get_by_role("checkbox",name="Development",exact=True).is_checked(),"native chip reset")
         check(filters.get_by_role("checkbox",name="Archived",exact=True).is_disabled(),"disabled chip")
         chips=cp.locator("#demo-removable-skills")
+        check(chips.locator(":scope > li").evaluate_all("els=>els.length===3&&els.every(e=>!e.hasAttribute('class')&&getComputedStyle(e).display==='flex')"),"native removable chips inherit contextual styles")
         cp.evaluate("""()=>document.querySelector('#demo-removable-skills').addEventListener('beforechipremove',e=>e.preventDefault(),{once:true})""")
         chips.get_by_role("button",name="Remove CSS",exact=True).click()
-        check(chips.locator('.chip').count()==3,"chip removal cancelable")
+        check(chips.locator(':scope > li').count()==3,"chip removal cancelable")
         chips.get_by_role("button",name="Remove CSS",exact=True).click()
-        check(chips.locator('.chip').count()==2,"native chip remove action")
+        check(chips.locator(':scope > li').count()==2,"native chip remove action")
         check(chips.get_by_role("button",name="Remove JavaScript",exact=True).evaluate("e=>document.activeElement===e"),"removal preserves logical focus")
         cp.locator("#chip-restore").click()
-        check(chips.locator('.chip').count()==3,"restore uses delegated removal")
+        check(chips.locator(':scope > li').count()==3,"restore uses delegated removal")
         set_profile(cp,material="liquid-silicone")
         chips.get_by_role("button",name="Remove HTML",exact=True).click()
-        check(chips.locator('.chip').count()==2,"chip removal with material")
+        check(chips.locator(':scope > li').count()==2,"chip removal with material")
         check_width(cp,"chips mobile")
 
         cp.goto(url+"docs/command-palette/",wait_until="load")
@@ -592,8 +614,9 @@ try:
         command.wait_for(state="visible")
         search=command.get_by_role("searchbox")
         check(command.evaluate("e=>e.matches(':modal')") and search.evaluate("e=>document.activeElement===e"),"native modal with initial search focus")
+        check(command.locator("#workspace-command-results").evaluate("e=>!e.hasAttribute('class')&&getComputedStyle(e).display==='grid'"),"native command results need no class")
         search.fill("workspace settings")
-        check(command.locator(".command-results > li:not([hidden])").count()==1,"all query words match")
+        check(command.locator("#workspace-command-results > li:not([hidden])").count()==1,"all query words match")
         cp.keyboard.press("Enter")
         command.wait_for(state="hidden")
         check(cp.locator("#command-action-status").inner_text()=="Selected: Open workspace settings","Enter activates matching command")
@@ -676,6 +699,15 @@ try:
             check(native_page.locator("#site-main-menu-drawer").evaluate("e=>e.matches(':modal')"),"native command drawer works without site JS")
             native_page.get_by_role("button",name="Close main menu",exact=True).click()
             native_page.locator("#site-main-menu-drawer").wait_for(state="hidden")
+            for slug,opener,dialog_id in [("dialogs","open-native-dialog","native-dialog"),("exit","open-exit-dialog","exit-dialog")]:
+                native_page.goto(url+"docs/"+slug+"/",wait_until="load")
+                native_page.locator("#"+opener).click()
+                dialog=native_page.locator("#"+dialog_id)
+                dialog.wait_for(state="visible")
+                check(dialog.evaluate("e=>e.matches(':modal')"),"native example opens without site JavaScript "+slug)
+                dialog.get_by_role("button",name="Close",exact=True).click()
+                dialog.wait_for(state="hidden")
+                check(not dialog.evaluate("e=>e.open"),"native example closes without site JavaScript "+slug)
             native_context.close()
         noscript_context=browser.new_context(java_script_enabled=False,viewport={"width":390,"height":844})
         noscript_page=noscript_context.new_page()
@@ -767,8 +799,9 @@ try:
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         set_profile(cp,material="default",effects="none")
         mini=cp.locator(".app-shell").first
-        mini_workspace=mini.locator(".dashboard-workspace")
-        mini_side=mini.locator(".dashboard-sidebar")
+        mini_workspace=mini.locator(":scope > section")
+        mini_side=mini.locator(":scope > nav")
+        check(mini.locator(":scope > .app-shell-grid").count()==0 and mini_side.count()==1,"native responsive shell uses direct regions")
         check(mini_workspace.evaluate("e=>e.scrollHeight>e.clientHeight"),"shell content has independent scroll range")
         mini_workspace.evaluate("e=>{e.scrollTop=120}")
         check(mini_workspace.evaluate("e=>e.scrollTop")>0 and mini_side.evaluate("e=>e.scrollTop")==0,"workspace scrolling does not scroll navigation")
@@ -778,6 +811,7 @@ try:
         set_profile(cp,material="default",theme="light",palette="natural",effects="none")
         split=cp.locator("#standalone-project-split")
         handle=split.get_by_role("separator")
+        check(split.locator(":scope > section").count()==2 and split.locator(":scope > .split-workspace-grid").count()==0,"split layout needs no grid wrapper")
         handle.wait_for(state="visible")
         handle.scroll_into_view_if_needed()
         before=float(handle.get_attribute("aria-valuenow"))
@@ -800,7 +834,7 @@ try:
         notes.fill("Preserve my notes")
         cp.set_viewport_size({"width":390,"height":844})
         handle.wait_for(state="hidden")
-        check(split.evaluate("""e=>{const p=[...e.querySelectorAll('.split-workspace-grid > section')].map(x=>x.getBoundingClientRect());return Math.abs(p[0].left-p[1].left)<2&&p[1].top>=p[0].bottom}"""),"narrow split workspace stacks")
+        check(split.evaluate("""e=>{const p=[...e.querySelectorAll(':scope > section')].map(x=>x.getBoundingClientRect());return Math.abs(p[0].left-p[1].left)<2&&p[1].top>=p[0].bottom}"""),"narrow split workspace stacks")
         check(notes.input_value()=="Preserve my notes","responsive split retains native field value")
         check_width(cp,"split workspace mobile")
         cp.set_viewport_size({"width":1800,"height":1000})
@@ -817,7 +851,8 @@ try:
         metrics=cp.locator("[data-site-demo-content] .metric-card")
         check(metrics.count()==3 and metrics.first.evaluate("e=>e.classList.contains('card')&&e.classList.contains('stack')"),"KPI reuses core card and stack")
         check(metrics.first.locator("dd > strong").inner_text()=="€48,250","KPI preserves application-formatted value")
-        change=metrics.first.locator(".metric-change")
+        check(metrics.first.locator("dd > strong").evaluate("e=>!e.hasAttribute('class')&&parseFloat(getComputedStyle(e).fontSize)>parseFloat(getComputedStyle(e.parentElement).fontSize)"),"native metric value is emphasized without child classes")
+        change=metrics.first.locator("dd > span[data-tone]")
         check(change.evaluate("""e=>{
           const probe=document.createElement('span');probe.style.color='var(--color-success)';e.append(probe);
           const ok=getComputedStyle(e).color===getComputedStyle(probe).color;probe.remove();return ok;
@@ -836,12 +871,13 @@ try:
         flat=cp.locator("#demo-flat-trend polyline")
         check(flat.evaluate("e=>Array.from(e.points).every(p=>p.y===20)"),"constant series produces a flat line")
         check(spark.locator("svg").get_attribute("aria-hidden")=="true" and spark.locator("data").count()==7,"decorative graph preserves accessible source values")
+        check(spark.locator("svg, details > ol").evaluate_all("els=>els.length===2&&els.every(e=>!e.hasAttribute('class'))"),"dynamic chart needs no plot or values classes")
         points=line.get_attribute("points")
         cp.evaluate("""async()=>{
           const revision=new URL(document.querySelector('script[src*="/assets/engines.js"]').src).search;
           const {mountSparkline}=await import(new URL('../../engines/dashboard/sparkline.mjs'+revision,location.href).href);
           const figure=document.querySelector('#demo-revenue-trend');
-          const datum=figure.querySelector('.sparkline-values data');datum.value='55';datum.textContent='55';
+          const datum=figure.querySelector('details > ol > li > data');datum.value='55';datum.textContent='55';
           mountSparkline(figure).refresh();
         }""")
         check(line.get_attribute("points")!=points,"sparkline refresh derives geometry from changed data")
@@ -966,7 +1002,7 @@ try:
         cp.locator("#admin-commands").wait_for(state="hidden")
         check(cp.locator("#admin-reports").is_visible(),"command palette navigates real application views")
         check(cp.locator("#admin-report-ring progress").evaluate("e=>e.value===5&&e.max===13"),"report metrics reflect project changes")
-        cp.locator("#admin-shell .topbar-actions").get_by_role("button",name="Appearance",exact=True).click()
+        cp.locator("#admin-shell > header > div:last-child").get_by_role("button",name="Appearance",exact=True).click()
         appearance=cp.locator("#admin-appearance")
         appearance.wait_for(state="visible")
         check(appearance.locator("select").count()==len(profiles),"standalone uses all shared appearance profiles")

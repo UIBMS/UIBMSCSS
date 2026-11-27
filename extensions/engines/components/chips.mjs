@@ -5,7 +5,7 @@ export function mountChips(container){
   if(!container?.matches('.chips'))throw new TypeError('Expected a .chips container');
   const doc=container.ownerDocument;
   const previousTab=container.getAttribute('tabindex');if(previousTab===null)container.tabIndex=-1;
-  const buttons=()=>[...container.querySelectorAll(':scope > .chip > button[name="remove-chip"]:not(:disabled,[aria-disabled="true"])')];
+  const buttons=()=>[...container.querySelectorAll(':scope > :is(.chip,li) > button[name="remove-chip"]:not(:disabled,[aria-disabled="true"])')];
   function remove(button){
     if(!buttons().includes(button))return false;
     const chip=button.parentElement,detail={chip,value:button.value};

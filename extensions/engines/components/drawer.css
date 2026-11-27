@@ -12,25 +12,27 @@ dialog.drawer {
   transition:transform var(--signature-time,var(--motion-duration,180ms)) var(--motion-easing,ease),
     display var(--signature-time,var(--motion-duration,180ms)) allow-discrete,
     overlay var(--signature-time,var(--motion-duration,180ms)) allow-discrete;
-}
-dialog.drawer:dir(rtl) { --_uibms-drawer-shift:-100%; }
-dialog.drawer.drawer-start {
-  --_uibms-drawer-shift:-100%;inset-inline-end:auto;inset-inline-start:0;
-  border-radius:0;border-start-end-radius:calc(var(--radius)*2);border-end-end-radius:calc(var(--radius)*2);
-}
-dialog.drawer.drawer-start:dir(rtl) { --_uibms-drawer-shift:100%; }
-dialog.drawer.drawer-bottom {
-  inset-block-start:auto;inset-block-end:0;inset-inline:0;
-  inline-size:100dvw;block-size:auto;max-block-size:var(--drawer-bottom-max,82dvh);
-  border-radius:calc(var(--radius)*2) calc(var(--radius)*2) 0 0;
-  transform:translateY(100%);
-  padding-block-end:max(var(--space),env(safe-area-inset-bottom));
-}
-dialog.drawer[open] { transform:none; }
-@starting-style {
-  dialog.drawer[open] { transform:translateX(var(--_uibms-drawer-shift)); }
-  dialog.drawer.drawer-bottom[open] { transform:translateY(100%); }
-}
-@media (prefers-reduced-motion:reduce) {
-  dialog.drawer { transition:none; }
+
+  &:dir(rtl) { --_uibms-drawer-shift:-100%; }
+  &.drawer-start {
+    --_uibms-drawer-shift:-100%;inset-inline-end:auto;inset-inline-start:0;
+    border-radius:0;border-start-end-radius:calc(var(--radius)*2);border-end-end-radius:calc(var(--radius)*2);
+
+    &:dir(rtl) { --_uibms-drawer-shift:100%; }
+  }
+  &.drawer-bottom {
+    inset-block-start:auto;inset-block-end:0;inset-inline:0;
+    inline-size:100dvw;block-size:auto;max-block-size:var(--drawer-bottom-max,82dvh);
+    border-radius:calc(var(--radius)*2) calc(var(--radius)*2) 0 0;
+    transform:translateY(100%);
+    padding-block-end:max(var(--space),env(safe-area-inset-bottom));
+  }
+  &[open] { transform:none; }
+  @starting-style {
+    &[open] { transform:translateX(var(--_uibms-drawer-shift)); }
+    &.drawer-bottom[open] { transform:translateY(100%); }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    transition:none;
+  }
 }

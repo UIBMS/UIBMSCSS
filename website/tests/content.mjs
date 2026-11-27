@@ -7,6 +7,7 @@ import {framework} from '../src/lib/contract.mjs';
 import {expressivePalettes,expressiveStyles,paletteRoles,oklch} from '../src/lib/expressive-palettes.mjs';
 import {renderHtml,slugify} from '../src/lib/render.mjs';
 import {codeBlock} from '../src/lib/code.mjs';
+import {assertPreferredMarkup,assertPreferredScript,assertDocumentReferences,requiredStyles} from './semantic.mjs';
 const allowedClasses=new Set(framework.classes);
 const componentClasses=new Set(["tabs","segmented","dropdown","tooltip","drawer","drawer-start","drawer-bottom","toasts","toast","stepper","stepper-vertical","stepper-panel","pagination","tags","tag","chips","chip","command-palette","command-results"]);
 const dashboardClasses=new Set(["app-shell","app-shell-grid","dashboard-topbar","dashboard-sidebar","dashboard-workspace","sidebar-toggle","sidebar-drawer-toggle","dashboard-nav-drawer","sidebar-nav","sidebar-icon","sidebar-label","topbar-brand","topbar-actions","dashboard-page-header","page-heading","page-actions","dashboard-breadcrumb","split-workspace","split-workspace-grid","split-pane","split-handle","dashboard-view","metric-card","metric-label","metric-value","metric-change","metric-context","widget-grid","sparkline","sparkline-plot","sparkline-values","progress-ring","quick-actions"]);
@@ -25,6 +26,20 @@ for(const p of dashboardPages){
     await readFile(new URL('../../extensions/engines/'+file,import.meta.url),'utf8');
   }
 }
+// Preferred markup is checked throughout the catalogue, including source-only
+// examples, and every standalone application, not only selected dashboard pages.
+assertPreferredMarkup('<article class="card stack"><header><h2>Title</h2></header></article>','validator self-test');
+assert.throws(()=>assertPreferredMarkup('<uibms-card>Example</uibms-card>','validator self-test'));
+assert.throws(()=>assertPreferredMarkup('<span class="metric-value">1</span>','validator self-test'));
+assert.throws(()=>assertPreferredScript("document.querySelector('.dashboard-view')",'validator self-test'));
+assert.throws(()=>assertDocumentReferences('<button commandfor="missing" command="show-modal">Open</button>','validator self-test'));
+assertDocumentReferences('<button commandfor="sample" command="show-modal">Open</button><dialog id="sample"><form method="dialog"><button>Close</button></form></dialog>','validator self-test');
+for(const name of ['classes','effects','native-html','profiles','scoped']){
+  const html=await readFile(new URL('../../examples/'+name+'.html',import.meta.url),'utf8');
+  assertPreferredMarkup(html,name+' showcase');
+  assertDocumentReferences(html,name+' showcase');
+  if(name==='native-html')assert(!/\bclass=/.test(html),'native HTML showcase remains classless');
+}
 // Widgets must not introduce a private fixed palette or duplicate card surfaces.
 for(const file of ['metrics','widget-grid','quick-actions','sparkline','progress-ring']){
   const source=await readFile(new URL('../../extensions/engines/dashboard/'+file+'.css',import.meta.url),'utf8');
@@ -39,17 +54,20 @@ for(const attr of framework.effectAttributes)assert(slugs.has('docs/'+(attr==='d
 for(const p of profiles){const examples=docPages.find(d=>d.slug==='docs/'+p.key).sections.flatMap(s=>s.examples).filter(e=>e.html);assert(examples.some(e=>!e.html.includes('data-'+p.key+'=')),`Missing inherited example for ${p.key}`);}
 let checks=0,codeExamples=0,liveExamples=0;
 for(const p of pages){
-  const ids=new Set();
+  const ids=new Set(),styles=new Set();
   for(const s of p.sections){assert(!ids.has(slugify(s.title)),`Duplicate section ${p.slug}/${s.title}`);ids.add(slugify(s.title));
     for(const ex of s.examples){codeExamples++;assert(ex.code&&ex.lang,`Missing code ${p.slug}`);
-      if(ex.html){liveExamples++;assert.equal(ex.html,ex.code,`Source differs from rendered markup ${p.slug}`);
+      const label=p.slug+'/'+ex.label;
+      if(ex.lang==='html')assertPreferredMarkup(ex.code,label);
+      for(const script of [ex,...(ex.scripts||[])])if(script.lang==='javascript')assertPreferredScript(script.code,label);
+      if(ex.html){for(const stylesheet of requiredStyles(ex.html))styles.add(stylesheet);liveExamples++;assert.equal(ex.html,ex.code,`Source differs from rendered markup ${p.slug}`);
         for(const match of ex.html.matchAll(/\bclass="([^"]+)"/g))for(const cls of match[1].split(/\s+/)){assert(allowedClasses.has(cls)||(p.group==='Components'&&componentClasses.has(cls))||(p.group==='Dashboard'&&(dashboardClasses.has(cls)||componentClasses.has(cls))),`Unknown demo class ${cls}`);checks++;}
         for(const match of ex.html.matchAll(/\b(data-[\w-]+)(?:=|[\s>])/g)){assert(attrs.has(match[1])||((p.slug==='docs/chips'||p.group==='Dashboard')&&match[1]==='data-tone'),`Unknown demo attribute ${match[1]}`);checks++;}
         assert(!/\bcontenteditable\b|<script\b/i.test(ex.html));
       }
     }
   }
-  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));for(const id of ['site-main-menu-drawer','site-doc-drawer','site-toc-drawer']){assert(html.includes('id="'+id+'" class="drawer'));assert(html.includes('commandfor="'+id+'" command="show-modal"'));}assert(!html.includes('data-site-menu-open')&&!html.includes('data-site-mobile-open'));assert(html.includes('id="site-appearance"'));assert(!html.includes('{{base}}'));const ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);assert.equal(new Set(ids).size,ids.length,`Duplicate IDs ${p.slug}`);for(const a of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(a[1]),`Missing anchor ${p.slug}#${a[1]}`);checks+=6;}
+  for(const base of ['/','/UIBMSCSS/']){const html=renderHtml(p,base);assert(html.includes(`href="${basePath(base)}framework/uibms.full.min.css?v=`));assert(html.includes('id="site-doc-nav"'));for(const id of ['site-main-menu-drawer','site-doc-drawer','site-toc-drawer']){assert(html.includes('id="'+id+'" class="drawer'));assert(html.includes('commandfor="'+id+'" command="show-modal"'));}assert(!html.includes('data-site-menu-open')&&!html.includes('data-site-mobile-open'));assert(html.includes('id="site-appearance"'));assert(!html.includes('{{base}}'));assertDocumentReferences(html,p.slug+' '+base);for(const name of styles)assert(html.includes('engines/'+name+'?v='),p.slug+' missing component stylesheet '+name);checks+=6;}
 }
 for(const p of pages){
   const html=renderHtml(p,'/UIBMSCSS/');
@@ -67,13 +85,13 @@ for(const demo of demos){
  for(const name of demo.stylesheets)await readFile(new URL('../../extensions/engines/'+name,import.meta.url),'utf8');
  for(const ext of ['css','js'])await readFile(new URL('../public/assets/'+demo.entry+'.'+ext,import.meta.url),'utf8');
  for(const base of ['/','/UIBMSCSS/']){
-  const html=renderHtml(demo,base),ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);
-  assert.equal(new Set(ids).size,ids.length,'Duplicate demo ID '+demo.slug);
+  const html=renderHtml(demo,base);
+  assertPreferredMarkup(html,demo.slug+' '+base);
+  assertDocumentReferences(html,demo.slug+' '+base);
+  for(const name of requiredStyles(html))assert(demo.stylesheets.includes(name),demo.slug+' missing component stylesheet '+name);
   assert(!/<iframe\b/i.test(html)&&!html.includes('id="site-doc-nav"')&&!html.includes('id="site-header"')&&!html.includes('assets/site.js?v='));
   assert.equal((html.match(/<main\b/g)||[]).length,1);
   assert(html.includes('href="'+basePath(base)+'demos/"'));
-  for(const a of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(a[1]),'Missing demo anchor '+a[1]);
-  for(const a of html.matchAll(/\b(?:commandfor|popovertarget|aria-controls)="([^"]+)"/g))assert(ids.includes(a[1]),'Missing demo control target '+a[1]);
   for(const stylesheet of demo.stylesheets)assert(html.includes('engines/'+stylesheet+'?v='));
  }
 }

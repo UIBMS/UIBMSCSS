@@ -11,7 +11,7 @@ export function clampSplit(ratio,available,minStart=160,minEnd=220){
 }
 export function mountSplitWorkspace(root,{ratio,minStart=160,minEnd=220,keyboardStep=.05}={}){
   if(instances.has(root))return instances.get(root);
-  const grid=root?.querySelector(':scope > .split-workspace-grid');
+  const grid=root?.querySelector(':scope > .split-workspace-grid')??root;
   const start=grid?.firstElementChild,end=grid?.lastElementChild;
   const legacy=grid?.querySelector(':scope > .split-handle[role=separator]');
   const handle=legacy??start?.nextElementSibling;
@@ -26,7 +26,7 @@ export function mountSplitWorkspace(root,{ratio,minStart=160,minEnd=220,keyboard
   const cssRatio=parseFloat(win.getComputedStyle(root).getPropertyValue('--dashboard-split-ratio'));
   let preferred=Math.max(0,Math.min(1,finite(ratio,finite(cssRatio,.42)))),actual=preferred,drag=null,dead=false;
   const step=Math.max(.01,Math.min(.5,finite(keyboardStep,.05)));
-  const stacked=()=>win.getComputedStyle(grid).getPropertyValue('--_uibms-split-mode').trim()==='stacked';
+  const stacked=()=>win.getComputedStyle(handle).getPropertyValue('--_uibms-split-mode').trim()==='stacked';
   const available=()=>Math.max(0,grid.clientWidth-handle.getBoundingClientRect().width);
   function refresh(){
     if(dead)return;

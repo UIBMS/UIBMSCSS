@@ -1,23 +1,39 @@
 const revision=new URL(import.meta.url).search;
-const {loadAppearanceEngines}=await import('./appearance-engines.js'+revision);
-if(document.querySelector('.tabs[role="tablist"]')){
-  const {mountTabs}=await import('../engines/components/tabs.mjs'+revision);
-  mountTabs(document);
-}
-if(document.querySelector('.dropdown[role="menu"][popover]')){
-  const {mountDropdowns}=await import('../engines/components/dropdown.mjs'+revision);
-  mountDropdowns(document);
-}
-if(document.querySelector('.tooltip[role="tooltip"][popover]')){
-  const {mountTooltips}=await import('../engines/components/tooltip.mjs'+revision);
-  mountTooltips(document);
-}
-if(document.querySelector('dialog.drawer')){
-  const {mountDrawers}=await import('../engines/components/drawer.mjs'+revision);
-  mountDrawers(document);
-}
-if(document.querySelector('#demo-notifications')){
-  const {mountToasts}=await import('../engines/components/toast.mjs'+revision);
+const appearanceModule=import('./appearance-engines.js'+revision);
+const query=selector=>document.querySelector(selector);
+const when=(needed,load)=>needed?load():null;
+const shells=[...document.querySelectorAll('.app-shell')],splits=[...document.querySelectorAll('.split-workspace')];
+const dashboardShell=query('#dashboard-demo-shell'),workspaceCommands=query('#workspace-commands');
+const dynamicSparklines=[...document.querySelectorAll('figure.sparkline')].filter(figure=>
+  (figure.querySelector(':scope > svg.sparkline-plot')??figure.querySelector(':scope > svg'))?.matches(':empty'));
+const rings=[...document.querySelectorAll('.progress-ring:has(> progress)')];
+
+// Start independent requests together, and only for authored functionality.
+// Segmented controls and static SVG graphs never need a component controller.
+const [
+  {loadAppearanceEngines},tabsModule,dropdownModule,tooltipModule,toastModule,stepperModule,paginationModule,
+  chipsModule,commandModule,shellModule,splitModule,sparklineModule,ringModule
+]=await Promise.all([
+  appearanceModule,
+  when(query('.tabs[role="tablist"]'),()=>import('../engines/components/tabs.mjs'+revision)),
+  when(query('.dropdown[role="menu"][popover]'),()=>import('../engines/components/dropdown.mjs'+revision)),
+  when(query('.tooltip[role="tooltip"][popover]'),()=>import('../engines/components/tooltip.mjs'+revision)),
+  when(query('#demo-notifications'),()=>import('../engines/components/toast.mjs'+revision)),
+  when(query('#onboarding-steps'),()=>import('../engines/components/stepper.mjs'+revision)),
+  when(query('#records-pagination'),()=>import('../engines/components/pagination.mjs'+revision)),
+  when(query('#demo-removable-skills'),()=>import('../engines/components/chips.mjs'+revision)),
+  when(workspaceCommands||dashboardShell,()=>import('../engines/components/command.mjs'+revision)),
+  when(shells.length,()=>import('../engines/dashboard/app-shell.mjs'+revision)),
+  when(splits.length,()=>import('../engines/dashboard/split-workspace.mjs'+revision)),
+  when(dynamicSparklines.length,()=>import('../engines/dashboard/sparkline.mjs'+revision)),
+  when(rings.length,()=>import('../engines/dashboard/progress-ring.mjs'+revision)),
+  appearanceModule.then(({loadDrawerFallback})=>loadDrawerFallback(()=>import('../engines/components/drawer.mjs'+revision)))
+]);
+tabsModule?.mountTabs(document);
+dropdownModule?.mountDropdowns(document);
+tooltipModule?.mountTooltips(document);
+if(toastModule){
+  const {mountToasts}=toastModule;
   const notifications = mountToasts(document.querySelector('#demo-notifications'));
   document.querySelector('#toast-success').addEventListener('click', () => {
     notifications.show({tone:'success', title:'Changes saved', message:'Your workspace is up to date.'});
@@ -33,8 +49,8 @@ if(document.querySelector('#demo-notifications')){
   });
   document.querySelector('#toast-clear').addEventListener('click', () => notifications.clear());
 }
-if(document.querySelector('#onboarding-steps')){
-  const {mountStepper}=await import('../engines/components/stepper.mjs'+revision);
+if(stepperModule){
+  const {mountStepper}=stepperModule;
   const list = document.querySelector('#onboarding-steps');
   const wizard = mountStepper(list);
   const back = document.querySelector('#stepper-back');
@@ -50,8 +66,8 @@ if(document.querySelector('#onboarding-steps')){
   next.addEventListener('click', () => wizard.next({focus:true}));
   update();
 }
-if(document.querySelector('#records-pagination')){
-  const {mountPagination}=await import('../engines/components/pagination.mjs'+revision);
+if(paginationModule){
+  const {mountPagination}=paginationModule;
   const summary = document.querySelector('#pagination-summary');
   const records = document.querySelector('#pagination-records');
   function showPage(page) {
@@ -69,8 +85,8 @@ if(document.querySelector('#records-pagination')){
   });
   showPage(pagination.current);
 }
-if(document.querySelector('#demo-removable-skills')){
-  const {mountChips}=await import('../engines/components/chips.mjs'+revision);
+if(chipsModule){
+  const {mountChips}=chipsModule;
   const group = document.querySelector('#demo-removable-skills');
   const status = document.querySelector('#chip-status');
   const initial = Array.from(group.children, chip => chip.cloneNode(true));
@@ -83,27 +99,27 @@ if(document.querySelector('#demo-removable-skills')){
     status.value = 'Three selected skills';
   });
 }
-if(document.querySelector('#workspace-commands')){
-  const {mountCommandPalette}=await import('../engines/components/command.mjs'+revision);
-  const dialog = document.querySelector('#workspace-commands');
+if(workspaceCommands){
+  const {mountCommandPalette}=commandModule;
+  const dialog = workspaceCommands;
   const commands = mountCommandPalette(dialog);
   dialog.addEventListener('commandselect', event => {
     document.querySelector('#command-action-status').value =
       'Selected: ' + event.detail.action.textContent.trim();
   });
 }
-if(document.querySelector('.app-shell,.split-workspace')){
-  const shellModule=document.querySelector('.app-shell')?await import('../engines/dashboard/app-shell.mjs'+revision):null;
-  const splitModule=document.querySelector('.split-workspace')?await import('../engines/dashboard/split-workspace.mjs'+revision):null;
-  for(const shell of document.querySelectorAll('.app-shell'))shellModule.mountAppShell(shell);
-  for(const split of document.querySelectorAll('.split-workspace'))splitModule.mountSplitWorkspace(split);
-  if(document.querySelector('#dashboard-demo-shell')){
-    const {mountAppShell}=shellModule,{mountSplitWorkspace}=splitModule;
-    const {mountCommandPalette}=await import('../engines/components/command.mjs'+revision);
-    const shell = document.querySelector('#dashboard-demo-shell');
-    const layout = mountAppShell(shell);
+if(shells.length||splits.length){
+  let dashboardLayout;
+  for(const shell of shells){
+    const layout=shellModule.mountAppShell(shell);
+    if(shell===dashboardShell)dashboardLayout=layout;
+  }
+  for(const split of splits)splitModule.mountSplitWorkspace(split);
+  if(dashboardShell){
+    const shell=dashboardShell,layout=dashboardLayout;
+    const {mountCommandPalette}=commandModule;
     const workspace = shell.querySelector('#dash-workspace');
-    const views = [...workspace.querySelectorAll(':scope > .dashboard-view')];
+    const views = [...workspace.querySelectorAll(':scope > :is(section[id],.dashboard-view)')];
     const links = [...shell.querySelectorAll('#dash-sidebar a[href]')];
     function showView(id, focus = false) {
       const view = views.find(v => v.id === id);
@@ -128,19 +144,12 @@ if(document.querySelector('.app-shell,.split-workspace')){
       }
     });
     showView('dash-overview');
-    mountSplitWorkspace(shell.querySelector('.split-workspace'));
     mountCommandPalette(shell.querySelector('#dash-commands'));
   }
 }
-// The widget adapters are generic: the native data/progress values are the source.
-if(document.querySelector('figure.sparkline > svg.sparkline-plot:empty')){
-  const {mountSparkline}=await import('../engines/dashboard/sparkline.mjs'+revision);
-  for(const figure of document.querySelectorAll('figure.sparkline:has(> svg.sparkline-plot:empty)'))mountSparkline(figure);
-}
-if(document.querySelector('.progress-ring > progress')){
-  const {mountProgressRing}=await import('../engines/dashboard/progress-ring.mjs'+revision);
-  for(const root of document.querySelectorAll('.progress-ring:has(> progress)'))mountProgressRing(root);
-}
+// Native data/progress values remain the source of the optional decorations.
+for(const figure of dynamicSparklines)sparklineModule.mountSparkline(figure);
+for(const root of rings)ringModule.mountProgressRing(root);
 const siliconeExamples=[...document.querySelectorAll('[data-site-demo-run="liquid-silicone"]')];
 await loadAppearanceEngines({
   loadMaterial:()=>import('../engines/material.mjs'+revision),

@@ -5,15 +5,15 @@
         border: var(--border-width) solid var(--color-border-subtle);
         border-radius: calc(var(--radius) * 2);
         padding: var(--space);
-    }
 
-    :where(.card:not(.panel)) {
-        background-color: var(--color-surface);
-        box-shadow: var(--shadow);
-    }
+        &:where(.card) {
+            background-color: var(--color-surface);
+            box-shadow: var(--shadow);
+        }
 
-    :where(.panel:not(.card)) {
-        background-color: var(--color-surface-subtle);
+        &:where(.panel) {
+            background-color: var(--color-surface-subtle);
+        }
     }
 
 }

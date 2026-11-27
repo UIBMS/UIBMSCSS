@@ -21,12 +21,12 @@
         vertical-align: top;
         overflow-wrap: normal;
         word-break: normal;
+
+        &:where(th) { font-weight: 650; }
     }
 
-    :where(th) { font-weight: 650; }
-
     /* Preserve standalone identifiers without preventing prose from wrapping. */
-    :where(th > code:only-child, td > code:only-child) {
+    :where(:is(th, td) > code:only-child) {
         white-space: nowrap;
     }
 

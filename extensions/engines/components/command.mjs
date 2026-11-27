@@ -7,7 +7,9 @@ export function commandMatches(text,query){
 export function mountCommandPalette(dialog,{shortcut=false,labels={}}={}){
   if(instances.has(dialog))return instances.get(dialog);
   if(!dialog?.matches('dialog.command-palette')||typeof dialog.showModal!=='function')throw new TypeError('Expected a native command palette dialog');
-  const doc=dialog.ownerDocument,input=dialog.querySelector('input[type="search"]'),list=dialog.querySelector('.command-results'),status=dialog.querySelector('[role="status"]');
+  const doc=dialog.ownerDocument,input=dialog.querySelector('input[type="search"]'),status=dialog.querySelector('[role="status"]');
+  const controls=input?.getAttribute('aria-controls'),controlled=controls&&doc.getElementById(controls);
+  const list=controlled&&dialog.contains(controlled)&&controlled.matches('ul')?controlled:dialog.querySelector('.command-results');
   if(!input||!list||!status)throw new TypeError('Command palette requires a search input, results and status');
   const originalHidden=new Map(),initialStatus=status.textContent,initialValue=input.value;
   const names={count:n=>n+' matching command'+(n===1?'':'s')+'.',empty:'No matching commands.',...labels};

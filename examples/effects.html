@@ -66,7 +66,7 @@
         <section id="lifecycle" class="stack">
             <h2>Native lifecycle.</h2>
             <p>Fade is a decorative edge-light transition; rise is a small movement. Text stays readable throughout.</p>
-            <div class="cluster"><button type="button" id="open-dialog">Open dialog</button><button type="button" popovertarget="popover">Open popover</button></div>
+            <div class="cluster"><button type="button" id="open-dialog" commandfor="dialog" command="show-modal">Open dialog</button><button type="button" popovertarget="popover">Open popover</button></div>
             <dialog id="dialog" data-entrance="fade rise" data-exit="fade rise" aria-labelledby="dialog-title"><h3 id="dialog-title">Native dialog</h3><p>Close with Escape or the native dialog form.</p><form method="dialog"><button autofocus>Close</button></form></dialog>
             <div id="popover" popover data-entrance="fade rise" data-exit="fade rise"><h3>Native popover</h3><p>Focus and dismissal retain browser behavior.</p><button type="button" popovertarget="popover" popovertargetaction="hide">Close</button></div>
         </section>
@@ -76,7 +76,7 @@
             <article id="scroll-sample" class="card stack" data-scroll="reveal progress"><h3>Scroll-linked depth</h3><p>Small movement and a decorative page progress line. No content is hidden in fallback browsers.</p><a href="#content">Return to top</a></article>
             <article class="panel stack" data-scroll="parallax"><h3>Subtle parallax</h3><p>Native view timeline, no scroll event handler.</p></article>
         </section>
-        <footer><hr><small>Development source. Physical optical rendering, true continuous corners and custom input-driven scroll physics remain future research.</small></footer>
+        <footer><hr><small>Development source. Core effects are native CSS; the separately loadable experimental material engine is not used in this showcase. True continuous corners and custom input-driven scroll physics remain research.</small></footer>
     </main>
     <script>
         // Example controls only; UIBMS CSS has no JavaScript runtime.
@@ -84,7 +84,11 @@
             const select = document.getElementById(id);
             select.addEventListener('change', () => document.documentElement.setAttribute('data-' + id, select.value));
         }
-        document.getElementById('open-dialog').addEventListener('click', () => document.getElementById('dialog').showModal());
+        // Optional fallback; supporting browsers open the modal directly from HTML.
+        const invoker = document.getElementById('open-dialog');
+        if (!('commandForElement' in invoker && 'command' in invoker)) {
+            invoker.addEventListener('click', () => document.getElementById('dialog').showModal());
+        }
     </script>
 </body>
 </html>

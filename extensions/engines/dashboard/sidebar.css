@@ -5,7 +5,7 @@
   color:var(--dashboard-sidebar-foreground,var(--color-text));
   border-inline-end:var(--border-width) solid var(--color-border);min-inline-size:0;
 }
-:where(.sidebar-nav,.app-shell > nav,.app-shell .dashboard-nav-drawer > nav) {
+:where(.sidebar-nav,nav.dashboard-sidebar,.dashboard-sidebar > nav,.app-shell > nav,.app-shell .dashboard-nav-drawer > nav) {
   min-inline-size:0;
   & :where(ul) { min-inline-size:0;display:grid;gap:calc(var(--space)*.2);list-style:none;margin:0;padding:0; }
   & :where(li) { min-inline-size:0;margin:0; }

@@ -6,14 +6,14 @@
         }
 
         :where(button, input:is([type="button"], [type="submit"], [type="reset"]),
-            [data-hover~="lift"]:not([data-hover~="none"]), [data-hover~="glow"]:not([data-hover~="none"]),
+            :is([data-hover~="lift"], [data-hover~="glow"]):not([data-hover~="none"]),
             [data-active~="press"]:not([data-active~="none"]), [data-focus~="glow"]:not([data-focus~="none"])) {
             transition: none;
             translate: none;
         }
 
         :where(dialog, [popover]):where([data-entrance~="rise"]:not([data-entrance~="none"]),
-            [data-exit~="rise"]:not([data-exit~="none"]), [data-exit~="fade"]:not([data-exit~="none"])) {
+            :is([data-exit~="rise"], [data-exit~="fade"]):not([data-exit~="none"])) {
             transition: none;
             transform: none;
         }

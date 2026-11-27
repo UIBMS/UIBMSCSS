@@ -759,6 +759,21 @@ Establish the following 13 public class names and responsibilities as the initia
 
 The 13 identifiers and their responsibilities are approved. Exact class implementations, dimensions, token contracts, supported combinations, distribution and detailed composition behavior remain open. Illustrative markup is not an approved implementation.
 
+### CLS-004 — Minimal component markup and contextual native CSS
+
+Status: approved, 2026-11-27.
+
+Apply the semantic HTML-first, minimal-class approach to the whole framework, its optional extensions, documentation and application demos.
+
+- Identify a reusable component with a meaningful class when native element styling alone is insufficient. Prefer native HTML elements, semantic attributes and structural relationships for its internal content.
+- Use native CSS nesting to express component context, with direct-child selectors where the component owns that structure and `:where()` where appropriate to preserve low specificity. Avoid deep or brittle selectors and unintended styling of nested components.
+- Eliminate redundant child classes and wrappers; retain meaningful layout/surface composition, accessibility hooks, and explicit distinctions that cannot be represented safely by native semantics. Do not introduce custom HTML elements as a component system.
+- Keep shared styles, design tokens, contextual data attributes, cascade layers and responsive behavior authoritative. Do not duplicate declarations or add new utilities merely to remove a class.
+- Prefer native HTML and CSS interaction and positioning. Keep JavaScript optional for behavior that native mechanisms cannot adequately provide, including accessible keyboard interactions and dynamic data.
+- Preserve existing supported markup during migration where practical; teach the minimal native pattern first and verify behavior, scoping, responsiveness and accessibility before removing compatibility hooks.
+
+The aim is the minimum necessary markup and CSS, not an arbitrary number of classes or mandatory use of nesting when a simple selector is clearer.
+
 ### HTM-001 — Comprehensive, context-aware native HTML styling
 
 Status: approved — Option C, 2026-11-24.

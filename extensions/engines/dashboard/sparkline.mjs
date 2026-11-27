@@ -17,7 +17,7 @@ export function sparklinePoints(values,{width=100,height=40,padding=4}={}){
 }
 export function mountSparkline(figure){
   if(instances.has(figure))return instances.get(figure);
-  const plot=figure?.querySelector(':scope > svg.sparkline-plot');
+  const plot=figure?.querySelector(':scope > svg.sparkline-plot')??figure?.querySelector(':scope > svg');
   if(!figure?.matches('figure.sparkline')||!plot||plot.children.length)throw new TypeError('Expected a sparkline figure with an empty SVG');
   const doc=figure.ownerDocument;
   const viewBox=plot.getAttribute('viewBox'),original=plot.getAttribute('aria-hidden');
@@ -34,7 +34,8 @@ export function mountSparkline(figure){
     plot.setAttribute('viewBox','0 0 100 40');plot.setAttribute('preserveAspectRatio','none');plot.replaceChildren(...nodes);
   }
   function refresh(){
-    const data=[...figure.querySelectorAll('.sparkline-values data[value]')];
+    const legacy=[...figure.querySelectorAll('.sparkline-values data[value]')].filter(el=>el.closest('figure.sparkline')===figure);
+    const data=legacy.length?legacy:[...figure.querySelectorAll(':scope > details > ol > li > data[value]')];
     draw(data.map(el=>{const v=el.getAttribute('value').trim();return v?Number(v):NaN;}));
   }
   plot.setAttribute('aria-hidden','true');

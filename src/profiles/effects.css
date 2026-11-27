@@ -1,19 +1,18 @@
 @layer configuration {
 
-    :where([data-effects="default"]) {
-        --signature-time: initial;
+    :where([data-effects="default"], [data-effects="none"]) {
         --explicit-time: initial;
+        --signature-time: initial;
         --signature-lift: initial;
         --signature-press: initial;
         --signature-scroll: initial;
-    }
 
-    :where([data-effects="none"]) {
-        --signature-time: 0ms;
-        --explicit-time: initial;
-        --signature-lift: none;
-        --signature-press: none;
-        --signature-scroll: auto;
+        &:where([data-effects="none"]) {
+            --signature-time: 0ms;
+            --signature-lift: none;
+            --signature-press: none;
+            --signature-scroll: auto;
+        }
     }
 
 }

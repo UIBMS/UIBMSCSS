@@ -12,7 +12,7 @@ export function mountStepper(list,{scope=list.parentElement}={}){
     const buttons=[...list.children].filter(li=>li.matches('li')).map(li=>li.querySelector(':scope > button[aria-controls][id]'));
     if(!buttons.length||buttons.some(b=>!b))return [];
     const mapped=buttons.map(button=>({button,panel:doc.getElementById(button.getAttribute('aria-controls'))}));
-    if(mapped.some(({button,panel})=>!panel||!scope.contains(panel)||!panel.matches('.stepper-panel')||panel.contains(list)||list.contains(panel)||panel.getAttribute('aria-labelledby')!==button.id)||new Set(mapped.map(p=>p.panel)).size!==mapped.length)return [];
+    if(mapped.some(({button,panel})=>!panel||!scope.contains(panel)||!panel.matches('.stepper-panel,section[aria-labelledby]')||panel.contains(list)||list.contains(panel)||panel.getAttribute('aria-labelledby')!==button.id)||new Set(mapped.map(p=>p.panel)).size!==mapped.length)return [];
     return mapped;
   }
   function apply(index,focus=false){

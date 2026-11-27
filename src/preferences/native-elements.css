@@ -1,11 +1,7 @@
 @layer preferences {
 
     @media (forced-colors: active) {
-        :where(:focus-visible) {
-            outline-color: Highlight;
-        }
-
-        :where(:target:not(:focus-visible)) {
+        :where(:focus-visible, :target:not(:focus-visible)) {
             outline-color: Highlight;
         }
 
@@ -14,9 +10,7 @@
             border-color: ButtonText;
         }
 
-        :where(button:is(:disabled, [aria-disabled="true"]),
-            input:is(:disabled, [aria-disabled="true"]), select:is(:disabled, [aria-disabled="true"]),
-            textarea:is(:disabled, [aria-disabled="true"])),
+        :where(button, input, select, textarea):where(:disabled, [aria-disabled="true"]),
         :where(input[type="file"]:disabled)::file-selector-button {
             color: GrayText;
             border-color: GrayText;
