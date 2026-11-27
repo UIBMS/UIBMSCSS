@@ -1,0 +1,12 @@
+/* Optional page header; native breadcrumbs and headings remain semantic. */
+.dashboard-page-header {
+  display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;
+  gap:var(--space);min-inline-size:0;margin-block-end:var(--space);
+}
+:where(.dashboard-page-header > .page-heading) { flex:1 1 12rem;min-inline-size:0;overflow-wrap:anywhere; }
+:where(.dashboard-page-header h1,.dashboard-page-header h2,.dashboard-page-header h3,.dashboard-page-header p) { margin:0; }
+:where(.dashboard-page-header .page-actions) { display:flex;flex-wrap:wrap;align-items:center;gap:calc(var(--space)*.4);max-inline-size:100%;min-inline-size:0; }
+:where(.dashboard-breadcrumb ol) { display:flex;flex-wrap:wrap;align-items:center;gap:calc(var(--space)*.35);list-style:none;padding:0;margin:0 0 calc(var(--space)*.45);font-size:.875em; }
+:where(.dashboard-breadcrumb li) { display:flex;align-items:center;gap:calc(var(--space)*.35);margin:0;min-inline-size:0;overflow-wrap:anywhere; }
+:where(.dashboard-breadcrumb li + li)::before { content:'/';color:var(--color-text-muted); }
+:where(.dashboard-breadcrumb a[href]) { color:var(--color-text-muted); }

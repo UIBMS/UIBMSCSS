@@ -1,0 +1,23 @@
+/* Optional split workspace. Ratio is an application-configurable structure. */
+.split-workspace {
+  container:uibms-split / inline-size;inline-size:100%;min-inline-size:0;
+}
+.split-workspace > .split-workspace-grid {
+  --_uibms-split-mode:wide;
+  display:grid;min-inline-size:0;align-items:stretch;
+  grid-template-columns:minmax(0,calc((100% - var(--dashboard-split-gutter,1.25rem))*var(--_uibms-split-ratio,var(--dashboard-split-ratio,.42)))) var(--dashboard-split-gutter,1.25rem) minmax(0,1fr);
+}
+:where(.split-pane) { min-inline-size:0;min-block-size:0;overflow-wrap:anywhere; }
+:where(.split-handle) {
+  position:relative;align-self:stretch;min-inline-size:0;min-block-size:var(--target-size);
+  display:flex;align-items:center;justify-content:center;cursor:col-resize;touch-action:none;user-select:none;
+  border-radius:var(--radius);color:var(--color-text-muted);
+}
+:where(.split-handle)::after { content:'';display:block;inline-size:3px;block-size:min(3rem,80%);border-radius:var(--radius);background-color:currentColor; }
+:where(.split-handle:focus-visible) { outline:2px solid var(--color-focus);outline-offset:-2px;color:var(--color-text); }
+@media (hover:hover) { :where(.split-handle:hover) { background-color:var(--color-surface-subtle);color:var(--color-text); } }
+:where(.split-workspace:not([data-uibms-split-ready]) .split-handle) { visibility:hidden;pointer-events:none; }
+@container uibms-split (width < 36rem) {
+  .split-workspace > .split-workspace-grid { --_uibms-split-mode:stacked;grid-template-columns:minmax(0,1fr);gap:var(--space); }
+  .split-workspace > .split-workspace-grid > .split-handle { display:none; }
+}

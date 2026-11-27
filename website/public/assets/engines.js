@@ -92,6 +92,46 @@ if(document.querySelector('#workspace-commands')){
       'Selected: ' + event.detail.action.textContent.trim();
   });
 }
+if(document.querySelector('.app-shell,.split-workspace')){
+  const shellModule=document.querySelector('.app-shell')?await import('../engines/dashboard/app-shell.mjs'+revision):null;
+  const splitModule=document.querySelector('.split-workspace')?await import('../engines/dashboard/split-workspace.mjs'+revision):null;
+  for(const shell of document.querySelectorAll('.app-shell'))shellModule.mountAppShell(shell);
+  for(const split of document.querySelectorAll('.split-workspace'))splitModule.mountSplitWorkspace(split);
+  if(document.querySelector('#dashboard-demo-shell')){
+    const {mountAppShell}=shellModule,{mountSplitWorkspace}=splitModule;
+    const {mountCommandPalette}=await import('../engines/components/command.mjs'+revision);
+    const shell = document.querySelector('#dashboard-demo-shell');
+    const layout = mountAppShell(shell);
+    const workspace = shell.querySelector('.dashboard-workspace');
+    const views = [...workspace.querySelectorAll(':scope > .dashboard-view')];
+    const links = [...shell.querySelectorAll('.sidebar-nav a[href]')];
+    function showView(id, focus = false) {
+      const view = views.find(v => v.id === id);
+      if (!view) return false;
+      for (const v of views) v.hidden = v !== view;
+      for (const link of links) {
+        if (link.getAttribute('href') === '#' + id) link.setAttribute('aria-current', 'page');
+        else link.removeAttribute('aria-current');
+      }
+      if (layout.mode === 'compact') layout.setExpanded(false);
+      workspace.scrollTop = 0;
+      if (focus) view.focus({preventScroll:true});
+      return true;
+    }
+    shell.addEventListener('click', event => {
+      const link = event.target.closest('a[href^="#"]');
+      if (!link || !shell.contains(link)) return;
+      const id = link.getAttribute('href').slice(1);
+      if (views.some(v => v.id === id)) {
+        event.preventDefault();
+        showView(id, true);
+      }
+    });
+    showView('dash-overview');
+    mountSplitWorkspace(shell.querySelector('.split-workspace'));
+    mountCommandPalette(shell.querySelector('#dash-commands'));
+  }
+}
 const material=mountMaterial(document,{mediaLoader:()=>import('../engines/media-deformation.mjs'+revision)});
 // Enhance compatible live examples; keep global settings and native top-layer dialogs independent.
 mountForms(document,{filter:el=>!!el.closest('[data-site-demo-content]')&&!el.closest('dialog,[popover]')});

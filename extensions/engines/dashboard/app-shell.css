@@ -1,0 +1,58 @@
+/* Optional responsive administration shell. Structure only; no app routing. */
+.app-shell {
+  container: uibms-shell / inline-size;
+  inline-size:100%;min-inline-size:0;max-inline-size:100%;
+  block-size:var(--dashboard-height,100dvh);min-block-size:0;
+  box-sizing:border-box;color:var(--color-text);background-color:var(--color-background);
+  border:var(--border-width) solid var(--color-border);border-radius:var(--radius);
+  overflow:hidden;
+}
+.app-shell > .app-shell-grid {
+  --_uibms-shell-mode:wide;
+  display:grid;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
+  grid-template-columns:minmax(0,var(--dashboard-sidebar-width,15rem)) minmax(0,1fr);
+  grid-template-rows:auto minmax(0,1fr);
+  grid-template-areas:"top top" "side content";
+}
+.app-shell-grid > .dashboard-topbar { grid-area:top;min-inline-size:0; }
+.app-shell-grid > .dashboard-sidebar { grid-area:side;min-inline-size:0;min-block-size:0;overflow:auto;overscroll-behavior:contain; }
+.app-shell-grid > .dashboard-workspace {
+  grid-area:content;min-inline-size:0;min-block-size:0;overflow:auto;
+  overscroll-behavior:contain;padding:var(--dashboard-content-padding,var(--space));
+}
+.app-shell .sidebar-toggle { display:none; }
+.app-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
+.app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
+  grid-template-columns:minmax(0,var(--dashboard-rail-width,4rem)) minmax(0,1fr);
+}
+/* The accessible link name stays in the DOM in a compact icon rail. */
+@container uibms-shell (min-width:42rem) {
+  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar .sidebar-label {
+    position:absolute;inline-size:1px;block-size:1px;margin:-1px;padding:0;
+    overflow:hidden;clip-path:inset(50%);white-space:nowrap;
+  }
+  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar :is(.sidebar-nav a,.sidebar-nav summary) {
+    justify-content:center;padding-inline:calc(var(--space)*.25);
+  }
+  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar .sidebar-nav ul ul {
+    padding-inline-start:0;
+  }
+}
+@container uibms-shell (width < 42rem) {
+  .app-shell > .app-shell-grid,.app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
+    --_uibms-shell-mode:compact;
+    grid-template-columns:minmax(0,1fr);grid-template-rows:auto auto minmax(0,1fr);
+    grid-template-areas:"top" "side" "content";
+  }
+  .app-shell-grid > .dashboard-sidebar {
+    max-block-size:min(var(--dashboard-mobile-nav-height,14rem),40dvh);
+    border-inline-end:0;border-block-end:var(--border-width) solid var(--color-border);
+  }
+  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) {
+    grid-template-rows:auto minmax(0,1fr);grid-template-areas:"top" "content";
+  }
+  .app-shell[data-uibms-shell-ready] > .app-shell-grid:has(> .dashboard-topbar .sidebar-toggle[aria-expanded=false]) > .dashboard-sidebar { display:none; }
+}
+
+/* Hidden application views are absent even when a layout class sets display. */
+:where(.app-shell) [hidden] { display:none !important; }

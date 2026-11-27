@@ -61,3 +61,7 @@ Mount options: mediaRenderer (auto by default, canvas2d to force the fallback), 
 The independent components/ directory contains individually loadable tabs.css, tabs.mjs and segmented.css. See components/README.md for native HTML contracts, keyboard behaviour, and optional material selection. Neither core CSS nor the Material Engine requires the components library.
 
 The complete initial component collection now includes tabs, segmented controls, dropdowns, tooltips, drawers, toasts, stepper, pagination, tags/chips and command palette. See components/README.md for individual loading and lifecycle contracts.
+
+## Optional dashboard layouts
+
+The dashboard/ directory provides independently loadable App Shell, Sidebar, Topbar, Page Header and Split Workspace styles, plus small optional shell and splitter controllers. See dashboard/README.md for the structural contracts. Layout boundaries stay stable under material feedback; nested native controls remain interactive. Neither the core CSS nor the general component library requires these modules.
