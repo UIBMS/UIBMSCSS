@@ -45,6 +45,17 @@ for(const [slug,classes] of [['stepper',['stepper-panel']],['command-palette',['
     }
   }
 }
+// Preferred dashboard layouts require no legacy structural child classes.
+const legacyLayoutClasses=new Set(['app-shell-grid','dashboard-workspace','sidebar-nav','sidebar-icon','sidebar-label','topbar-brand','topbar-actions','page-heading','page-actions','dashboard-breadcrumb','split-workspace-grid','dashboard-view']);
+for(const slug of ['dashboard','app-shell','dashboard-sidebar','topbar','page-header','split-workspace']){
+  const page=dashboardPages.find(p=>p.slug==='docs/'+slug);
+  assert(page,slug);
+  for(const ex of page.sections.flatMap(s=>s.examples).filter(e=>e.html)){
+    for(const match of ex.html.matchAll(/\bclass="([^"]+)"/g)){
+      assert(!match[1].split(/\s+/).some(cls=>legacyLayoutClasses.has(cls)),slug+' contains a redundant layout class');
+    }
+  }
+}
 // Widgets must not introduce a private fixed palette or duplicate card surfaces.
 for(const file of ['metrics','widget-grid','quick-actions','sparkline','progress-ring']){
   const source=await readFile(new URL('../../extensions/engines/dashboard/'+file+'.css',import.meta.url),'utf8');

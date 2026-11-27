@@ -103,7 +103,7 @@ if(document.querySelector('.app-shell,.split-workspace')){
     const shell = document.querySelector('#dashboard-demo-shell');
     const layout = mountAppShell(shell);
     const workspace = shell.querySelector('#dash-workspace');
-    const views = [...workspace.querySelectorAll(':scope > .dashboard-view')];
+    const views = [...workspace.querySelectorAll(':scope > :is(section[id],.dashboard-view)')];
     const links = [...shell.querySelectorAll('#dash-sidebar a[href]')];
     function showView(id, focus = false) {
       const view = views.find(v => v.id === id);

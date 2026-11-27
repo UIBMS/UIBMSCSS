@@ -2,11 +2,11 @@
 #admin-shell { border:0;border-radius:0; }
 #admin-main > section { max-inline-size:90rem;margin-inline:auto;min-inline-size:0; }
 #admin-main > section + section { margin-block-start:var(--space); }
-#admin-shell .page-heading { flex-basis:min(100%,24rem);gap:calc(var(--space) * .25); }
-#admin-shell > header .topbar-actions { gap:calc(var(--space)*.25); }
+#admin-shell .dashboard-page-header > div:first-child { flex-basis:min(100%,24rem);gap:calc(var(--space) * .25); }
+#admin-shell > header > div:last-child { gap:calc(var(--space)*.25); }
 #admin-shell > header button:not(.sidebar-toggle,.sidebar-drawer-toggle) { display:inline-flex;align-items:center;gap:calc(var(--space)*.25); }
 @container uibms-shell (width < 42rem) {
-  #admin-shell > header .topbar-actions button > span { display:none; }
+  #admin-shell > header > div:last-child button > span { display:none; }
 }
 .demo-brand { display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:calc(var(--space)*.4);color:var(--color-text);text-decoration:none;line-height:1.2; }
 .demo-brand img { grid-row:1/3; }
@@ -32,13 +32,13 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
 }
 #admin-main > section { gap:calc(var(--space) * 1.25); }
 #admin-main > section:target { outline:none; }
-#admin-shell .page-heading h1 { inline-size:fit-content; }
-#admin-shell .page-heading p { color:var(--color-text-muted); }
+#admin-shell .dashboard-page-header > div:first-child h1 { inline-size:fit-content; }
+#admin-shell .dashboard-page-header > div:first-child p { color:var(--color-text-muted); }
 #admin-main > section :is(h2,h3) { margin-block:0;font-size:clamp(1.05rem,1rem + .45vw,1.35rem); }
 #admin-main > section .card { padding:calc(var(--space) * 1.25); }
 #admin-shell .dashboard-page-header { margin-block-end:0; }
 
-#admin-shell :is(.page-actions,.quick-actions) > a {
+#admin-shell :is(.dashboard-page-header > div + div,.quick-actions) > a {
   display:inline-flex;
   align-items:center;
   min-block-size:var(--target-size);
@@ -50,7 +50,7 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
   font-weight:600;
   text-decoration:none;
 }
-#admin-shell .page-actions > a[href="#admin-create"] {
+#admin-shell .dashboard-page-header > div + div > a[href="#admin-create"] {
   background-color:color-mix(in oklab,var(--color-surface),var(--color-accent) 16%);
   color:var(--color-accent);
 }
@@ -73,7 +73,7 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
 #admin-shell meter::-webkit-meter-optimum-value { background:var(--color-accent);border-radius:var(--radius); }
 #admin-shell meter::-moz-meter-bar { background:var(--color-accent);border-radius:var(--radius); }
 
-#admin-shell .split-workspace-grid { align-items:start; }
+#admin-shell .split-workspace { align-items:start; }
 #admin-record-count { color:var(--color-text-muted);font-size:.875em; }
 #admin-project-rows button {
   inline-size:100%;
@@ -107,11 +107,11 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
 #admin-shell .stepper [aria-current="step"] { border-color:var(--color-accent); }
 
 @media (hover:hover) {
-  #admin-shell :is(.page-actions,.quick-actions) > a:hover,
+  #admin-shell :is(.dashboard-page-header > div + div,.quick-actions) > a:hover,
   #admin-project-rows button:hover {
     background-color:color-mix(in oklab,var(--color-surface),var(--color-accent) 12%);
   }
-  #admin-shell .page-actions > a[href="#admin-create"]:hover {
+  #admin-shell .dashboard-page-header > div + div > a[href="#admin-create"]:hover {
     background-color:color-mix(in oklab,var(--color-surface),var(--color-accent) 23%);
   }
 }
