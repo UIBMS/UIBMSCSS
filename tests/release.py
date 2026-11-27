@@ -79,7 +79,10 @@ with sync_playwright() as p:
     def resting_button_color(selector):
         return resolved_color(selector, 'color-mix(in oklab, var(--color-surface), var(--color-accent) 9%)')
     def set_attr(selector,key,val): page.locator(selector).first.evaluate('(e,p)=>e.setAttribute(p[0],p[1])',[key,val])
-    def hover(selector): page.locator(selector).hover();page.wait_for_timeout(320)
+    def hover(selector, expected_translate):
+        page.locator(selector).hover()
+        page.wait_for_function('([sel,expected])=>getComputedStyle(document.querySelector(sel)).translate===expected', arg=[selector,expected_translate],timeout=3000)
+
     def rect(selector): return page.locator(selector).bounding_box()
     for scoped in (False, True):
         for full in (False,True):
@@ -145,21 +148,21 @@ with sync_playwright() as p:
                 check(pre+'unknown typography inherits width',css('#unknown-typography','--reading-width'),'72ch')
                 check(pre+'default typography restores width',css('#default-typography','--reading-width'),'65ch')
                 check(pre+'profile duration',css('#button','transition-duration'),'0.22s' if full else '0.18s')
-                hover('#lift');check(pre+'explicit lift',css('#lift','translate'),'0px -4px')
+                hover('#lift','0px -4px');check(pre+'explicit lift',css('#lift','translate'),'0px -4px')
                 # Hit-test the translated button after the hover transition, not its old coordinates.
                 hit=rect('#lift');page.mouse.move(hit['x']+hit['width']/2,hit['y']+hit['height']/2)
                 page.mouse.down()
                 try:
                     check(pre+'press reaches intended button',page.locator('#lift').evaluate('e=>e.matches(":active")'))
-                    page.wait_for_timeout(330)
+                    page.wait_for_function('expected=>getComputedStyle(document.querySelector("#lift")).translate===expected',arg='0px 2px' if full else '0px 1px',timeout=3000)
                     check(pre+'independent default press',css('#lift','translate'),'0px 2px' if full else '0px 1px')
                 finally:page.mouse.up()
-                hover('#none-hover');check(pre+'individual none wins',css('#none-hover','translate'),'none')
-                hover('#none-default');check(pre+'context none',css('#none-default','translate'),'none')
-                hover('#none-explicit');check(pre+'explicit inside none',css('#none-explicit','translate'),'0px -4px')
+                hover('#none-hover','none');check(pre+'individual none wins',css('#none-hover','translate'),'none')
+                hover('#none-default','none');check(pre+'context none',css('#none-default','translate'),'none')
+                hover('#none-explicit','0px -4px');check(pre+'explicit inside none',css('#none-explicit','translate'),'0px -4px')
                 if page.evaluate('CSS.supports("animation-timeline", "view(block)") && CSS.supports("animation-timeline", "scroll(root block)") && CSS.supports("animation-range", "entry 0% cover 35%")'):
                     check(pre+'scroll animation',css('#scroll','animation-name'),('uibms-scoped-' if scoped else 'uibms-')+'scroll-reveal, '+('uibms-scoped-' if scoped else 'uibms-')+'scroll-progress')
-                page.emulate_media(reduced_motion='reduce');hover('#lift');check(pre+'reduced movement',css('#lift','translate'),'none');check(pre+'reduced transition',css('#lift','transition-duration'),'0s');check(pre+'reduced scroll',css('#scroll','animation-name'),'none')
+                page.emulate_media(reduced_motion='reduce');hover('#lift','none');check(pre+'reduced movement',css('#lift','translate'),'none');check(pre+'reduced transition',css('#lift','transition-duration'),'0s');check(pre+'reduced scroll',css('#scroll','animation-name'),'none')
                 if args.browser=='chromium':
                     page.emulate_media(forced_colors='active');check(pre+'forced-color material fallback',css('#glass','backdrop-filter'),'none')
                 page.emulate_media(reduced_motion='no-preference',forced_colors='none')

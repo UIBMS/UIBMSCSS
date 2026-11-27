@@ -93,7 +93,7 @@ try:
         page=context.new_page()
         page.set_default_timeout(10000)
         errors=[]
-        page.on("pageerror",lambda error:errors.append(str(error)))
+        page.on("pageerror",lambda error:(errors.append(str(error)),print("Browser page error:",error,flush=True)))
         page.goto(url,wait_until="load")
         page.wait_for_selector("html[data-site-ready]",state="attached")
         primary="#site-hero [data-site-primary]"
