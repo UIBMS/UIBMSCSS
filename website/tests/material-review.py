@@ -571,7 +571,7 @@ try:
         check(not filters.get_by_role("checkbox",name="Development",exact=True).is_checked(),"native chip reset")
         check(filters.get_by_role("checkbox",name="Archived",exact=True).is_disabled(),"disabled chip")
         chips=cp.locator("#demo-removable-skills")
-        check(chips.locator(":scope > li").evaluate_all("els=>els.length===3&&els.every(e=>!e.hasAttribute('class')&&getComputedStyle(e).display==='inline-flex')"),"native removable chips inherit contextual styles")
+        check(chips.locator(":scope > li").evaluate_all("els=>els.length===3&&els.every(e=>!e.hasAttribute('class')&&getComputedStyle(e).display==='flex')"),"native removable chips inherit contextual styles")
         cp.evaluate("""()=>document.querySelector('#demo-removable-skills').addEventListener('beforechipremove',e=>e.preventDefault(),{once:true})""")
         chips.get_by_role("button",name="Remove CSS",exact=True).click()
         check(chips.locator(':scope > li').count()==3,"chip removal cancelable")
