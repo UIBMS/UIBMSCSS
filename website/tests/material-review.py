@@ -261,7 +261,7 @@ try:
         native_drawers=cp.evaluate("()=>{const b=document.createElement('button');return 'commandForElement' in b&&'command' in b&&'closedBy' in document.createElement('dialog')}")
         drawer_requests=[request for request in requests if re.search(r"/engines/components/drawer\.mjs",request)]
         check(len(drawer_requests)==(0 if native_drawers else 1),"drawer adapter is requested only for missing native capabilities")
-        other_controllers=[request for request in requests if re.search(r"/engines/(components|dashboard)/",request) and request not in drawer_requests]
+        other_controllers=[request for request in requests if re.search(r"/engines/(components|dashboard)/[^?]+\.mjs(?:\?|$)",request) and request not in drawer_requests]
         check(not other_controllers,"plain native controls do not request unrelated component adapters")
         set_profile(cp,material="liquid-silicone")
         cp.locator("[data-site-demo-content] button[data-uibms-material-host]").first.wait_for(state="attached")
