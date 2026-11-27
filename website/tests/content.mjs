@@ -25,6 +25,16 @@ for(const p of dashboardPages){
     await readFile(new URL('../../extensions/engines/'+file,import.meta.url),'utf8');
   }
 }
+// Preferred widget examples must not require legacy descendant classes.
+for(const slug of ['dashboard','kpi-cards','statistic-cards','sparklines','progress-rings','widget-grid']){
+  const page=dashboardPages.find(p=>p.slug==='docs/'+slug);
+  assert(page,slug);
+  for(const example of page.sections.flatMap(s=>s.examples).filter(e=>e.html)){
+    for(const match of example.html.matchAll(/\bclass="([^"]+)"/g)){
+      assert(!match[1].split(/\s+/).some(cls=>['metric-label','metric-value','metric-context','metric-change','sparkline-plot','sparkline-values'].includes(cls)),slug+' contains a redundant widget child class');
+    }
+  }
+}
 // Widgets must not introduce a private fixed palette or duplicate card surfaces.
 for(const file of ['metrics','widget-grid','quick-actions','sparkline','progress-ring']){
   const source=await readFile(new URL('../../extensions/engines/dashboard/'+file+'.css',import.meta.url),'utf8');

@@ -6,40 +6,40 @@
     border:var(--border-width) solid var(--color-border);
     border-radius:calc(var(--radius) + var(--space) * .25);
     background-color:var(--color-surface);color:var(--color-text);
-  }
-  :where(.segmented[role="radiogroup"] > label) {
-    position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 auto;
-    min-inline-size:0;min-block-size:var(--target-size);max-inline-size:100%;
-    margin:0;padding:calc(var(--space) * .4) var(--space);text-align:center;overflow-wrap:anywhere;
-    border:var(--border-width) solid transparent;border-radius:var(--radius);cursor:pointer;
-    color:var(--color-text);background-color:transparent;font-weight:550;
-  }
-  /* The native input covers its label, preserving its full hit area, focus,
-     radio keyboard behaviour, checked state and form serialization. */
-  :where(.segmented[role="radiogroup"] > label > input[type="radio"]) {
-    position:absolute;inset:0;margin:0;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
-    max-inline-size:none;max-block-size:none;opacity:0;cursor:pointer;z-index:1;
-  }
-  :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:checked)) {
-    background-color:var(--color-surface-subtle);border-color:var(--color-border);font-weight:650;
-  }
-  @media (hover:hover) {
-    :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:not(:disabled)):hover) {
-      background-color:color-mix(in oklab,var(--color-surface) 94%,var(--color-text));
+    & > :where(label) {
+      position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 auto;
+      min-inline-size:0;min-block-size:var(--target-size);max-inline-size:100%;
+      margin:0;padding:calc(var(--space) * .4) var(--space);text-align:center;overflow-wrap:anywhere;
+      border:var(--border-width) solid transparent;border-radius:var(--radius);cursor:pointer;
+      color:var(--color-text);background-color:transparent;font-weight:550;
     }
-    :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:checked:not(:disabled)):hover) {
-      background-color:color-mix(in oklab,var(--color-surface-subtle) 94%,var(--color-text));
+    /* The native input covers its label, preserving its full hit area, focus,
+       radio keyboard behaviour, checked state and form serialization. */
+    & > :where(label > input[type="radio"]) {
+      position:absolute;inset:0;margin:0;inline-size:100%;block-size:100%;min-inline-size:0;min-block-size:0;
+      max-inline-size:none;max-block-size:none;opacity:0;cursor:pointer;z-index:1;
     }
-  }
-  :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:not(:disabled)):active) {
-    background-color:var(--color-loud,var(--color-accent));color:var(--color-on-loud,var(--color-on-accent));
-  }
-  :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:disabled)) {
-    cursor:not-allowed;color:var(--color-text-muted);
-  }
-  :where(.segmented[role="radiogroup"] > label > input[type="radio"]:disabled) { cursor:not-allowed; }
-  :where(.segmented[role="radiogroup"] > label:has(> input[type="radio"]:focus-visible)) {
-    outline:2px solid var(--color-focus);outline-offset:2px;
+    & > :where(label:has(> input[type="radio"]:checked)) {
+      background-color:var(--color-surface-subtle);border-color:var(--color-border);font-weight:650;
+    }
+    @media (hover:hover) {
+      & > :where(label:has(> input[type="radio"]:not(:disabled)):hover) {
+        background-color:color-mix(in oklab,var(--color-surface) 94%,var(--color-text));
+      }
+      & > :where(label:has(> input[type="radio"]:checked:not(:disabled)):hover) {
+        background-color:color-mix(in oklab,var(--color-surface-subtle) 94%,var(--color-text));
+      }
+    }
+    & > :where(label:has(> input[type="radio"]:not(:disabled)):active) {
+      background-color:var(--color-loud,var(--color-accent));color:var(--color-on-loud,var(--color-on-accent));
+    }
+    & > :where(label:has(> input[type="radio"]:disabled)) {
+      cursor:not-allowed;color:var(--color-text-muted);
+    }
+    & > :where(label > input[type="radio"]:disabled) { cursor:not-allowed; }
+    & > :where(label:has(> input[type="radio"]:focus-visible)) {
+      outline:2px solid var(--color-focus);outline-offset:2px;
+    }
   }
 }
 /* Only when the optional Material Engine is actually painting the selection. */

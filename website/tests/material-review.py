@@ -817,7 +817,8 @@ try:
         metrics=cp.locator("[data-site-demo-content] .metric-card")
         check(metrics.count()==3 and metrics.first.evaluate("e=>e.classList.contains('card')&&e.classList.contains('stack')"),"KPI reuses core card and stack")
         check(metrics.first.locator("dd > strong").inner_text()=="€48,250","KPI preserves application-formatted value")
-        change=metrics.first.locator(".metric-change")
+        check(metrics.first.locator("dd > strong").evaluate("e=>!e.hasAttribute('class')&&parseFloat(getComputedStyle(e).fontSize)>parseFloat(getComputedStyle(e.parentElement).fontSize)"),"native metric value is emphasized without child classes")
+        change=metrics.first.locator("dd > span[data-tone]")
         check(change.evaluate("""e=>{
           const probe=document.createElement('span');probe.style.color='var(--color-success)';e.append(probe);
           const ok=getComputedStyle(e).color===getComputedStyle(probe).color;probe.remove();return ok;
@@ -836,12 +837,13 @@ try:
         flat=cp.locator("#demo-flat-trend polyline")
         check(flat.evaluate("e=>Array.from(e.points).every(p=>p.y===20)"),"constant series produces a flat line")
         check(spark.locator("svg").get_attribute("aria-hidden")=="true" and spark.locator("data").count()==7,"decorative graph preserves accessible source values")
+        check(spark.locator("svg, details > ol").evaluate_all("els=>els.length===2&&els.every(e=>!e.hasAttribute('class'))"),"dynamic chart needs no plot or values classes")
         points=line.get_attribute("points")
         cp.evaluate("""async()=>{
           const revision=new URL(document.querySelector('script[src*="/assets/engines.js"]').src).search;
           const {mountSparkline}=await import(new URL('../../engines/dashboard/sparkline.mjs'+revision,location.href).href);
           const figure=document.querySelector('#demo-revenue-trend');
-          const datum=figure.querySelector('.sparkline-values data');datum.value='55';datum.textContent='55';
+          const datum=figure.querySelector('details > ol > li > data');datum.value='55';datum.textContent='55';
           mountSparkline(figure).refresh();
         }""")
         check(line.get_attribute("points")!=points,"sparkline refresh derives geometry from changed data")

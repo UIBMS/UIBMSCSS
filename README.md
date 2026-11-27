@@ -6,6 +6,7 @@ A modern native CSS framework for humans and AI coding agents, designed to make 
 
 - Modern CSS that is interoperable across Chromium (Blink), Safari (WebKit) and Firefox (Gecko).
 - Minimalistic, optimized engineering without artificial limits.
+- Semantic HTML-first components with minimal classes and contextual native CSS nesting; no custom HTML component tags.
 - Meaningful tokenization, not tokenization of every declaration.
 - Applicable WCAG 2.2 Level AAA accessibility requirements targeted by default, while preserving developer freedom.
 - Intuitive, discoverable and predictable development for humans and AI coding agents.

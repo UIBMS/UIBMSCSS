@@ -1,7 +1,10 @@
 /* Compose with native controls and an existing .cluster or .stack layout. */
 @layer features {
-  :where(.quick-actions > :is(a[href],button)) {
-    overflow-wrap:anywhere;white-space:normal;max-inline-size:100%;
+  :where(.quick-actions) {
+    & > :where(a[href],button) {
+      overflow-wrap:anywhere;white-space:normal;max-inline-size:100%;
+    }
+
+    &:where(.stack) > :where(a[href],button) { text-align:start; }
   }
-  :where(.quick-actions.stack > :is(a[href],button)) { text-align:start; }
 }

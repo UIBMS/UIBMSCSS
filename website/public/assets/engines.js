@@ -133,9 +133,11 @@ if(document.querySelector('.app-shell,.split-workspace')){
   }
 }
 // The widget adapters are generic: the native data/progress values are the source.
-if(document.querySelector('figure.sparkline > svg.sparkline-plot:empty')){
+const dynamicSparklines=[...document.querySelectorAll('figure.sparkline')].filter(figure=>
+  (figure.querySelector(':scope > svg.sparkline-plot')??figure.querySelector(':scope > svg'))?.matches(':empty'));
+if(dynamicSparklines.length){
   const {mountSparkline}=await import('../engines/dashboard/sparkline.mjs'+revision);
-  for(const figure of document.querySelectorAll('figure.sparkline:has(> svg.sparkline-plot:empty)'))mountSparkline(figure);
+  for(const figure of dynamicSparklines)mountSparkline(figure);
 }
 if(document.querySelector('.progress-ring > progress')){
   const {mountProgressRing}=await import('../engines/dashboard/progress-ring.mjs'+revision);
