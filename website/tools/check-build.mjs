@@ -6,6 +6,7 @@ import path from 'node:path';
 import {allPages as pages} from '../src/content/catalog.mjs';
 import {basePath} from '../src/lib/config.mjs';
 import {expressiveStyles} from '../src/lib/expressive-palettes.mjs';
+import {assertDocumentReferences,assertPreferredMarkup,requiredStyles} from '../tests/semantic.mjs';
 const root=path.resolve(fileURLToPath(new URL('../dist/',import.meta.url)));
 const base=basePath(process.env.SITE_BASE||'/');
 const manifest=JSON.parse(await readFile(path.join(root,'framework/manifest.json'),'utf8'));
@@ -21,7 +22,10 @@ for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdow
 for(const file of ['app-shell.css','app-shell.mjs','sidebar.css','topbar.css','page-header.css','split-workspace.css','split-workspace.mjs','metrics.css','widget-grid.css','quick-actions.css','sparkline.css','sparkline.mjs','progress-ring.css','progress-ring.mjs','README.md'])await stat(path.join(root,'engines/dashboard',file));
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
+ assertDocumentReferences(html,p.slug);
  if(p.standalone){
+  assertPreferredMarkup(html,p.slug);
+  for(const stylesheet of requiredStyles(html))assert(html.includes('/engines/'+stylesheet+'?v='),p.slug+' missing component stylesheet '+stylesheet);
   assert(!/<iframe\b/i.test(html),p.slug+' must not embed an iframe');
   assert(!html.includes('id="site-doc-nav"')&&!html.includes('id="site-header"'),p.slug+' must not include the documentation shell');
   assert(html.includes('/assets/'+p.entry+'.js?v=')&&html.includes('/assets/'+p.entry+'.css?v='),p.slug+' missing application assets');
@@ -32,9 +36,6 @@ for(const p of pages){
  assert(html.includes(`${base}framework/uibms.full.min.css`),p.slug);
  assert(!html.includes('{{base}}'),p.slug);
  if(process.env.SITE_PUBLIC==='1')assert(!html.includes('noindex, nofollow'),p.slug);
- const ids=[...html.matchAll(/<[^>]+\sid="([^"]+)"/g)].map(m=>m[1]);
- assert.equal(new Set(ids).size,ids.length,`Duplicate id ${p.slug}`);
- for(const m of html.matchAll(/<[^>]+\shref="#([^"#]+)"/g))assert(ids.includes(m[1]),`Missing fragment ${p.slug}#${m[1]}`);
  // Confirm linked local files/directories exist at the configured project base.
  for(const m of html.matchAll(/\b(?:href|src)="([^"]*)"/g)){
   const value=m[1];if(!value.startsWith(base)||value.startsWith('//'))continue;

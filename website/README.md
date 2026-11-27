@@ -1,8 +1,8 @@
 # UIBMS CSS documentation website
 
-WEB-001 through WEB-004 — implementation and local review, 25 November 2026.
+Development documentation and standalone application demos. WEB-001 through WEB-004 record the initial implementation and local review, 25 November 2026.
 
-The website is a separate Astro static project. Add this `website/` directory to the existing UIBMSCSS checkout beside `src/`, `dist/`, `docs/`, and `tools/`. Do not replace those directories. No files outside `website/` are modified by this package. The root GitHub Actions workflow builds and deploys the static documentation after GitHub Pages is configured to use GitHub Actions. Public documentation describes the development candidate; publishing it is not an official framework release.
+The website is a separate Astro static project inside the UIBMSCSS repository, beside `src/`, `dist/`, `docs/`, and `tools/`. The website consumes the generated distributions and optional engines; its build does not rewrite the maintained framework source or distributions. The root GitHub Actions workflow builds and deploys the static documentation after GitHub Pages is configured to use GitHub Actions. Public documentation describes the development candidate; publishing it is not an official framework release.
 
 ## Run locally
 
@@ -33,17 +33,20 @@ On Bash, use `SITE_BASE=/UIBMSCSS/ npm run build`. The base defaults to `/`. The
 
 ## Structure and consistency
 
-- `src/content/catalog.mjs`: single structured content/navigation catalog, 9 documentation groups and 68 routes (64 reference pages, homepage, examples, laboratory, downloads). Each section provides trusted authored descriptions and code; rendered HTML examples are derived from the same source string.
-- `src/lib/config.mjs`: six contextual profiles and their values; the header is the only sitewide settings UI. The `default` palette alias is documented; the menu presents Natural as its equivalent canonical choice.
+- `src/content/catalog.mjs`: single structured content/navigation catalogue; reference routes, group counts, examples, navigation and demo links are derived from this data rather than maintained as fixed numbers. Each section provides trusted authored descriptions and code; rendered HTML examples are derived from the same source string.
+- `src/content/demos.mjs`: registry and native markup for independent full-page application demos. Each declares its optional stylesheets and its own entry point; no documentation shell or iframe is used.
+- `src/lib/config.mjs`: shared profile definitions (seven core contextual profiles plus experimental material), their values and defaults. The documentation header and standalone app appearance controls share this configuration and saved appearance preferences. The `default` palette alias is documented; the menu presents Natural as its equivalent canonical choice.
 - `src/lib/code.mjs`: a single read-only code renderer with genuine Prism.js 1.30.0 build-time highlighting, line numbers, exact-source copying, and no editor or client-side highlighting runtime. The Prism token classes belong to the website, not UIBMS CSS.
 - `src/lib/render.mjs`: shared page-shell and documentation rendering functions used by Astro and the offline review helper. The generated route and layout under `src/pages/` and `src/layouts/` are the Astro entry points. This uses a structured JS catalog instead of MDX and native browser JavaScript instead of TypeScript to avoid extra tooling and keep static review reproducible. No additional frontend/UI framework is used.
 - `public/assets/site.css`: website-only chrome, documentation layout, and Prism token styling. Uses the existing CSS tokens, website IDs and `data-site-*` hooks; it does not extend the public framework. The provisional Bordeaux wordmark and demonstration media are website assets, not an approved new brand identity.
-- `public/assets/site.js`: centralized appearance persistence, collapsible/active navigation, search, copy, and demonstration event wiring. The only editable controls are functional native UI demos and the appearance settings; code is always read-only.
+- `public/assets/site.js`: documentation behavior only: appearance persistence, navigation, search, copy, and local demo wiring. Code is always read-only.
+- `public/assets/engines.js` and `appearance-engines.js`: load optional browser adapters only for relevant markup, missing native capabilities or explicit material opt-in. The core framework needs no JavaScript.
+- `public/assets/admin-demo.css` and `admin-demo.js`: application-specific presentation and behavior for the full-page admin demo, using framework tokens, native control state and reusable optional components.
 - `tools/stage-assets.mjs`: checks every CSS file against the repository distribution manifest before copying it into generated `public/framework/`. The source of truth is `../dist/`. The staging script never writes to the framework. Generated copies are ignored by Git.
 - `tools/preview.mjs`: optional offline review generator using the exact same catalog, shared render functions, Prism library and distribution assets. It is not an Astro build and is not a release mechanism. Run `npm run preview:offline`, then `python -m http.server 8080 --bind 127.0.0.1 --directory preview-output`.
-- `tests/content.mjs`: content and API consistency assertions. `tests/review.py`: local HTTP browser/link tests, with an explicitly marked inline fixture mode for restricted environments. `review/`: verification records and limitations.
+- `tests/content.mjs` and `tests/semantic.mjs`: content, preferred native markup, optional asset coverage, local control relationships and displayed-source consistency assertions. `tools/check-build.mjs` also validates actual generated routes. `tests/review.py`: local HTTP browser/link tests, with an explicitly marked inline fixture mode for restricted environments. `review/`: verification records and limitations.
 
-The public API remains exactly the existing 13 framework classes, six configuration and seven individual-effect attributes, plus the scoped adoption marker. Website-only styling is narrowly scoped to the documentation interface. Native examples use the actual full bundle, and scoped adoption is demonstrated in a separate iframe. Explicit local configuration examples do not change the sitewide appearance.
+The core API inventory is read from the generated stylesheets and manifest. Optional component classes and the experimental material setting remain separate from the core. Prefer native elements, meaningful component/layout classes, contextual low-specificity CSS nesting and independent appearance attributes. Legacy child classes remain compatible but should not be required by new examples. Website-only styling stays inside the documentation or the independent app. Native examples use the actual full bundle. The only iframe is the isolated scoped-adoption comparison, not a standalone application. Explicit local configuration examples do not change the sitewide appearance.
 
 ## Verification commands
 
@@ -61,7 +64,7 @@ For GitHub project path testing, generate with `SITE_BASE=/UIBMSCSS/` and pass `
 
 ## Release gate
 
-The offline environment could not resolve npm or GitHub through shell networking, and Chromium policy blocked localhost HTTP navigation. The site was generated with installed genuine Prism.js 1.30.0 and Node.js, not Astro itself. Astro installation, lockfile generation, production build and real-origin browser persistence/clipboard/asset serving remain unverified. Review browser checks used actual generated HTML/CSS/JS embedded into Chromium, with mocked storage/clipboard. Firefox/Safari, assistive technology, and full accessibility testing remain pending. See `review/SUMMARY.md`. The repository owner has authorized public documentation deployment. No official versioned framework release or comprehensive browser/accessibility certification is implied.
+During the initial offline review, the environment could not resolve npm or GitHub through shell networking, and Chromium policy blocked localhost HTTP navigation. The site was generated with installed genuine Prism.js 1.30.0 and Node.js, not Astro itself. Astro installation, lockfile generation, production build and real-origin browser persistence/clipboard/asset serving remain unverified. Review browser checks used actual generated HTML/CSS/JS embedded into Chromium, with mocked storage/clipboard. Firefox/Safari, assistive technology, and full accessibility testing remain pending. See `review/SUMMARY.md`. The repository owner has authorized public documentation deployment. No official versioned framework release or comprehensive browser/accessibility certification is implied. During the contextual-refactoring branch, repeat the complete content, distribution, build and browser checks before merging or deploying; the previous review is historical evidence, not verification of the new source.
 
 ## GitHub Pages
 

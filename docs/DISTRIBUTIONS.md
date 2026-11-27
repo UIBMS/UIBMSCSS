@@ -10,7 +10,7 @@ Choose one principal stylesheet, not both global and scoped variants. No consume
 <link rel="stylesheet" href="dist/uibms.min.css">
 ```
 
-The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `.css` version. The standard stylesheet includes the natural palette, native HTML styling, 13 classes, density/shape/typography configurations and initial signature effects. Seven alternative palettes and three alternative effects profiles are optional.
+The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `.css` version. Full adds palette and motion-profile extensions, not the separate optional component, dashboard or experimental material/form engines. The standard stylesheet includes the natural palette, native HTML styling, 13 classes, density/shape/typography configurations and initial signature effects. Seven alternative palettes and three alternative effects profiles are optional.
 
 ```html
 <link rel="stylesheet" href="dist/uibms.min.css">
@@ -18,6 +18,10 @@ The comprehensive equivalent is `dist/uibms.full.min.css`. Each has a readable `
 <link rel="stylesheet" href="dist/extensions/profiles/effects-fluid.min.css">
 <section data-palette="ocean" data-effects="fluid">...</section>
 ```
+
+## Optional components and engines
+
+Copy only the required files from `extensions/engines/`. For example, a native segmented radio group needs only `components/segmented.css` in addition to the chosen framework bundle; a drawer needs its stylesheet and a JavaScript compatibility adapter only when native invoker or backdrop behavior is unavailable. Use native semantic children within meaningful component classes and keep JavaScript for necessary behavior. The optional engine files are not among the generated global/scoped extension variants; review their selectors before using them on a host page with scoped core adoption. See [component usage](../extensions/engines/components/README.md) and [dashboard usage](../extensions/engines/dashboard/README.md).
 
 ## Scoped adoption
 
@@ -42,7 +46,7 @@ npm --prefix tools install
 npm --prefix tools run build
 ```
 
-The two direct parser dependencies are pinned. The packager inlines the explicit local source imports, creates the standard/full and scoped variants, and conservatively compacts formatting without value rewriting or a CSS transpiler. There are eight principal files and 40 optional extension variants (global/scoped, readable/minified for each of ten extensions). `dist/manifest.json` reports exact byte counts, gzip sizes and SHA-256 digests. Generated CSS must not be edited by hand. CSS comments in source are not emitted in bundles, other than a generated-file banner. Use the same tool versions to reproduce the output.
+The two direct parser dependencies are pinned. The packager inlines the explicit local source imports, creates the standard/full and scoped variants, and conservatively compacts formatting without value rewriting or a CSS transpiler. There are eight principal files and 40 optional extension variants (global/scoped, readable/minified for each of ten extensions). `dist/manifest.json` reports exact byte counts, gzip sizes and SHA-256 digests. Generated CSS must not be edited by hand. During the contextual refactoring, checked-in distributions describe the previous candidate until a fresh build regenerates them and the manifest together. CSS comments in source are not emitted in bundles, other than a generated-file banner. Use the same tool versions to reproduce the output.
 
 ## Release verification
 

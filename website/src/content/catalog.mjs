@@ -7,6 +7,13 @@ import {demos} from './demos.mjs';
 const section=(title,body,examples=[],extra={})=>({title,body,examples,...extra});
 const example=(label,html,extra={})=>({label,html,code:html,lang:'html',...extra});
 const snippet=(label,code,lang='html')=>({label,code,lang});
+// Shared consumer example: native dialog commands first, optional fallback only.
+const drawerFallback=`const invoker = document.createElement('button');
+if (!('commandForElement' in invoker && 'command' in invoker &&
+      'closedBy' in document.createElement('dialog'))) {
+  const {mountDrawers} = await import('./engines/components/drawer.mjs');
+  mountDrawers(document);
+}`;
 const page=(slug,title,description,sections,extra={})=>({slug,title,description,sections:sections.map(section=>({
   ...section,examples:section.examples.map(item=>item.code===undefined?{...item,code:item.html}:item)
 })),...extra});
@@ -18,7 +25,7 @@ const docs=[];
 const group=(title,pages)=>{docs.push({title,pages});return pages;};
 group('Getting started',[
  doc('introduction','Introduction','A native CSS foundation for humans and AI coding agents.',[
-  section('HTML first','<p>UIBMS CSS styles meaningful HTML without requiring a component library, a JavaScript runtime, mandatory wrappers or a utility vocabulary. Use classes for reusable layout and styling patterns, data attributes for configuration and individual effects, and ordinary CSS for customization.</p>',[example('A native interface',`<article class="card stack">\n  <h2>Project workspace</h2>\n  <p>Use semantic HTML and a few meaningful classes.</p>\n  <div class="cluster">\n    <button type="button">Continue</button>\n    <a href="#html-first">Learn more</a>\n  </div>\n</article>`)]),
+  section('HTML first','<p>UIBMS CSS styles meaningful HTML without requiring a component library, a JavaScript runtime, mandatory wrappers or a utility vocabulary. Use classes for meaningful reusable layout and styling patterns, native elements for component content, and contextual CSS nesting for internal styling. Use data attributes for configuration and individual effects, not as replacements for styling classes. No custom HTML component tags are required.</p>',[example('A native interface',`<article class="card stack">\n  <h2>Project workspace</h2>\n  <p>Use semantic HTML and a few meaningful classes.</p>\n  <div class="cluster">\n    <button type="button">Continue</button>\n    <a href="#html-first">Learn more</a>\n  </div>\n</article>`)]),
   section('Design principles','<p>Minimal by default; native browser semantics; context-aware tokens; predictable cascade; progressively enhanced interactions; developer freedom. UIBMS CSS targets applicable WCAG 2.2 AAA requirements but is not a certification of a site.</p>'),
   section('Development status',`<p>${notice} The project is licensed under MIT. No official release version has been selected. The initial CSS candidate has recorded Chromium verification. The documentation site has a separate deployment regression suite; Firefox/WebKit and comprehensive accessibility verification remain open.</p>`)
  ]),
@@ -41,6 +48,24 @@ group('Getting started',[
 group('Foundation',[
  doc('architecture','Architecture','Responsibility-based native CSS architecture.',[
   section('Separation of concerns',table(['Mechanism','Responsibility'],[['Semantic HTML','Content and native behavior'],['Classes','Reusable layout and styling'],['Contextual data attributes','Inherited configuration'],['Individual data attributes','Explicit visual effects'],['Custom properties','Meaningful design values'],['Pseudo-classes','Native interaction states']])),
+  section('Contextual component markup','<p>First use the native element defaults. Add a meaningful component class only when a distinct reusable pattern is needed, and keep compatible surface or layout classes when they provide a real benefit. Use native direct children and contextual nesting instead of child-specific classes. Scope selectors narrowly and keep specificity low. The following project-summary class is application CSS, not a new UIBMS class.</p>',[
+    snippet('Native component structure',`<article class="card project-summary">
+  <header><h2>Projects</h2></header>
+  <p>12 active projects</p>
+  <footer><small>Updated today</small></footer>
+</article>`),
+    snippet('Contextual application CSS',`:where(.project-summary) {
+  display: grid;
+  gap: var(--space);
+
+  & > :where(header) > :where(h2) {
+    margin: 0;
+  }
+  & > :where(footer) {
+    color: var(--color-text-muted);
+  }
+}`,'css')
+  ]),
   section('Source structure','<p>The maintained source is in src/. The distribution packager assembles native imports, preserving the CSS cascade. Generated bundles are not edited manually.</p>',[snippet('Source entry excerpt','@layer reset, defaults, configuration, features, preferences;\n@layer defaults.contexts;\n@import url("reset/reset.css");\n@import url("tokens/colors.css");','css')]),
   section('Scoped adoption','<p>The optional scope marker is data-uibms (presence only). Scoping limits selector matching, not every possible interaction with the host cascade.</p>')
  ]),
@@ -270,8 +295,8 @@ group('Advanced',[
   section('Author responsibilities','<p>Provide accessible names, meaningful error text, alternative text and captions, keyboard navigation, predictable focus management, readable content and sufficient contrast after custom overrides. Test with assistive technologies and real devices. The release candidate has not achieved comprehensive AAA certification.</p>')
  ]),
  doc('compatibility','Browser compatibility','Modern CSS, progressive enhancement and open browser release gates.',[
-  section('Required and optional capabilities',table(['Capability','Notes'],[['Cascade layers, :where(), custom properties, nesting and light-dark()','Core uses modern native CSS. Exact supported browser version policy is not finalized.'],['@scope','Required for scoped adoption; no global fallback.'],['backdrop-filter','Optional; opaque material fallback.'],['@starting-style / discrete display and overlay transitions','Native opening/closing fallback.'],['Scroll/view timelines and animation-range','Feature-detected; static fallback.'],['Native dialog / popover','Browser native behavior required.']])),
-  section('Verification status','<p>Chromium 144.0.7559.96 passed 556 targeted candidate checks. Safari/WebKit and Firefox/Gecko runs, actual device and assistive technology testing, exact version policy and comprehensive accessibility remain pending. Do not infer production certification from a single-engine test.</p>')
+  section('Required and optional capabilities',table(['Capability','Notes'],[['Cascade layers, :where(), custom properties, nesting and light-dark()','Core uses modern native CSS. Exact supported browser version policy is not finalized.'],['@scope','Required for scoped adoption; no global fallback.'],['backdrop-filter','Optional; opaque material fallback.'],['@starting-style / discrete display and overlay transitions','Native opening/closing fallback.'],['Scroll/view timelines and animation-range','Feature-detected; static fallback.'],['Native dialog / popover','Browser native behavior required.'],['Native dialog commands / closedby','Native invokers and backdrop dismissal where supported; optional compatibility adapter for drawers.']])),
+  section('Verification status','<p>Chromium 144.0.7559.96 passed 556 targeted checks on the initial generated candidate, before the contextual refactoring. The current development source requires a fresh distribution build and integration run. Safari/WebKit and Firefox/Gecko runs, actual device and assistive technology testing, exact version policy and comprehensive accessibility remain pending. Do not infer production certification from a single-engine test.</p>')
  ])
 ]);
 group('Development',[
@@ -285,7 +310,7 @@ group('Development',[
  ]),
  doc('testing','Testing','Reproducible release-candidate checks and explicit release gates.',[
   section('Browser checks','<p>From the repository root, install Playwright and browser binaries. The existing harness tests actual generated CSS and selected native interaction, configuration, scoping, preference and reflow cases.</p>',[snippet('Terminal','python -m pip install playwright\npython -m playwright install chromium firefox webkit\npython tests/release.py --browser chromium\npython tests/release.py --browser firefox\npython tests/release.py --browser webkit','bash')]),
-  section('Recorded verification','<p>556 targeted Chromium checks passed on the initial candidate. This is not a claim that all earlier tests were rerun verbatim. Cross-engine, clean installation and full accessibility verification are still release gates.</p>')
+  section('Recorded verification','<p>556 targeted Chromium checks passed on the initial generated candidate, before contextual refactoring. Targeted refactoring checks do not replace the complete release suite. Cross-engine, clean installation and full accessibility verification are still release gates.</p>')
  ]),
  doc('performance','Performance','Measured distribution sizes and limited benchmark evidence.',[
   section('File sizes','<p>Actual byte and gzip counts come from the unchanged release manifest. No runtime JS is required by the CSS framework. Website interactions and documentation tooling are separate.</p>',[],{manifest:'main'}),
@@ -311,7 +336,7 @@ group('Optional engines',[
 
 group('Components',[
  doc('components','Components overview','Independently loadable HTML-first components.',[
-  section('Optional architecture','<p>Components are structural patterns, not new appearance settings. Load only the stylesheets you need. The core bundles are unchanged. Native HTML owns state wherever possible; optional controllers handle interaction and positioning where necessary.</p>',[snippet('Load individually','<link rel="stylesheet" href="engines/components/tabs.css">\n<link rel="stylesheet" href="engines/components/segmented.css">')]),
+  section('Optional architecture','<p>Components are separately loadable structural patterns, not new appearance settings. Prefer a meaningful root class and native internal elements; use contextual CSS rather than requiring dedicated classes on each child. Load only the stylesheets you need. These optional components are not part of the core bundles. Native HTML owns state wherever possible; optional controllers handle interaction and positioning where necessary. Existing legacy child hooks remain supported but are not the preferred markup.</p>',[snippet('Load individually','<link rel="stylesheet" href="engines/components/tabs.css">\n<link rel="stylesheet" href="engines/components/segmented.css">')]),
   section('Component catalogue',table(['Component','Implementation'],[['<a href="{{base}}docs/tabs/">Tabs</a>','Native buttons, ARIA panels, optional keyboard controller.'],['<a href="{{base}}docs/segmented/">Segmented controls</a>','Native radio inputs; CSS only.'],['<a href="{{base}}docs/dropdown/">Dropdown menus</a>','Native popover with optional keyboard and viewport positioning controller.'],['<a href="{{base}}docs/tooltip/">Tooltips</a>','Native described-by relationship, delayed pointer/focus feedback.'],['<a href="{{base}}docs/drawer/">Drawers</a>','Docked native modal dialog, optional invoker fallback.'],['<a href="{{base}}docs/toast/">Toast notifications</a>','Independent notification queue and live-region announcements.'],["<a href=\"{{base}}docs/stepper/\">Stepper</a>","Ordered process navigation and optional panel switching."],["<a href=\"{{base}}docs/pagination/\">Pagination</a>","Native page links and bounded client-side page controls."],["<a href=\"{{base}}docs/chips/\">Tags and chips</a>","Descriptive labels, native selectable filters and removable items."],["<a href=\"{{base}}docs/command-palette/\">Command palette</a>","Native modal search and keyboard-driven application actions."]])),
   section('Loading strategy','<p>All ten initial components are implemented as development candidates. Each has a separate stylesheet and only necessary optional scripts. Core distributions remain independent of this library.</p>')
  ]),
@@ -339,7 +364,10 @@ group('Components',[
   section('Lifecycle','<p>mountTooltips(root, {delay:300, leaveDelay:160}) configures pointer delays in milliseconds. Use one tooltip per trigger. Call refresh() after markup changes and destroy() to release timers and listeners. Requires native Popover API support.</p>')
  ]),
  doc('drawer','Drawers','Responsive docked native dialogs and bottom sheets.',[
-  section('Loading','<p>Load drawer.css. Native commandfor and command="show-modal" open the dialog in supporting browsers. The small optional mountDrawers controller supports older native dialog implementations lacking invoker commands. Forms with method="dialog" close natively. No custom focus trap or overlay manager is required. Use closedby="any" to opt in to native backdrop dismissal; the optional adapter supplies compatibility where native support is missing.</p>',[snippet('Optional stylesheet and fallback',"<link rel=\"stylesheet\" href=\"engines/components/drawer.css\">\n<script type=\"module\">\n  import {mountDrawers} from './engines/components/drawer.mjs';\n  mountDrawers(document);\n</script>")]),
+  section('Loading','<p>Load drawer.css. Native commandfor and command="show-modal" open the dialog in supporting browsers. The small optional mountDrawers controller supports older native dialog implementations lacking invoker commands or closedby support. Import it only when the necessary native capability is missing. Forms with method="dialog" close natively. No custom focus trap or overlay manager is required. Use closedby="any" to opt in to native backdrop dismissal; the optional adapter supplies compatibility where native support is missing.</p>',[snippet('Native stylesheet and optional fallback',`<link rel="stylesheet" href="engines/components/drawer.css">
+<script type="module">
+${drawerFallback.split('\n').map(line=>'  '+line).join('\n')}
+</script>`)]),
   section('End drawer','<p>The structural drawer class docks a native modal dialog at the logical end of the viewport. Escape and the close button dismiss it; native modal focus handling prevents interaction with the background. Width defaults to 28rem and cannot exceed the viewport. The form values survive reopening. No demo data is transmitted.</p>',[example('Workspace settings drawer',"<div class=\"cluster\">\n  <button type=\"button\" commandfor=\"settings-drawer\" command=\"show-modal\" aria-haspopup=\"dialog\">Open settings</button>\n  <dialog class=\"drawer\" id=\"settings-drawer\" aria-labelledby=\"settings-drawer-title\">\n    <form method=\"dialog\" class=\"stack\">\n      <header class=\"cluster\">\n        <h3 id=\"settings-drawer-title\">Workspace settings</h3>\n        <button type=\"submit\" value=\"close\" autofocus aria-label=\"Close settings\">×</button>\n      </header>\n      <label>Workspace name <input name=\"name\" value=\"UIBMS\"></label>\n      <label><input type=\"checkbox\" name=\"updates\" checked> Receive updates</label>\n      <label>Notes <textarea name=\"notes\" rows=\"4\"></textarea></label>\n      <button type=\"submit\" value=\"save\">Done</button>\n    </form>\n  </dialog>\n</div>")]),
   section('Start drawer','<p>Add the drawer-start structural class for logical start placement. Logical sides follow the document direction.</p>',[example('Navigation drawer',"<div class=\"cluster\">\n  <button type=\"button\" commandfor=\"navigation-drawer\" command=\"show-modal\" aria-haspopup=\"dialog\">Open navigation</button>\n  <dialog class=\"drawer drawer-start\" id=\"navigation-drawer\" aria-labelledby=\"navigation-drawer-title\">\n    <div class=\"stack\">\n      <header class=\"cluster\">\n        <h3 id=\"navigation-drawer-title\">Navigation</h3>\n        <form method=\"dialog\"><button type=\"submit\" autofocus aria-label=\"Close navigation\">×</button></form>\n      </header>\n      <nav class=\"stack\" aria-label=\"Component navigation\">\n        <a href=\"{{base}}docs/components/\">Components overview</a>\n        <a href=\"{{base}}docs/tabs/\">Tabs</a>\n        <a href=\"{{base}}docs/dropdown/\">Dropdown menus</a>\n      </nav>\n    </div>\n  </dialog>\n</div>")]),
   section('Bottom sheet','<p>Add drawer-bottom for a content-sized bottom sheet. Long content scrolls within the native dialog. Customize --drawer-width or --drawer-bottom-max as needed.</p>',[example('Project filter sheet',"<div class=\"cluster\">\n  <button type=\"button\" commandfor=\"filter-drawer\" command=\"show-modal\" aria-haspopup=\"dialog\">Open filters</button>\n  <dialog class=\"drawer drawer-bottom\" id=\"filter-drawer\" aria-labelledby=\"filter-drawer-title\">\n    <form method=\"dialog\" class=\"stack\">\n      <header class=\"cluster\">\n        <h3 id=\"filter-drawer-title\">Filter projects</h3>\n        <button type=\"submit\" value=\"close\" autofocus aria-label=\"Close filters\">×</button>\n      </header>\n      <label>Search <input type=\"search\" name=\"search\" placeholder=\"Project name\"></label>\n      <label><input type=\"checkbox\" name=\"active\" checked> Active projects</label>\n      <button type=\"submit\" value=\"apply\">Apply filters</button>\n    </form>\n  </dialog>\n</div>")]),
@@ -425,7 +453,7 @@ group('Dashboard',[
         "scripts": [
           {
             "lang": "javascript",
-            "code": "import {mountDrawers} from './engines/components/drawer.mjs';\nmountDrawers(document);\nimport {mountProgressRing} from './engines/dashboard/progress-ring.mjs';\nimport {mountAppShell} from './engines/dashboard/app-shell.mjs';\nimport {mountSplitWorkspace} from './engines/dashboard/split-workspace.mjs';\nimport {mountDropdowns} from './engines/components/dropdown.mjs';\nimport {mountCommandPalette} from './engines/components/command.mjs';\nmountDropdowns(document);\nconst shell = document.querySelector('#dashboard-demo-shell');\nconst layout = mountAppShell(shell);\nconst workspace = shell.querySelector('#dash-workspace');\nconst views = [...workspace.querySelectorAll(':scope > .dashboard-view')];\nconst links = [...shell.querySelectorAll('#dash-sidebar a[href]')];\nfunction showView(id, focus = false) {\n  const view = views.find(v => v.id === id);\n  if (!view) return false;\n  for (const v of views) v.hidden = v !== view;\n  for (const link of links) {\n    if (link.getAttribute('href') === '#' + id) link.setAttribute('aria-current', 'page');\n    else link.removeAttribute('aria-current');\n  }\n  if (layout.mode === 'compact') layout.setExpanded(false);\n  workspace.scrollTop = 0;\n  if (focus) view.focus({preventScroll:true});\n  return true;\n}\nshell.addEventListener('click', event => {\n  const link = event.target.closest('a[href^=\"#\"]');\n  if (!link || !shell.contains(link)) return;\n  const id = link.getAttribute('href').slice(1);\n  if (views.some(v => v.id === id)) {\n    event.preventDefault();\n    showView(id, true);\n  }\n});\nshowView('dash-overview');\nmountSplitWorkspace(shell.querySelector('.split-workspace'));\nmountCommandPalette(shell.querySelector('#dash-commands'));\nfor (const ring of shell.querySelectorAll('.progress-ring')) mountProgressRing(ring);"
+            "code": drawerFallback + "\nimport {mountProgressRing} from './engines/dashboard/progress-ring.mjs';\nimport {mountAppShell} from './engines/dashboard/app-shell.mjs';\nimport {mountSplitWorkspace} from './engines/dashboard/split-workspace.mjs';\nimport {mountDropdowns} from './engines/components/dropdown.mjs';\nimport {mountCommandPalette} from './engines/components/command.mjs';\nmountDropdowns(document);\nconst shell = document.querySelector('#dashboard-demo-shell');\nconst layout = mountAppShell(shell);\nconst workspace = shell.querySelector('#dash-workspace');\nconst views = [...workspace.querySelectorAll(':scope > section[id]')];\nconst links = [...shell.querySelectorAll('#dash-sidebar a[href]')];\nfunction showView(id, focus = false) {\n  const view = views.find(v => v.id === id);\n  if (!view) return false;\n  for (const v of views) v.hidden = v !== view;\n  for (const link of links) {\n    if (link.getAttribute('href') === '#' + id) link.setAttribute('aria-current', 'page');\n    else link.removeAttribute('aria-current');\n  }\n  if (layout.mode === 'compact') layout.setExpanded(false);\n  workspace.scrollTop = 0;\n  if (focus) view.focus({preventScroll:true});\n  return true;\n}\nshell.addEventListener('click', event => {\n  const link = event.target.closest('a[href^=\"#\"]');\n  if (!link || !shell.contains(link) || event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;\n  const id = link.getAttribute('href').slice(1);\n  if (views.some(v => v.id === id)) {\n    event.preventDefault();\n    showView(id, true);\n  }\n});\nshowView('dash-overview');\nmountSplitWorkspace(shell.querySelector('.split-workspace'));\nmountCommandPalette(shell.querySelector('#dash-commands'));\nfor (const ring of shell.querySelectorAll('.progress-ring')) mountProgressRing(ring);"
           }
         ]
       }
@@ -471,7 +499,7 @@ group('Dashboard',[
         "scripts": [
           {
             "lang": "javascript",
-            "code": "import {mountDrawers} from './engines/components/drawer.mjs';\nmountDrawers(document);\nimport {mountAppShell} from './engines/dashboard/app-shell.mjs';\nfor (const el of document.querySelectorAll('.app-shell')) mountAppShell(el);"
+            "code": drawerFallback + "\nimport {mountAppShell} from './engines/dashboard/app-shell.mjs';\nfor (const el of document.querySelectorAll('.app-shell')) mountAppShell(el);"
           }
         ]
       }
@@ -656,11 +684,14 @@ group('Dashboard',[
       },
       {
         "label": "Mount the adapter",
-        "code": "import {mountSparkline} from './engines/dashboard/sparkline.mjs';\nfor (const el of document.querySelectorAll('figure.sparkline')) mountSparkline(el);",
+        "code": "import {mountSparkline} from './engines/dashboard/sparkline.mjs';\nfor (const el of document.querySelectorAll('figure.sparkline:has(> svg:empty)')) mountSparkline(el);",
         "lang": "javascript"
       }
     ]
   },
+  section('Static trend without JavaScript','<p>For a fixed series, author or generate SVG geometry before the page is delivered. Keep the actual data in native HTML and use a descriptive caption. Only dynamic, initially empty plots need the optional browser adapter.</p>',[
+    example('Static trend (HTML and SVG only)',staticSparkline('Daily observations',[12,16,14,21,24],'Five observations, rising overall.'))
+  ]),
   {
     "title": "Data-driven trend",
     "body": "<p>The geometry is computed from the finite numeric series; empty and constant series are supported. Negative and positive values use the same normalization. The mini-chart uses each series range, so slopes across differently scaled series are not directly comparable. The chart is decorative; the caption and actual observations convey the information.</p>",
@@ -673,7 +704,7 @@ group('Dashboard',[
         "scripts": [
           {
             "lang": "javascript",
-            "code": "import {mountSparkline} from './engines/dashboard/sparkline.mjs';\nfor (const el of document.querySelectorAll('figure.sparkline')) mountSparkline(el);"
+            "code": "import {mountSparkline} from './engines/dashboard/sparkline.mjs';\nfor (const el of document.querySelectorAll('figure.sparkline:has(> svg:empty)')) mountSparkline(el);"
           }
         ]
       }
@@ -681,7 +712,7 @@ group('Dashboard',[
   },
   {
     "title": "Controller and tokens",
-    "body": "<p>Fixed charts can use a native SVG polyline with a caption and a list of values. For values that change in the browser, mountSparkline(figure) expects an empty direct SVG and native data[value] elements in details > ol > li. refresh() recalculates geometry after changing the data; destroy() removes generated marks and restores SVG attributes. sparklinePoints(values,{width,height,padding}) is an independent pure helper. Override --dashboard-sparkline-height, --dashboard-sparkline-ink or --dashboard-chart-stroke as needed. No data is fetched.</p>",
+    "body": "<p>Fixed charts use a native SVG polyline with a caption and a list of values; they do not need the browser chart adapter. For values that change in the browser, mountSparkline(figure) expects an empty direct SVG and native data[value] elements in details > ol > li. refresh() recalculates geometry after changing the data; destroy() removes generated marks and restores SVG attributes. sparklinePoints(values,{width,height,padding}) is an independent pure helper. Override --dashboard-sparkline-height, --dashboard-sparkline-ink or --dashboard-chart-stroke as needed. No data is fetched.</p>",
     "examples": []
   }
 ],{stylesheets:["dashboard/metrics.css","dashboard/widget-grid.css","dashboard/sparkline.css"]}),

@@ -22,7 +22,7 @@ The six initial implementation checkpoints have produced a development release c
 
 Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate or [dist/uibms.scoped.min.css](dist/uibms.scoped.min.css) for a marked adoption region. Full variants and 40 independently loadable extension variants are in [dist/](dist/). Exact distribution sizes and hashes are recorded in [the generated manifest](dist/manifest.json). See [distribution usage and build instructions](docs/DISTRIBUTIONS.md).
 
-The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation, licensing and version approval remain release gates. No public release or full WCAG certification is claimed.
+The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation and version approval remain release gates. The repository is licensed under MIT. No public release or full WCAG certification is claimed.
 
 During the CLS-004 contextual refactoring, core source modules on the development branch may be ahead of the checked-in release candidate distributions. The generated `dist/` files and manifest retain the prior candidate until the distribution regeneration and full regression checkpoint. Do not treat the previous release test results as certification of the refactored source.
 
@@ -32,8 +32,8 @@ See [Architecture and foundational principles](docs/ARCHITECTURE.md).
 
 ## Optional physical interfaces
 
-[Liquid Silicone Material Engine and Form Engine](extensions/engines/README.md) are opt-in, unbundled development candidates. The core CSS distributions remain unchanged. Native controls stay authoritative; optional pickers and elastic contour rendering are separate. Full browser and accessibility verification is pending.
+[Liquid Silicone Material Engine and Form Engine](extensions/engines/README.md) are opt-in, unbundled development candidates. These engines and the optional component/dashboard stylesheets are not bundled in the core distributions. Native controls stay authoritative; optional pickers and elastic contour rendering are separate. Full browser and accessibility verification is pending.
 
 ## Standalone demos
 
-[Open the Demos catalogue](https://uibms.github.io/UIBMSCSS/demos/) for full-page applications. The first is the [Administration dashboard](https://uibms.github.io/UIBMSCSS/demos/admin/), a local sample project workspace. Demos share the framework and appearance profiles, not the documentation shell. New applications are registered in `website/src/content/demos.mjs`; the catalogue, static routes and build checks consume that registry. Sample application state is separate from the reusable engines.
+[Open the Demos catalogue](https://uibms.github.io/UIBMSCSS/demos/) for full-page applications. The first is the [Administration dashboard](https://uibms.github.io/UIBMSCSS/demos/admin/), a local sample project workspace. Demos share the framework and appearance profiles, not the documentation shell. New applications are registered in `website/src/content/demos.mjs`; the catalogue, static routes and build checks consume that registry. Sample application state is separate from the reusable engines. Preferred examples use native semantic children, meaningful component classes and contextual nesting; legacy child hooks are supported for existing integrations, not required for new ones.
