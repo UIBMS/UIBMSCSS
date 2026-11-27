@@ -1,12 +1,9 @@
 @layer defaults {
 
-    :where(img, video) {
+    :where(img, video, audio, iframe, embed, object, canvas, svg) {
         max-inline-size: 100%;
-        block-size: auto;
-    }
 
-    :where(audio, iframe, embed, object, canvas, svg) {
-        max-inline-size: 100%;
+        &:where(img, video) { block-size: auto; }
     }
 
     :where(figure) {

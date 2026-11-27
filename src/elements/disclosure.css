@@ -13,17 +13,17 @@
         padding: calc(var(--space) * 0.5);
         border-radius: var(--radius);
         font-weight: 600;
-    }
 
-    @media (hover: hover) {
-        :where(summary:hover) {
-            background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 7%);
+        @media (hover: hover) {
+            &:where(:hover) {
+                background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 7%);
+            }
         }
-    }
 
-    :where(details[open] > summary) {
-        border-block-end: var(--border-width) solid var(--color-border);
-        color: var(--color-accent);
+        &:where(details[open] > *) {
+            border-block-end: var(--border-width) solid var(--color-border);
+            color: var(--color-accent);
+        }
     }
 
     @supports (interpolate-size: allow-keywords) and selector(::details-content) {

@@ -35,6 +35,7 @@ FIXTURE = '''<section id="app" {marker} data-theme="dark" data-palette="ocean" d
   <button id="named"><span aria-hidden="true">+</span><span class="visually-hidden">Add item</span></button><a id="skip" class="visually-hidden" href="#heading">Skip to heading</a>
   <form id="form"><label for="email">Email</label><input id="email" type="email" required><button type="submit" id="submit">Save</button></form>
   <label id="check-label"><input type="checkbox" id="check"> Checkbox</label><input id="disabled" disabled><input id="readonly" readonly value="read only"><input id="hidden" hidden>
+  <input id="aria-invalid" aria-invalid="true" value="Invalid"><input id="aria-disabled" aria-disabled="true"><label>File <input type="file" id="file-input"></label><label>Category <select id="native-select"><option value="a">Alpha</option><option value="b">Beta</option></select></label><a id="disabled-link" href="#heading" aria-disabled="true">Unavailable</a>
   <details id="details"><summary>More information</summary><p>Content</p></details>
   <button id="open-dialog" onclick="document.getElementById('dialog').showModal()">Dialog</button><dialog id="dialog" class="stack" data-entrance="fade rise" data-exit="fade rise" aria-label="Dialog"><p>Dialog content</p><form method="dialog"><button>Close</button></form></dialog>
   <button id="open-popover" popovertarget="popover">Popover</button><div id="popover" popover class="stack" data-entrance="fade rise" data-exit="fade rise">Popover content<button popovertarget="popover" popovertargetaction="hide">Close</button></div>
@@ -93,6 +94,13 @@ with sync_playwright() as p:
                 check(pre+'native hidden',css('#hidden','display'),'none')
                 check(pre+'native disabled',page.locator('#disabled').is_disabled())
                 check(pre+'native readonly',page.locator('#readonly').evaluate('e=>e.readOnly'))
+                check(pre+'ARIA invalid retains non-colour signal',css('#aria-invalid','border-top-style'),'dashed')
+                check(pre+'ARIA disabled appearance',css('#aria-disabled','cursor'),'not-allowed')
+                check(pre+'ARIA disabled link',css('#disabled-link','text-decoration-style'),'dashed')
+                if page.evaluate('CSS.supports("selector(::file-selector-button)")'):
+                    check(pre+'native file button retains target',page.locator('#file-input').evaluate('e=>parseFloat(getComputedStyle(e,"::file-selector-button").minBlockSize)>=44'))
+                page.locator('#native-select').select_option('b')
+                check(pre+'native select value',page.locator('#native-select').input_value(),'b')
                 check(pre+'closed dialog',css('#dialog','display'),'none')
                 check(pre+'closed popover',css('#popover','display'),'none')
                 check(pre+'layout conflict',css('#conflict','display'),'block')

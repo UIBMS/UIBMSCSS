@@ -5,21 +5,21 @@
         font-size: 0.9375em;
     }
 
-    :where(code, kbd) {
+    :where(code, kbd, pre) {
         background-color: var(--color-surface-subtle);
         color: var(--color-text);
+    }
+
+    :where(code, kbd) {
         padding: 0.125em 0.25em;
         border-radius: calc(var(--radius) * 0.5);
     }
 
-    :where(kbd) {
+    :where(kbd, pre) {
         border: var(--border-width) solid var(--color-border);
     }
 
     :where(pre) {
-        background-color: var(--color-surface-subtle);
-        color: var(--color-text);
-        border: var(--border-width) solid var(--color-border);
         border-radius: var(--radius);
         padding: var(--space);
         margin-block: var(--space);
@@ -29,7 +29,7 @@
         overflow-wrap: normal;
     }
 
-    :where(pre code, pre samp) {
+    :where(pre :is(code, samp)) {
         font-size: inherit;
         background-color: transparent;
         color: inherit;

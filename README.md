@@ -24,6 +24,8 @@ Use [dist/uibms.min.css](dist/uibms.min.css) for the standard global candidate o
 
 The release-candidate suite passed 556 targeted Chromium checks on the generated stylesheets. Safari/WebKit and Firefox/Gecko verification, comprehensive accessibility and device testing, clean dependency installation, licensing and version approval remain release gates. No public release or full WCAG certification is claimed.
 
+During the CLS-004 contextual refactoring, core source modules on the development branch may be ahead of the checked-in release candidate distributions. The generated `dist/` files and manifest retain the prior candidate until the distribution regeneration and full regression checkpoint. Do not treat the previous release test results as certification of the refactored source.
+
 Explore the [native HTML](examples/native-html.html), [reusable classes](examples/classes.html), [configuration](examples/profiles.html), [signature experience](examples/effects.html) and [scoped adoption](examples/scoped.html) showcases from a local checkout.
 
 See [Architecture and foundational principles](docs/ARCHITECTURE.md).
