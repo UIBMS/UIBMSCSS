@@ -646,6 +646,13 @@ try:
         cp.goto(url+"docs/icons/",wait_until="load")
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
         set_profile(cp,material="default",effects="default",density="default",typography="default")
+        icon_catalogue=cp.locator("#uibms-icon-catalogue")
+        check(icon_catalogue.locator("a[data-icon][download]").count()==64,"catalogue exposes all 64 downloadable SVGs")
+        if cp.evaluate("()=>CSS.supports('mask: linear-gradient(black, black)')"):
+            search_icon=icon_catalogue.get_by_role("link",name="Search",exact=True)
+            check(search_icon.evaluate("e=>getComputedStyle(e,'::before').maskImage.includes('svg/search.svg')"),"icon mask follows the requested SVG")
+            check(search_icon.evaluate("e=>{const icon=getComputedStyle(e,'::before');return icon.backgroundColor===getComputedStyle(e).color && parseFloat(icon.inlineSize)>parseFloat(getComputedStyle(e).fontSize)}"),"icon uses inherited ink and the authored size override")
+            check(search_icon.evaluate("e=>{const original=e.dataset.icon;e.dataset.icon='unknown-icon';const content=getComputedStyle(e,'::before').content;e.dataset.icon=original;return content==='none'}"),"unknown icon names leave the native link available")
         disclosure=cp.locator("#menu-icon-example")
         summary=disclosure.locator("summary")
         line=summary.locator("svg > line").first

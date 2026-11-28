@@ -62,7 +62,7 @@ for(const p of pages){
       for(const script of [ex,...(ex.scripts||[])])if(script.lang==='javascript')assertPreferredScript(script.code,label);
       if(ex.html){for(const stylesheet of requiredStyles(ex.html))styles.add(stylesheet);liveExamples++;assert.equal(ex.html,ex.code,`Source differs from rendered markup ${p.slug}`);
         for(const match of ex.html.matchAll(/\bclass="([^"]+)"/g))for(const cls of match[1].split(/\s+/)){assert(allowedClasses.has(cls)||(p.slug==='docs/icons'&&cls==='menu-icon')||(p.group==='Components'&&componentClasses.has(cls))||(p.group==='Dashboard'&&(dashboardClasses.has(cls)||componentClasses.has(cls))),`Unknown demo class ${cls}`);checks++;}
-        for(const match of ex.html.matchAll(/\b(data-[\w-]+)(?:=|[\s>])/g)){assert(attrs.has(match[1])||(p.slug==='docs/icons'&&match[1]==='data-morph')||((p.slug==='docs/chips'||p.group==='Dashboard')&&match[1]==='data-tone'),`Unknown demo attribute ${match[1]}`);checks++;}
+        for(const match of ex.html.matchAll(/\b(data-[\w-]+)(?:=|[\s>])/g)){assert(attrs.has(match[1])||(p.slug==='docs/icons'&&['data-icon','data-morph'].includes(match[1]))||((p.slug==='docs/chips'||p.group==='Dashboard')&&match[1]==='data-tone'),`Unknown demo attribute ${match[1]}`);checks++;}
         assert(!/\bcontenteditable\b|<script\b/i.test(ex.html));
       }
     }
