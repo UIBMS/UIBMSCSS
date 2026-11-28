@@ -17,6 +17,7 @@ export function mountSpacingPreview(root) {
     const summary = exact.closest('fieldset').querySelector('output');
     const initial = {amount: Number(exact.defaultValue), unit: unit.value};
     const values = Array(edge ? 4 : 1).fill(initial);
+    let sliderUnit;
     for (const option of unit.options) {
       if (option.value && globalThis.CSS && !CSS.supports('padding-top', '1' + option.value)) {
         option.disabled = true;
@@ -32,7 +33,10 @@ export function mountSpacingPreview(root) {
       const mixed = mixedUnits || allSides() && values.some(value => value.amount !== current.amount);
       unit.value = mixedUnits ? '' : current.unit;
       range.disabled = exact.disabled = mixedUnits;
-      range.max = sliderMaximum(current.unit, current.amount);
+      // Keep an expanded range stable while the thumb moves back toward zero.
+      const currentMaximum = sliderUnit === current.unit ? Number(range.max) : 0;
+      range.max = sliderMaximum(current.unit, Math.max(current.amount, currentMaximum));
+      sliderUnit = current.unit;
       range.step = current.unit === 'px' ? '1' : '0.1';
       range.value = current.amount;
       range.setAttribute('aria-valuetext', mixed ? 'Mixed side values' : range.value + ' ' + current.unit);
@@ -78,6 +82,7 @@ export function mountSpacingPreview(root) {
     update();
     return () => {
       values.fill(initial);
+      sliderUnit = undefined;
       update();
     };
   });
