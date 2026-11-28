@@ -991,9 +991,16 @@ try:
         appearance=cp.locator("#site-appearance > summary")
         appearance.click()
         cp.locator("#appearance-theme").select_option("dark")
-        check(cp.locator("html").get_attribute("data-theme")=="dark","advanced table applies the shared theme")
+        cp.locator("#appearance-palette").select_option("ocean")
+        check(cp.locator("html").get_attribute("data-theme")=="dark" and
+              cp.locator("html").get_attribute("data-palette")=="ocean","advanced table applies the shared theme and palette")
+        with cp.expect_response(lambda response: "/engines/material.mjs" in response.url) as material_response:
+            cp.locator("#appearance-material").select_option("liquid-silicone")
+        check(material_response.value.ok,"optional material loads from the shared appearance switch")
+        cp.locator("#appearance-material").select_option("default")
         cp.goto(url+"docs/tables/",wait_until="load")
-        check(cp.locator("html").get_attribute("data-theme")=="dark","appearance is shared between the demo and documentation")
+        check(cp.locator("html").get_attribute("data-theme")=="dark" and
+              cp.locator("html").get_attribute("data-palette")=="ocean","appearance is shared between the demo and documentation")
         cp.get_by_role("link",name="Try the advanced table demo").click()
         controls.wait_for(state="visible")
         appearance.click()
