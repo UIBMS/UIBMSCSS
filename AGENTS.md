@@ -12,3 +12,5 @@ Read [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) before changing any framework,
 - Add meaningful regression tests for new relationships (including density, shape, typography, direction, scoped adoption and narrow containers). Run the repository validation workflow and inspect every job before merging. Distinguish confirmed checks from unverified devices or accessibility claims.
 
 For detailed engineering contracts and rationale, see [GEO-002](docs/ARCHITECTURE.md#geo-002--mathematically-derived-contextual-geometry).
+
+For SVG icons, scroll-driven wordmarks, and the generator in `tools/icons`, also read [the icon engine instructions](extensions/engines/icons/AGENTS.md).
