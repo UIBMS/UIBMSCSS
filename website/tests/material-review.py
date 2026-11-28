@@ -235,6 +235,7 @@ try:
         page.evaluate("(saved)=>localStorage.setItem('uibmscss:appearance:v1',JSON.stringify(saved))",saved)
         for slug in index:
             page.set_viewport_size({"width":390,"height":812})
+            print("Checking reference route:",slug or "home",flush=True)
             page.goto(url+(slug+"/" if slug else ""),wait_until="load")
             page.wait_for_selector("html[data-site-ready][data-site-engines-ready]",state="attached")
             frame(page)
@@ -1097,7 +1098,7 @@ try:
         showcase=showcase_context.new_page()
         showcase.set_default_timeout(15000)
         showcase_errors=[]
-        showcase.on("pageerror",lambda error:showcase_errors.append(str(error)))
+        showcase.on("pageerror",lambda error:(showcase_errors.append(str(error)),print("Showcase page error:",error,flush=True)))
         showcase.goto(url+"components/",wait_until="load")
         showcase.wait_for_selector("html[data-site-ready][data-site-engines-ready]",state="attached")
         expected=sum(
@@ -1125,6 +1126,32 @@ try:
         showcase.set_viewport_size({"width":390,"height":844})
         frame(showcase)
         check_width(showcase,"component showcase mobile")
+        # Optical rendering is viewport-windowed, but the complete DOM and
+        # native controls remain available. Verify enhancement and release
+        # without replacing controls or forcing every surface to be painted.
+        showcase.evaluate("()=>{document.activeElement?.blur();window.scrollTo(0,0)}")
+        set_profile(showcase,material="liquid-silicone")
+        painted="e=>e.hasAttribute('data-uibms-material-host')||e.hasAttribute('data-uibms-material-native')"
+        first=showcase.locator("#open-native-dialog")
+        second=showcase.locator("#stepper-next")
+        showcase.wait_for_function("()=>document.querySelector('#site-header').hasAttribute('data-uibms-material-native')")
+        check(not first.evaluate(painted) and not second.evaluate(painted),"far showcase previews remain native before scrolling")
+        first.scroll_into_view_if_needed()
+        showcase.wait_for_function("sel=>{const e=document.querySelector(sel);return e.hasAttribute('data-uibms-material-host')||e.hasAttribute('data-uibms-material-native')}",arg="#open-native-dialog")
+        check(first.evaluate(painted),"near showcase preview receives material")
+        first.click()
+        showcase.locator("#native-dialog").wait_for(state="visible")
+        showcase.locator("#native-dialog").get_by_role("button",name="Close",exact=True).click()
+        showcase.locator("#native-dialog").wait_for(state="hidden")
+        showcase.evaluate("()=>document.activeElement?.blur()")
+        second.scroll_into_view_if_needed()
+        showcase.wait_for_function("()=>{const e=document.querySelector('#stepper-next');return e.hasAttribute('data-uibms-material-host')||e.hasAttribute('data-uibms-material-native')}")
+        showcase.wait_for_function("()=>!document.querySelector('#open-native-dialog').matches('[data-uibms-material-host],[data-uibms-material-native]')")
+        check(second.evaluate(painted) and not first.evaluate(painted),"viewport material follows scrolling and releases distant surfaces")
+        check(showcase.locator("[data-site-demo-content]").count()==expected,"windowing preserves every authored example")
+        set_profile(showcase,material="default")
+        showcase.wait_for_function("()=>!document.querySelector('#stepper-next').matches('[data-uibms-material-host],[data-uibms-material-native]')")
+        check(not second.evaluate(painted),"global material reset releases decoration")
         check(not showcase_errors,"no showcase runtime errors",showcase_errors)
         showcase_context.close()
         check(not errors,"no component runtime errors",errors)
