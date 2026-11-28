@@ -995,6 +995,7 @@ try:
 
         launcher=masthead.get_by_role("button",name="Menu",exact=True)
         drawer=cp.get_by_role("dialog",name="Journal menu")
+        check(launcher.is_hidden(),"the desktop header does not show the mobile launcher")
         cp.set_viewport_size({"width":320,"height":844})
         cp.locator("html").evaluate("element=>element.dir='rtl'")
         set_profile(cp,density="spacious",typography="editorial")
@@ -1013,7 +1014,7 @@ try:
         drawer.wait_for(state="hidden")
         check(nav.is_visible(),"resizing restores desktop blog navigation and closes the modal")
 
-        blog_static_context=browser.new_context(java_script_enabled=False,viewport={"width":320,"height":844})
+        blog_static_context=browser.new_context(java_script_enabled=False,viewport={"width":320,"height":844},reduced_motion="reduce")
         blog_static=blog_static_context.new_page()
         blog_static.goto(url+"demos/blog/",wait_until="load")
         blog_static.locator("#journal-header summary").filter(has_text="Topics").click()
