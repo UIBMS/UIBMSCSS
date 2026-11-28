@@ -18,8 +18,15 @@
   min-inline-size: 0;
 }
 
-#table-demo :where(label > input:not([type="checkbox"]), label > select) {
-  display: block;
+#table-controls > :where(div:first-child) {
+  align-items: end;
+}
+
+#table-controls > :where(div:first-child) > label {
+  display: grid;
+}
+
+#table-controls :where(label > input:not([type="checkbox"]), label > select) {
   max-inline-size: 100%;
 }
 
@@ -29,6 +36,7 @@
 
 #table-demo :where(th > button) {
   text-align: start;
+  white-space: nowrap;
 }
 
 #table-controls[hidden] {
