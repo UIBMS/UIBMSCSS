@@ -23,6 +23,12 @@ for(const file of ['app-shell.css','app-shell.mjs','sidebar.css','topbar.css','p
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
  assertDocumentReferences(html,p.slug);
+ if(p.componentShowcase){
+  const examples=p.sections.flatMap(s=>s.topics.flatMap(t=>t.examples));
+  assert.equal((html.match(/<section data-site-example>/g)||[]).length,examples.length,p.slug+' live examples');
+  assert(!/<iframe\b/i.test(html),p.slug+' must not embed iframes');
+  for(const name of requiredStyles(html))assert(html.includes('/engines/'+name+'?v='),p.slug+' missing '+name);
+ }
  if(p.standalone){
   assertPreferredMarkup(html,p.slug);
   for(const stylesheet of requiredStyles(html))assert(html.includes('/engines/'+stylesheet+'?v='),p.slug+' missing component stylesheet '+stylesheet);

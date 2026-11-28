@@ -46,7 +46,7 @@
 [data-site-section] > h2 { margin-block-start:0; }
 [data-site-section] > p { max-inline-size:80ch; }
 [data-site-example] { margin-block:calc(var(--space)*1.5); min-inline-size:0; }
-[data-site-example] > h3 { margin-block-start:0; }
+[data-site-example] > :is(h3,h4) { margin-block-start:0; }
 [data-site-preview] {
   border:var(--border-width) solid var(--color-border);
   border-block-end:0;
