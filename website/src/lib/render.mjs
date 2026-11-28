@@ -8,7 +8,7 @@ import { profiles, initialAttributes, esc, jsonScript, href, asset, basePath, ti
 import { codeBlock } from './code.mjs';
 import { framework } from './contract.mjs';
 import { renderAdminDemo } from '../content/demos.mjs';
-const demoRenderers={'admin-demo':renderAdminDemo,'auth-demo':renderAuthDemo,'table-demo':base=>renderTableDemo(base,appearance(true)),'blog-demo':base=>renderBlogDemo(base,appearance(true))};
+const demoRenderers={'admin-demo':renderAdminDemo,'auth-demo':renderAuthDemo,'table-demo':base=>renderTableDemo(base,appearance(true)),'blog-demo':(base,page)=>renderBlogDemo(base,appearance(true),page)};
 
 const frameworkAsset=(base,name)=>asset(base,'framework/'+name)+'?v='+manifest.files[name].sha256;
 const revision=encodeURIComponent(process.env.GITHUB_SHA||manifest.files['uibms.full.min.css'].sha256);

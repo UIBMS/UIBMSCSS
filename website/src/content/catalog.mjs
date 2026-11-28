@@ -5,6 +5,7 @@ import {profiles,configDetails,titleCase} from '../lib/config.mjs';
 import {framework} from '../lib/contract.mjs';
 import {expressivePalettes,oklch,paletteRoles} from '../lib/expressive-palettes.mjs';
 import {demos} from './demos.mjs';
+import {journalPages} from './blog-demo.mjs';
 // A single authoritative navigation/content catalog. Trusted authored HTML only.
 const section=(title,body,examples=[],extra={})=>({title,body,examples,...extra});
 const example=(label,html,extra={})=>({label,html,code:html,lang:'html',...extra});
@@ -936,5 +937,5 @@ export const componentShowcase=page('components','Components','Explore every liv
   stylesheets:[...new Set(showcaseSections.flatMap(section=>section.topics.flatMap(({source})=>source.stylesheets||[])))]
 });
 export const pages=[home,...docPages,componentShowcase,showcase,demoGallery,laboratory,downloads];
-export const allPages=[...pages,...demos];
+export const allPages=[...pages,...demos,...journalPages];
 export const topLinks=[['Documentation','docs/introduction'],['Components','components'],['Examples','examples'],['Demos','demos'],['Laboratory','laboratory'],['Downloads','downloads']];
