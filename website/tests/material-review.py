@@ -661,6 +661,22 @@ try:
         summary.press("Space")
         check(line.evaluate("e=>getComputedStyle(e).transitionDuration==='0s' && Math.abs(new DOMMatrixReadOnly(getComputedStyle(e).transform).b+.7071)<.01"),"reduced motion preserves the open icon pose")
         cp.emulate_media(reduced_motion="no-preference")
+        wordmark=cp.locator("#wordmark-scroll-example")
+        if cp.evaluate("()=>CSS.supports('animation-timeline: view(block)')&&CSS.supports('animation-range: contain 0% contain 100%')"):
+            cp.set_viewport_size({"width":390,"height":760})
+            pose = '''async (e,progress)=>{
+              const rect=e.getBoundingClientRect();
+              scrollTo({top:scrollY+rect.top+progress*(rect.height-innerHeight),behavior:'instant'});
+              await new Promise(r=>requestAnimationFrame(()=>requestAnimationFrame(r)));
+              const style=getComputedStyle(e,'::before');
+              return [style.maskPosition,style.animationName];
+            }'''
+            start,middle,end,rewind=[wordmark.evaluate(pose,p) for p in (-.05,.5,1.05,-.05)]
+            check(start[0]=="0% 0%" and end[0]=="100% 100%" and start==rewind and middle[0] not in (start[0],end[0]),"wordmark tracks scroll and reverses to its first SVG frame")
+            cp.emulate_media(reduced_motion="reduce")
+            check(wordmark.evaluate(pose,1)[1]=="none","wordmark keeps its starting frame with reduced motion")
+            cp.emulate_media(reduced_motion="no-preference")
+        check(wordmark.locator("svg").count()==0,"wordmark artwork comes from the CSS mask")
         # The documentation's three responsive menus use native modal drawers.
         cp.goto(url+"docs/grid/",wait_until="load")
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
