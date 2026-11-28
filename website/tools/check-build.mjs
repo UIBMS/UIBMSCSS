@@ -15,6 +15,7 @@ for(const [name,v] of Object.entries(manifest.files)){
  assert.equal(b.length,v.bytes,name);assert.equal(createHash('sha256').update(b).digest('hex'),v.sha256,name);
 }
 await stat(path.join(root,'framework/LICENSE'));
+await stat(path.join(root,'engines/icons/menu.css'));
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.css'),'utf8'),expressiveStyles());
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.scoped.css'),'utf8'),expressiveStyles(true));
 for(const file of ['material.mjs','media-deformation.mjs','forms.mjs','liquid-silicone.css','forms.css','landscape.svg'])await stat(path.join(root,'engines',file));

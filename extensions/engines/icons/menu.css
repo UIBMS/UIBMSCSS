@@ -1,0 +1,45 @@
+/* The two authored strokes share the center of the 24-unit viewBox.
+   Native disclosure and drawer state select their pose. */
+@layer features {
+  :where(svg.menu-icon) {
+    --_uibms-menu-separation: 4px;
+    --_uibms-menu-offset: var(--_uibms-menu-separation);
+    --_uibms-menu-angle: 0deg;
+    vertical-align: middle;
+
+    &:where(:not([width], [height])) {
+      inline-size: 1em;
+      block-size: 1em;
+      inline-size: 1lh;
+      block-size: 1lh;
+    }
+
+    & > :where(line) {
+      --_uibms-menu-direction: 1;
+      transform-box: view-box;
+      transform-origin: center;
+      transform: translateY(calc(var(--_uibms-menu-offset) * var(--_uibms-menu-direction)))
+                 rotate(calc(var(--_uibms-menu-angle) * var(--_uibms-menu-direction)));
+
+      &:where(:first-child) { --_uibms-menu-direction: -1; }
+
+      @media (prefers-reduced-motion: no-preference) {
+        transition: transform var(--signature-time, var(--motion-duration, 180ms))
+                              var(--motion-easing, ease);
+      }
+    }
+  }
+
+  :where(details[open] > summary > svg.menu-icon,
+         dialog.drawer[open] form[method="dialog"] > button > svg.menu-icon) {
+    --_uibms-menu-offset: 0px;
+    --_uibms-menu-angle: 45deg;
+  }
+
+  /* The modal close control enters the top layer with the drawer. */
+  @starting-style {
+    :where(dialog.drawer[open] form[method="dialog"] > button > svg.menu-icon > line) {
+      transform: translateY(calc(var(--_uibms-menu-separation) * var(--_uibms-menu-direction)));
+    }
+  }
+}

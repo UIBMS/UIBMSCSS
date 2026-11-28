@@ -10,6 +10,7 @@ export const legacyChildClasses=new Set([
   'stepper-panel','command-results'
 ]);
 const optionalStyles={
+  'icons/menu.css':['menu-icon'],
   'components/tabs.css':['tabs'],
   'components/segmented.css':['segmented'],
   'components/dropdown.css':['dropdown'],
