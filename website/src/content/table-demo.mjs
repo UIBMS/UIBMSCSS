@@ -45,14 +45,15 @@ export const tableDemo = {
   title: 'Advanced table',
   description: 'Search a CRM contact list, choose columns, and filter or sort by record fields.',
   kind: 'application', standalone: true, sections: [], documentation: 'docs/tables',
-  entry: 'table-demo', stylesheets: [],
+  entry: 'table-demo', stylesheets: ['icons/icons.css', 'liquid-silicone.css', 'forms.css'], appearance: true,
   features: ['Column selection', 'Search and field filters', 'Keyboard-accessible sorting']
 };
 
-export function renderTableDemo(base) {
+export function renderTableDemo(base, appearance) {
   return `<header id="table-demo-header" class="cluster">
   <a href="${href(base, 'demos')}"><img src="${asset(base, 'assets/brand.svg')}" alt="" width="32" height="32"> UIBMS CSS</a>
   <a href="${href(base, 'demos')}">All demos</a>
+  ${appearance}
 </header>
 <main id="table-demo" class="stack">
   <header>

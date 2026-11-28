@@ -9,23 +9,13 @@
 #site-top,#site-actions { display:flex; flex-wrap:wrap; align-items:center; gap:calc(var(--space)*.35); }
 #site-top { margin-inline:auto; }
 #site-actions #site-menu-toggle,#site-compact-navigation,#site-nav-toggle,#site-toc-toggle { display:none; }
-#site-top a,#site-github,#site-actions button,#site-appearance summary { min-block-size:var(--target-size); display:inline-flex; align-items:center; justify-content:center; color:var(--color-text); background:transparent; border:var(--border-width) solid transparent; border-radius:var(--radius); text-decoration:none; font-weight:550; font-size:.9em; white-space:nowrap; }
+#site-top a,#site-github,#site-actions button { min-block-size:var(--target-size); display:inline-flex; align-items:center; justify-content:center; color:var(--color-text); background:transparent; border:var(--border-width) solid transparent; border-radius:var(--radius); text-decoration:none; font-weight:550; font-size:.9em; white-space:nowrap; }
 /* Buttons use the framework's optical spacing; only non-button navigation
    surfaces own a local link/summary layout. */
-#site-top a,#site-github,#site-appearance summary { gap:calc(var(--space)*.4);padding:calc(var(--space)*.35) calc(var(--space)*.6); }
-:is(#site-github,#site-appearance summary,#site-mobile-top a) > svg[aria-hidden=true][viewBox]:not([width],[height]) { inline-size:1em;block-size:1em;inline-size:1lh;block-size:1lh;flex:none; }
+#site-top a,#site-github { gap:calc(var(--space)*.4);padding:calc(var(--space)*.35) calc(var(--space)*.6); }
+:is(#site-github,#site-mobile-top a) > svg[aria-hidden=true][viewBox]:not([width],[height]) { inline-size:1em;block-size:1em;inline-size:1lh;block-size:1lh;flex:none; }
 #site-top a[aria-current] { background:var(--color-surface-subtle); border-color:var(--color-border); }
-@media (hover:hover) and (pointer:fine) { #site-top a:hover,#site-actions button:hover,#site-github:hover,#site-appearance summary:hover { background:var(--color-surface-subtle); border-color:var(--color-border); } }
-#site-appearance { position:relative; margin:0; padding:0; border:0; }
-#site-appearance summary { list-style:none; cursor:pointer; }
-#site-appearance summary::-webkit-details-marker { display:none; }
-#site-appearance[open] > summary { margin:0; border-color:var(--color-border); background:var(--color-surface-subtle); }
-#site-appearance-panel { position:absolute; inset-block-start:calc(100% + .5rem); inset-inline-end:0; min-inline-size:min(21rem,calc(100vw - 2rem)); max-inline-size:min(24rem,calc(100vw - 2rem)); max-block-size:calc(100dvh - var(--site-header-size) - 1rem); overflow:auto; padding:var(--space); background:var(--color-surface); border:var(--border-width) solid var(--color-border); border-radius:calc(var(--radius)*2); box-shadow:var(--shadow); }
-#site-appearance-panel h2 { font-size:1.125em; margin:0; }
-#site-appearance-panel form { gap:calc(var(--space)*.55); }
-#site-appearance-panel label { display:grid; grid-template-columns:minmax(5rem,1fr) minmax(0,1.25fr); align-items:center; gap:.5rem; }
-#site-appearance-panel select { inline-size:100%; }
-#site-appearance-status:empty { display:none; }
+@media (hover:hover) and (pointer:fine) { #site-top a:hover,#site-actions button:hover,#site-github:hover { background:var(--color-surface-subtle); border-color:var(--color-border); } }
 #site-layout { display:grid; grid-template-columns:minmax(13rem,17rem) minmax(0,1fr) minmax(10rem,13rem); max-inline-size:104rem; margin-inline:auto; align-items:start; min-block-size:calc(100vh - var(--site-header-size)); }
 #site-sidebar,#site-toc { position:sticky; inset-block-start:var(--site-header-size); max-block-size:calc(100dvh - var(--site-header-size)); overflow:auto; padding:var(--space); scrollbar-width:thin; }
 #site-sidebar { border-inline-end:var(--border-width) solid var(--color-border); background:var(--color-surface); min-block-size:calc(100dvh - var(--site-header-size)); }
@@ -185,9 +175,6 @@ html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
 [data-site-section] { scroll-margin-block-start:.75rem; }
 #site-stats > *,[data-site-swatches] > * { min-inline-size:0;max-inline-size:100%;overflow-wrap:anywhere; }
 [data-site-swatches] code { display:block;max-inline-size:100%;white-space:normal;overflow-wrap:anywhere; }
-#site-appearance-panel { overscroll-behavior:contain; }
-#site-appearance-panel form label { min-inline-size:0; }
-#site-appearance-panel form select { min-inline-size:0;max-inline-size:100%; }
 @media(max-width:64rem) {
   #site-header { isolation:isolate; }
   #site-appearance-panel { inset-block-start:calc(var(--site-header-size) + .35rem);max-block-size:calc(100dvh - var(--site-header-size) - 1rem); }
@@ -195,7 +182,6 @@ html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
 @media(max-width:24rem) {
   #site-stats { grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem; }
   #site-stats > * { padding:calc(var(--space)*.7); }
-  #site-appearance-panel label { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); }
 }
 
 /* The scroll study keeps its artwork visible while its longer scene moves. */
