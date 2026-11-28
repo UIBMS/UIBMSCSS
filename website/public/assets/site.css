@@ -197,3 +197,17 @@ html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
   #site-stats > * { padding:calc(var(--space)*.7); }
   #site-appearance-panel label { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); }
 }
+
+/* The scroll study keeps its artwork visible while its longer scene moves. */
+#wordmark-scroll-example {
+  min-block-size: 140svh;
+}
+#wordmark-scroll-example::before {
+  position: sticky;
+  inset-block-start: calc(var(--site-header-size, 0px) + var(--space));
+  inline-size: min(100%, 42rem);
+  margin-inline: auto;
+}
+@media (prefers-reduced-motion: reduce) {
+  #wordmark-scroll-example { min-block-size: auto; }
+}

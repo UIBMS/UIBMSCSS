@@ -149,3 +149,5 @@ assert.equal(progressRatio(20,10),1);
 assert.equal(progressRatio(-1,10),0);
 assert.equal(progressRatio(1,0),null);
 console.log('Widget native SVG geometry and progress normalization passed.');
+
+await import("./wordmark.mjs");
