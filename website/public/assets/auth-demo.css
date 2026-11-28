@@ -1,0 +1,97 @@
+body {
+  min-block-size: 100svh;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  background: var(--color-surface-subtle);
+}
+
+#auth-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space);
+  padding: var(--space);
+  border-block-end: var(--border-width) solid var(--color-border);
+  background: var(--color-surface);
+}
+
+#auth-header a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-size);
+  gap: calc(var(--space) * .5);
+}
+
+#auth-main {
+  display: grid;
+  align-items: center;
+  justify-items: center;
+  padding: var(--space);
+  background: radial-gradient(ellipse at top, color-mix(in oklab, var(--color-accent) 13%, transparent), transparent 70%);
+}
+
+#auth-main > section {
+  inline-size: min(100%, 46ch);
+  padding: clamp(var(--space), 5vi, calc(3 * var(--space)));
+  border: var(--border-width) solid var(--color-border);
+  border-radius: calc(2 * var(--radius));
+  background: var(--color-surface);
+  box-shadow: var(--shadow);
+  overflow-wrap: anywhere;
+}
+
+#auth-main h1, #auth-main h2 {
+  margin-block: calc(var(--space) * .5);
+}
+
+#auth-main header > span {
+  display: inline-grid;
+  place-items: center;
+  inline-size: var(--target-size);
+  block-size: var(--target-size);
+  border-radius: var(--radius);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+}
+
+#auth-main form {
+  gap: calc(var(--space) * .4);
+  margin-block: var(--space);
+}
+
+#auth-main input { inline-size: 100%; }
+
+#auth-main form button {
+  margin-block-start: calc(var(--space) * .6);
+  color: var(--color-on-accent);
+  background: var(--color-accent);
+  border-color: currentColor;
+}
+
+#auth-main form button:hover {
+  background: color-mix(in oklab, var(--color-accent) 90%, var(--color-text));
+}
+
+#auth-demo-note {
+  font-size: .875em;
+  padding-block: calc(var(--space) * .5);
+  border-block: var(--border-width) solid var(--color-border);
+}
+
+#auth-result:not(:empty) {
+  display: block;
+  padding: calc(var(--space) * .75);
+  background: var(--color-surface-subtle);
+  border-inline-start: calc(3 * var(--border-width)) solid var(--color-accent);
+}
+
+#auth-main footer { margin-block-start: var(--space); }
+#auth-main footer a { display: inline-block; min-block-size: var(--target-size); align-content: center; }
+#auth-main footer p { margin: 0; }
+
+@media (forced-colors: active) {
+  #auth-main form button { border-color: ButtonText; }
+}
+
+#auth-main form[hidden] { display: none; }

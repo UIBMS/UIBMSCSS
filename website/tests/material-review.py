@@ -982,7 +982,7 @@ try:
         cp.set_viewport_size({"width":1440,"height":960})
         cp.goto(url+"demos/",wait_until="load")
         cp.wait_for_selector("html[data-site-engines-ready]",state="attached")
-        cp.get_by_role("link",name="Launch demo",exact=True).click()
+        cp.get_by_role("link",name="Administration dashboard demo",exact=True).click()
         cp.wait_for_selector("#admin-settings-form button[type=submit]:enabled",state="attached")
         set_profile(cp,material="default",theme="light",palette="natural",effects="none",density="default")
         admin=cp.locator("#admin-shell")
