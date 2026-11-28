@@ -198,6 +198,47 @@ with sync_playwright() as p:
                 markup='<!doctype html><link rel="stylesheet" href="/dist/'+ext+'"><link rel="stylesheet" href="/dist/'+core+'"><div '+marker+' data-effects="'+name+'"><button id="ext">Inside</button></div><div data-effects="'+name+'" id="host">Outside</div>'
                 load([ext,core],scoped,markup);check(ext+' separate motion, extension first',css('#ext','transition-duration'),t)
                 if scoped:check(ext+' host unaffected',css('#host','--signature-time'),'')
+    # Optical geometry is calculated from inherited tokens, not fixed pixels.
+    # Check every principal distribution in a single document per variant.
+    icon='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"/></svg>'
+    for scoped in (False,True):
+        for full in (False,True):
+            for mini in (False,True):
+                file='uibms'+('.scoped' if scoped else '')+('.full' if full else '')+('.min' if mini else '')+'.css'
+                marker='data-uibms' if scoped else ''
+                groups=[]
+                sized_icon=icon.replace('viewBox=', 'width="20" height="20" viewBox=')
+                for density in ('compact','default','spacious'):
+                    for direction in ('ltr','rtl'):
+                        for size in (12,24):
+                            for shape in ('sharp','default','pill'):
+                                style=f'font-size:{size}px;line-height:1.6'
+                                if shape=='pill':style+=';--radius:calc(var(--target-size) + 1lh + var(--space))'
+                                groups.append(f'<section data-density="{density}" dir="{direction}" data-shape="{shape if shape!="pill" else "default"}" data-test-shape="{shape}" style="{style}"><button data-test="leading">{icon}<span>Approve</span></button><button data-test="trailing"><span>Approve</span>{icon}</button><button data-test="only" aria-label="Approve">{icon}</button><button data-test="label"><span>Approve</span></button><button data-test="plain">Approve</button><button data-test="sized">{sized_icon}<span>Approve</span></button></section>')
+                load([file],scoped,'<!doctype html><link rel="stylesheet" href="/dist/'+file+'"><main '+marker+'>'+''.join(groups)+'</main>')
+                result=page.evaluate('''()=>{
+                    const exact=CSS.supports('margin-inline','calc(1cap + 1px * (1px / 1px) * (1 - pi / 4))');
+                    const metric=CSS.supports('inline-size','1lh'),near=(a,b)=>Math.abs(a-b)<.8,failures=[];
+                    for(const group of document.querySelectorAll('[data-test-shape]')){
+                      const get=key=>group.querySelector('[data-test="'+key+'"]'),s=e=>getComputedStyle(e),box=e=>e.getBoundingClientRect();
+                      const a=get('leading'),b=get('trailing'),o=get('only'),l=get('label'),p=get('plain'),x=get('sized');
+                      const sa=s(a),ia=a.querySelector('svg'),ib=b.querySelector('svg'),label=a.querySelector('span'),border=parseFloat(sa.borderTopWidth),lh=parseFloat(sa.lineHeight);
+                      const pad=parseFloat(s(p).paddingInlineStart),half=(box(a).height-2*border)/2,r=Math.min(Math.max(0,parseFloat(sa.borderTopLeftRadius)-border),half);
+                      const edge=exact?r*(1-Math.PI/4)*r/half:0,inset=exact?(half-lh/2-pad)*r/half:0;
+                      const rtl=sa.direction==='rtl',start=(e,i)=>rtl?box(e).right-box(i).right:box(i).left-box(e).left,end=(e,i)=>rtl?box(i).left-box(e).left:box(e).right-box(i).right;
+                      const actual=[near(box(ia).width,metric?lh:parseFloat(sa.fontSize)),near(box(ia).height,box(ia).width),near(box(ib).width,box(ia).width),near(box(o).width,box(o).height),
+                        box(a).height>=43.5,near(parseFloat(s(label).marginInlineEnd),edge),near(parseFloat(s(ia).marginInlineStart),inset),
+                        near(parseFloat(s(ib).marginInlineEnd),inset),near(parseFloat(s(l.querySelector('span')).marginInlineStart),edge),
+                        near(parseFloat(s(x.querySelector('span')).marginInlineStart),0),near(box(x.querySelector('svg')).width,20)];
+                      if(exact&&group.dataset.testShape==='pill')actual.push(near(start(a,ia),box(ia).top-box(a).top),near(end(b,ib),box(ib).top-box(b).top));
+                      if(actual.some(x=>!x))failures.push({shape:group.dataset.testShape,density:group.dataset.density,dir:group.dir,size:sa.fontSize,failed:actual.map((ok,i)=>ok?null:i).filter(i=>i!==null)});
+                      // The optional material engine appends an aria-hidden span.
+                      const original=s(ia).marginInlineStart,decoration=document.createElement('span');decoration.setAttribute('aria-hidden','true');decoration.style.position='absolute';a.append(decoration);
+                      if(s(ia).marginInlineStart!==original)failures.push({decoration:'changed icon geometry'});
+                    }
+                    return failures;
+                }''')
+                check(file+' optical button geometry, density, typography, direction, explicit size and decorative layer',result,[])
     # A bounded local workload for comparison, not a real-device performance claim.
     for file in ('uibms.min.css','uibms.full.min.css','uibms.scoped.min.css','uibms.scoped.full.min.css'):
         scoped='scoped' in file; marker='data-uibms' if scoped else ''

@@ -365,6 +365,53 @@
             font-weight: 600;
             cursor: pointer;
         }
+        :where(:scope,:scope *):where(button:has(>svg[aria-hidden="true"][viewBox]:not([width],[height]))) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(var(--space) * 0.5);
+            gap: max(calc(var(--space) * 0.5), calc(var(--space) - (1lh - 1cap) / 2));
+            &>:where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+                inline-size: 1em;
+                block-size: 1em;
+                inline-size: 1lh;
+                block-size: 1lh;
+                flex: none;
+            }
+            &>:where(span:not([aria-hidden="true"],.visually-hidden)) {
+                min-inline-size: 0;
+                overflow-wrap: anywhere;
+            }
+            &:where([aria-label]:not(:has(>span:not([aria-hidden="true"],.visually-hidden)))) {
+                padding-inline: calc(var(--space) * 0.5);
+            }
+        }
+        @supports (margin-inline: calc(1cap + 1px * (1px / 1px) * (1 - pi / 4))) {
+            :where(:scope,:scope *):where(button:has(>span:not([aria-hidden="true"],.visually-hidden)):not(:has(>svg[aria-hidden="true"]:is([width],[height])))) {
+                --_button-half: max(calc(0.5lh + var(--space) * 0.5), calc(var(--target-size) * 0.5 - var(--border-width)));
+                --_button-r: clamp(0px, calc(var(--radius) - var(--border-width)), var(--_button-half));
+                --_button-curve: calc(var(--_button-r) / var(--_button-half));
+                --_button-text-edge: calc(var(--_button-r) * (1 - pi / 4) * var(--_button-curve));
+                --_button-icon-edge: calc((var(--_button-half) - 0.5lh - var(--space)) * var(--_button-curve));
+                &>:where(span:not([aria-hidden="true"],.visually-hidden)) {
+                    margin-inline: var(--_button-text-edge);
+                    &:where(svg+*) {
+                        margin-inline-start: 0;
+                    }
+                    &:where(:has(+svg)) {
+                        margin-inline-end: 0;
+                    }
+                }
+                &>:where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+                    &:where(:has(+span:not([aria-hidden="true"],.visually-hidden))) {
+                        margin-inline-start: var(--_button-icon-edge);
+                    }
+                    &:where(span:not([aria-hidden="true"],.visually-hidden)+*) {
+                        margin-inline-end: var(--_button-icon-edge);
+                    }
+                }
+            }
+        }
         @media (prefers-reduced-motion: no-preference) {
             :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])),:where(:scope,:scope *) :where(input[type="file"])::file-selector-button {
                 transition: background-color var(--signature-time, var(--motion-duration)) var(--motion-easing);
