@@ -4,6 +4,12 @@
   --_preview-padding-color: color-mix(in oklab, var(--color-surface), var(--color-success) 24%);
   align-items: start;
 }
+#gutenberg-spacing > div {
+  container-type: inline-size;
+  min-inline-size: 0;
+  max-block-size: 70vh;
+  overflow: auto;
+}
 #gutenberg-spacing > div > p {
   margin: 0;
   padding: calc(var(--space) * .5);
@@ -54,10 +60,11 @@
 }
 #gutenberg-spacing fieldset > div {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(8ch, auto);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: calc(var(--space) * .5);
   align-items: end;
 }
+#gutenberg-spacing fieldset > div > label:first-child { grid-column: 1 / -1; }
 #gutenberg-spacing details { margin-block: calc(var(--space) * .5); }
 #gutenberg-spacing details fieldset {
   display: grid;
@@ -108,7 +115,8 @@
   min-inline-size: 0;
   min-block-size: var(--target-size);
 }
-#gutenberg-spacing input[type="number"] { inline-size: 9ch; }
+#gutenberg-spacing input[type="number"],
+#gutenberg-spacing select { inline-size: 100%; }
 #gutenberg-spacing output { display: block; margin-block-start: calc(var(--space) * .25); }
 @media (forced-colors: active) {
   #gutenberg-spacing article { border-color: CanvasText; }

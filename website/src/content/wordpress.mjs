@@ -99,6 +99,20 @@ export function wordpressPatternFile(pattern) {
   ].join('\n');
 }
 
+// Use the documented portable subset in theme.json. The browser preview can
+// offer newer CSS units independently of the installed Gutenberg version.
+export const wordpressThemeSpacingUnits = [
+  'px', 'em', 'rem', '%', 'vh', 'vw', 'vmin', 'vmax', 'ch', 'ex', 'cm', 'mm', 'in', 'pt', 'pc'
+];
+const spacingUnitGroups = [
+  ['Common', ['px', 'rem', 'em', '%', 'vw', 'vh']],
+  ['Font relative', ['ch', 'ex', 'cap', 'ic', 'lh', 'rch', 'rex', 'rcap', 'ric', 'rlh']],
+  ['Viewport', ['vi', 'vb', 'vmin', 'vmax',
+    ...['sv', 'lv', 'dv'].flatMap(prefix => ['w', 'h', 'i', 'b', 'min', 'max'].map(axis => prefix + axis))]],
+  ['Container', ['cqw', 'cqh', 'cqi', 'cqb', 'cqmin', 'cqmax']],
+  ['Physical', ['cm', 'mm', 'q', 'in', 'pt', 'pc']]
+];
+
 function spacingRow(name, label, value, edges) {
   return [
     '    <fieldset>',
@@ -116,8 +130,14 @@ function spacingRow(name, label, value, edges) {
       '      </details>'
     ] : []),
     '      <div>',
-    '        <label>Adjust <input type="range" name="' + name + '-slider" min="0" max="64" value="' + value + '" aria-label="' + label + ': adjust in pixels"></label>',
-    '        <label>Exact (px) <input type="number" name="' + name + '" min="0" max="64" value="' + value + '" aria-label="' + label + ': exact (px)"></label>',
+    '        <label>Adjust <input type="range" name="' + name + '-slider" min="0" max="64" value="' + value + '" aria-label="' + label + ': adjust"></label>',
+    '        <label>Exact value <input type="number" name="' + name + '" min="0" step="any" value="' + value + '" aria-label="' + label + ': exact value"></label>',
+    '        <label>Unit <select name="' + name + '-unit" aria-label="' + label + ': unit">',
+    ...(edges ? ['          <option value="" disabled>Mixed units</option>'] : []),
+    ...spacingUnitGroups.map(([group, units]) => '          <optgroup label="' + group + '">' +
+      units.map(unit => '<option' + (unit === 'px' ? ' selected' : '') + '>' + unit + '</option>').join('') +
+      '</optgroup>'),
+    '        </select></label>',
     '      </div>',
     ...(edges ? ['      <output aria-label="' + label + ' side values">' + value + ' px on all sides</output>'] : []),
     '    </fieldset>'

@@ -1,4 +1,11 @@
 // Form controls edit only this documentation preview.
+const cssLength = ({amount, unit}) => amount + unit;
+
+function sliderMaximum(unit, amount) {
+  const defaultMaximum = unit === 'px' ? 64 : unit === '%' || /^(?:[sld]?v|cq)/.test(unit) ? 100 : 8;
+  return Math.max(defaultMaximum, Math.ceil(amount));
+}
+
 export function mountSpacingPreview(root) {
   const form = root.querySelector('form');
   const sides = ['Top', 'Right', 'Bottom', 'Left'];
@@ -6,31 +13,50 @@ export function mountSpacingPreview(root) {
     const exact = form.elements.namedItem(name);
     const range = form.elements.namedItem(name + '-slider');
     const edge = form.elements.namedItem(name + '-side');
+    const unit = form.elements.namedItem(name + '-unit');
     const summary = exact.closest('fieldset').querySelector('output');
-    const values = Array(edge ? 4 : 1).fill(Number(exact.defaultValue));
+    const initial = {amount: Number(exact.defaultValue), unit: unit.value};
+    const values = Array(edge ? 4 : 1).fill(initial);
+    let sliderUnit;
+    for (const option of unit.options) {
+      if (option.value && globalThis.CSS && !CSS.supports('padding-top', '1' + option.value)) {
+        option.disabled = true;
+      }
+    }
+
+    const allSides = () => !edge || edge.value === 'all';
+    const selectedIndex = () => allSides() ? 0 : Number(edge.value);
 
     function update(syncExact = true) {
-      const index = edge && edge.value !== 'all' ? Number(edge.value) : 0;
-      const mixed = edge?.value === 'all' && values.some(value => value !== values[0]);
-      range.value = values[index];
-      if (mixed) range.setAttribute('aria-valuetext', 'Mixed side values');
-      else range.removeAttribute('aria-valuetext');
+      const current = values[selectedIndex()];
+      const mixedUnits = allSides() && values.some(value => value.unit !== current.unit);
+      const mixed = mixedUnits || allSides() && values.some(value => value.amount !== current.amount);
+      unit.value = mixedUnits ? '' : current.unit;
+      range.disabled = exact.disabled = mixedUnits;
+      // Keep an expanded range stable while the thumb moves back toward zero.
+      const currentMaximum = sliderUnit === current.unit ? Number(range.max) : 0;
+      range.max = sliderMaximum(current.unit, Math.max(current.amount, currentMaximum));
+      sliderUnit = current.unit;
+      range.step = current.unit === 'px' ? '1' : '0.1';
+      range.value = current.amount;
+      range.setAttribute('aria-valuetext', mixed ? 'Mixed side values' : range.value + ' ' + current.unit);
       if (syncExact) {
-        exact.value = mixed ? '' : values[index];
+        exact.value = mixed ? '' : current.amount;
         exact.placeholder = mixed ? 'Mixed' : '';
       }
       if (summary) {
-        summary.value = values.every(value => value === values[0])
-          ? values[0] + ' px on all sides'
-          : values.map((value, i) => sides[i] + ' ' + value + ' px').join(', ');
+        const describe = value => value.amount + ' ' + value.unit;
+        summary.value = values.every(value => cssLength(value) === cssLength(values[0]))
+          ? describe(values[0]) + ' on all sides'
+          : values.map((value, i) => sides[i] + ' ' + describe(value)).join(', ');
       }
-      root.style.setProperty('--_preview-' + name, values.map(value => value + 'px').join(' '));
+      root.style.setProperty('--_preview-' + name, values.map(cssLength).join(' '));
     }
 
-    function apply(value, syncExact = true) {
-      const pixels = Math.min(Number(exact.max), Math.max(Number(exact.min), Math.round(value)));
-      if (!edge || edge.value === 'all') values.fill(pixels);
-      else values[Number(edge.value)] = pixels;
+    function apply(amount, syncExact = true) {
+      const value = {amount, unit: unit.value};
+      if (allSides()) values.fill(value);
+      else values[selectedIndex()] = value;
       update(syncExact);
     }
 
@@ -39,17 +65,24 @@ export function mountSpacingPreview(root) {
         if (event.target.name === name + '-side') update();
       });
     }
+    unit.addEventListener('change', () => {
+      for (const [index, value] of values.entries()) {
+        if (allSides() || index === selectedIndex()) values[index] = {...value, unit: unit.value};
+      }
+      update();
+    });
     range.addEventListener('input', () => apply(range.valueAsNumber));
     exact.addEventListener('input', () => {
       if (Number.isFinite(exact.valueAsNumber) && exact.validity.valid) apply(exact.valueAsNumber, false);
     });
     exact.addEventListener('change', () => {
-      if (Number.isFinite(exact.valueAsNumber)) apply(exact.valueAsNumber);
+      if (Number.isFinite(exact.valueAsNumber) && exact.validity.valid) apply(exact.valueAsNumber);
       else update();
     });
     update();
     return () => {
-      values.fill(Number(exact.defaultValue));
+      values.fill(initial);
+      sliderUnit = undefined;
       update();
     };
   });
