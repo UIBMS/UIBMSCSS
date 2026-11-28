@@ -1235,8 +1235,19 @@ try:
           ctx.fillStyle=getComputedStyle(e).backgroundColor;ctx.fillRect(0,0,1,1);
           return [...ctx.getImageData(0,0,1,1).data].slice(0,3);
         }"""
+        # Read the completed tint, since WebKit may sample the first frame
+        # of a transition before any colour change is measurable.
+        finish_tint="""async element=>{
+          const transitions=element.getAnimations().filter(animation=>animation.transitionProperty==='background-color');
+          await Promise.allSettled(transitions.map(animation=>animation.finished));
+        }"""
+        cp.mouse.move(0,0)
+        frame(cp)
+        account.evaluate(finish_tint)
         rest=account.evaluate(button_color)
         account.hover()
+        frame(cp)
+        account.evaluate(finish_tint)
         hover=account.evaluate(button_color)
         check(min(rest)>200 and max(abs(a-b) for a,b in zip(rest,hover)) in range(1,25),
               "light buttons use close surface tints",[rest,hover])
