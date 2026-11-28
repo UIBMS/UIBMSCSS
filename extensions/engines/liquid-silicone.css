@@ -82,8 +82,6 @@
 :where(input[data-uibms-material-native][type=range]) {
   appearance:none;-webkit-appearance:none;background:transparent;cursor:ew-resize;
   --_uibms-rail:linear-gradient(to right,var(--color-accent,currentColor) var(--_uibms-range-progress,50%),var(--color-border-subtle,currentColor) var(--_uibms-range-progress,50%));
-}
-:where(input[data-uibms-material-native][type=range]) {
   --_uibms-range-track-size:calc(var(--target-size,2.75rem)*.18);
   --_uibms-range-thumb-size:calc(var(--target-size,2.75rem)*.62);
 }
