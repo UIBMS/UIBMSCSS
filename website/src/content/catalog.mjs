@@ -1,3 +1,4 @@
+import {iconGroups, icons} from '../../../tools/icons/icon-catalogue.mjs';
 import {menuIcon} from '../lib/menu-icon.mjs';
 import {staticSparkline} from '../lib/sparkline.mjs';
 import {profiles,configDetails,titleCase} from '../lib/config.mjs';
@@ -348,7 +349,22 @@ group('Development',[
  ])
 ]);
 group('Optional engines',[
- doc('icons','SVG icons','A two-stroke menu icon that follows the state of native controls with optional scroll-driven wordmarks.',[
+ doc('icons','SVG icons',icons.length+' original UIBMS icons with optional state and scroll motion.',[
+  section('Browse the icon set','<p>Download an SVG by choosing its name. Use the same name in <code>data-icon</code> to show the icon through CSS.</p>',[
+   example('UIBMS icon catalogue',`<div id="uibms-icon-catalogue">
+    ${Object.entries(iconGroups).map(([group, entries])=>`<section>
+      <h4>${group}</h4>
+      <ul>${entries.map(([name,label])=>`<li><a data-icon="${name}" href="{{base}}engines/icons/svg/${name}.svg" download="${name}.svg">${label}</a></li>`).join('')}</ul>
+    </section>`).join('')}
+   </div>`)
+  ]),
+  section('Use an icon','<p>Load the optional stylesheet and keep its SVG folder beside it. Add <code>data-icon</code> to a native element or a decorative span. Keep a visible label or an accessible name on interactive controls. Use a separate span if the component already owns its <code>::before</code> pseudo-element.</p>',[
+   snippet('Load the icon set', '<link rel="stylesheet" href="engines/icons/icons.css">'),
+   snippet('Icon-only and labelled controls',`<div class="cluster">
+  <button type="button" data-icon="search" aria-label="Search"></button>
+  <a data-icon="settings" href="{{base}}docs/configuration/">Settings</a>
+</div>`)
+  ]),
   section('Menu and close','<p>Open and close this disclosure with a click, tap, Enter or Space. The two SVG strokes follow the disclosure’s actual state. Reversing the action mid-transition reverses the icon. With reduced motion, the icon switches immediately.</p>',[
    example('Menu disclosure',`<details id="menu-icon-example">
   <summary>${menuIcon()} Menu links</summary>
@@ -373,7 +389,7 @@ group('Optional engines',[
   <p>Your story goes here.</p>
 </section>`)
   ])
- ],{stylesheets:['icons/menu.css','icons/examples/uibms-to-world.css']}),
+ ],{stylesheets:['icons/icons.css','icons/menu.css','icons/examples/uibms-to-world.css']}),
  doc('liquid-silicone','Liquid silicone','Experimental opt-in physical material with magnetic attraction, elastic contours and moving selection.',[
   section('Live material lab','<p>Only selected navigation items are highlighted. The card is passive; its button is independently pressable. Native controls retain their original semantics. This landscape is a registered image backdrop: the engine samples its pixels for optical distortion. Unregistered live HTML uses translucent backdrop filtering. The opacity slider adjusts the optical tint; ordinary sitewide surfaces preserve their resolved palette and use a readable default opacity. The slider’s track and thumb sizes come from <code>--target-size</code>. In WebKit, the offset is half the difference between the track and thumb heights, which centers the thumb.</p>',[example('Liquid silicone interface',"<section class=\"stack\" data-material=\"liquid-silicone\" style=\"padding:var(--space);border-radius:calc(var(--radius)*2)\">\n  <nav class=\"cluster\" aria-label=\"Material demo navigation\">\n    <button type=\"button\" aria-pressed=\"true\">Overview</button>\n    <button type=\"button\" aria-pressed=\"false\">Projects</button>\n    <button type=\"button\" aria-pressed=\"false\">Activity</button>\n  </nav>\n  <article class=\"card stack\">\n    <h3>Passive silicone card</h3>\n    <p>Hover or touch the card for magnetic attraction. Only the nested button compresses.</p>\n    <button type=\"button\">Continue</button>\n  </article>\n  <fieldset class=\"stack\">\n    <legend>Native controls</legend>\n    <label>Opacity <input type=\"range\" min=\"0\" max=\"100\" value=\"92\"></label>\n    <label><input type=\"checkbox\" checked> Reflections</label>\n    <div class=\"cluster\" role=\"radiogroup\" aria-label=\"Silicone colour\"><label><input type=\"radio\" name=\"silicone-colour\" checked> Clear</label><label><input type=\"radio\" name=\"silicone-colour\"> Tinted</label></div>\n    <label>Message <textarea>Natural HTML, optional material.</textarea></label>\n  </fieldset>\n</section>",{run:'liquid-silicone'})]),
   section('Installation','<p>Load the separate extension files after the core CSS. The engine is not bundled in the existing CSS distributions.</p>',[snippet('Optional engine',"<link rel=\"stylesheet\" href=\"uibms.min.css\">\n<link rel=\"stylesheet\" href=\"engines/liquid-silicone.css\">\n<script type=\"module\">\n  import { mountMaterial } from './engines/material.mjs';\n  mountMaterial(document);\n</script>")]),

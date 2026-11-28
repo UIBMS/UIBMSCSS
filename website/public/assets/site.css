@@ -211,3 +211,22 @@ html { scroll-padding-block-start:calc(var(--site-header-size) + .75rem); }
 @media (prefers-reduced-motion: reduce) {
   #wordmark-scroll-example { min-block-size: auto; }
 }
+
+#uibms-icon-catalogue ul {
+  --_uibms-icon-grid-gap: calc(var(--space) * .5);
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, max(8.5em, calc((100% - 3 * var(--_uibms-icon-grid-gap)) / 4))), 1fr));
+  gap: var(--_uibms-icon-grid-gap);
+  padding: 0;
+  list-style: none;
+}
+#uibms-icon-catalogue li { margin: 0; }
+#uibms-icon-catalogue a {
+  --icon-size: 1.5em;
+  display: flex;
+  align-items: center;
+  min-block-size: var(--target-size);
+  padding: calc(var(--space) * .5);
+  border: var(--border-width) solid var(--color-border-subtle);
+  border-radius: var(--radius);
+}

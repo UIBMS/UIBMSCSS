@@ -22,3 +22,15 @@ tools/icons and its examples in the SVG icons documentation.
   or unavailable scroll timelines. Reuse the SVG icons catalogue and Showcase.
 - Verify deterministic output, different-length words, invalid input, scroll
   reversal, reduced motion, and the built documentation before merging.
+
+## Static icon catalogue
+
+- Add original artwork and labels in tools/icons/icon-catalogue.mjs. Use the
+  shared 24-unit viewBox, centered geometry, 1.75-unit currentColor strokes, and
+  rounded caps and joins. Keep every symbol distinguishable at small sizes.
+- Regenerate the optional assets with `node tools/icons/generate-icons.mjs`.
+  The documentation catalogue and generated CSS use the same source list.
+- Use `data-icon` to select artwork. With CSS masks, the host supplies the
+  meaning and accessible name. Preserve native controls, optional loading, and
+  a text or accessible-name fallback. Verify the generated SVG files and CSS
+  together before merging.
