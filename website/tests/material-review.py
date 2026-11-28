@@ -1045,10 +1045,13 @@ try:
         cp.locator("#appearance-palette").select_option("ocean")
         check(cp.locator("html").get_attribute("data-theme")=="dark" and
               cp.locator("html").get_attribute("data-palette")=="ocean","advanced table applies the shared theme and palette")
-        with cp.expect_response(lambda response: "/engines/material.mjs" in response.url) as material_response:
-            cp.locator("#appearance-material").select_option("liquid-silicone")
-        check(material_response.value.ok,"optional material loads from the shared appearance switch")
+        cp.locator("#appearance-material").select_option("liquid-silicone")
+        enhanced_date=controls.locator('input[name="renewal"][data-uibms-form-source]')
+        enhanced_date.wait_for(state="attached")
+        check(cp.locator("html").get_attribute("data-material")=="liquid-silicone",
+              "optional material and date picker activate from the shared appearance switch")
         cp.locator("#appearance-material").select_option("default")
+        enhanced_date.wait_for(state="detached")
         cp.goto(url+"docs/tables/",wait_until="load")
         check(cp.locator("html").get_attribute("data-theme")=="dark" and
               cp.locator("html").get_attribute("data-palette")=="ocean","appearance is shared between the demo and documentation")
