@@ -1,6 +1,7 @@
 /* Optional responsive shell. Native regions can opt in with one class. */
 .app-shell {
   container:uibms-shell / inline-size;
+  --_uibms-sidebar-padding:calc(var(--space)*.65);
   position:relative;
   inline-size:100%;min-inline-size:0;max-inline-size:100%;
   block-size:var(--dashboard-height,100dvh);min-block-size:0;
@@ -27,7 +28,7 @@
 .app-shell :is(.sidebar-toggle,.sidebar-drawer-toggle) { display:none; }
 .app-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
 :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) {
-  grid-template-columns:minmax(0,var(--dashboard-rail-width,4rem)) minmax(0,1fr);
+  grid-template-columns:minmax(0,var(--dashboard-rail-width,max(4rem,calc(var(--target-size) + 2 * var(--_uibms-sidebar-padding) + var(--border-width))))) minmax(0,1fr);
 }
 @container uibms-shell (min-width:42rem) {
   :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) > :is(nav,.dashboard-sidebar) {

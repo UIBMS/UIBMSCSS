@@ -1,6 +1,6 @@
 /* Optional sidebar: semantic nav, lists, links and native details. */
 :is(.dashboard-sidebar,.app-shell > nav) {
-  box-sizing:border-box;padding:calc(var(--space)*.65);
+  box-sizing:border-box;padding:var(--_uibms-sidebar-padding,calc(var(--space)*.65));
   background-color:var(--dashboard-sidebar-background,var(--color-surface-subtle));
   color:var(--dashboard-sidebar-foreground,var(--color-text));
   border-inline-end:var(--border-width) solid var(--color-border);min-inline-size:0;
@@ -22,6 +22,9 @@
   }
   & :where(.sidebar-icon,:is(a,summary) > svg[aria-hidden=true]) {
     display:inline-grid;place-items:center;flex:none;inline-size:1.25em;block-size:1.25em;
+    &:where(.sidebar-icon,:not([width],[height])) {
+      inline-size:min(var(--target-size),1lh);block-size:min(var(--target-size),1lh);
+    }
   }
   & :where(.sidebar-label,:is(a,summary) > svg[aria-hidden=true] + span) { min-inline-size:0;overflow-wrap:anywhere; }
   & :where(a[aria-current]:not([aria-current=false])) {

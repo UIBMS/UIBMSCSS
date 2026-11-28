@@ -46,9 +46,17 @@
       box-sizing:border-box;max-inline-size:100%;text-align:start;overflow-wrap:anywhere;white-space:normal;
       background-color:transparent;color:var(--color-text);border:var(--border-width) solid transparent;
       border-radius:var(--radius);
-      border-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
       font:inherit;font-weight:550;text-decoration:none;
       padding:calc(var(--space) * .45) calc(var(--space) * .65);box-shadow:none;
+    }
+    /* Only edge items actually share the menu's outer corners. */
+    & > :where([role="menuitem"]:first-child) {
+      border-start-start-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
+      border-start-end-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
+    }
+    & > :where([role="menuitem"]:last-child) {
+      border-end-start-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
+      border-end-end-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
     }
     & :where([role="menuitem"]:focus-visible) { background-color:var(--color-surface-subtle);outline:2px solid var(--color-focus);outline-offset:-2px; }
     @media (hover:hover) {

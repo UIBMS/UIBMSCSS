@@ -4,7 +4,8 @@
 }
 :is(.split-workspace:where(:has(> [role="separator"][aria-controls])),.split-workspace > .split-workspace-grid) {
   display:grid;min-inline-size:0;align-items:stretch;
-  grid-template-columns:minmax(0,calc((100% - var(--dashboard-split-gutter,1.25rem))*var(--_uibms-split-ratio,var(--dashboard-split-ratio,.42)))) var(--dashboard-split-gutter,1.25rem) minmax(0,1fr);
+  --_uibms-split-gutter:var(--dashboard-split-gutter,max(1.25rem,calc(var(--space)*1.25)));
+  grid-template-columns:minmax(0,calc((100% - var(--_uibms-split-gutter))*var(--_uibms-split-ratio,var(--dashboard-split-ratio,.42)))) var(--_uibms-split-gutter) minmax(0,1fr);
 }
 /* A container query cannot change its own container's grid template.
    At narrow widths, direct panes span the whole grid instead. */
@@ -18,7 +19,7 @@
   display:flex;align-items:center;justify-content:center;cursor:col-resize;touch-action:none;user-select:none;
   border-radius:var(--radius);color:var(--color-text-muted);
 
-  &::after { content:'';display:block;inline-size:3px;block-size:min(3rem,80%);border-radius:var(--radius);background-color:currentColor; }
+  &::after { content:'';display:block;inline-size:max(2px,calc(var(--border-width)*3));block-size:min(calc(var(--target-size) + var(--space)*.25),80%);border-radius:var(--radius);background-color:currentColor; }
   &:where(:focus-visible) { outline:2px solid var(--color-focus);outline-offset:-2px;color:var(--color-text); }
   @media (hover:hover) {
     &:where(:hover) { background-color:var(--color-surface-subtle);color:var(--color-text); }
