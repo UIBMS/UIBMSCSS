@@ -1,0 +1,20 @@
+#site-appearance summary { min-block-size:var(--target-size); display:inline-flex; align-items:center; justify-content:center; color:var(--color-text); background:transparent; border:var(--border-width) solid transparent; border-radius:var(--radius); text-decoration:none; font-weight:550; font-size:.9em; white-space:nowrap; }
+#site-appearance summary { gap:calc(var(--space)*.4);padding:calc(var(--space)*.35) calc(var(--space)*.6); }
+@media (hover:hover) and (pointer:fine) { #site-appearance summary:hover { background:var(--color-surface-subtle); border-color:var(--color-border); } }
+#site-appearance summary > svg[aria-hidden=true][viewBox]:not([width],[height]) { inline-size:1em;block-size:1em;inline-size:1lh;block-size:1lh;flex:none; }
+#site-appearance-panel { overscroll-behavior:contain; }
+#site-appearance-panel form label { min-inline-size:0; }
+#site-appearance-panel form select { min-inline-size:0;max-inline-size:100%; }
+#site-appearance { position:relative; margin:0; padding:0; border:0; }
+#site-appearance summary { list-style:none; cursor:pointer; }
+#site-appearance summary::-webkit-details-marker { display:none; }
+#site-appearance[open] > summary { margin:0; border-color:var(--color-border); background:var(--color-surface-subtle); }
+#site-appearance-panel { position:absolute; inset-block-start:calc(100% + .5rem); inset-inline-end:0; min-inline-size:min(21rem,calc(100vw - 2rem)); max-inline-size:min(24rem,calc(100vw - 2rem)); max-block-size:calc(100dvh - var(--site-header-size) - 1rem); overflow:auto; padding:var(--space); background:var(--color-surface); border:var(--border-width) solid var(--color-border); border-radius:calc(var(--radius)*2); box-shadow:var(--shadow); }
+#site-appearance-panel h2 { font-size:1.125em; margin:0; }
+#site-appearance-panel form { gap:calc(var(--space)*.55); }
+#site-appearance-panel label { display:grid; grid-template-columns:minmax(5rem,1fr) minmax(0,1.25fr); align-items:center; gap:.5rem; }
+#site-appearance-panel select { inline-size:100%; }
+#site-appearance-status:empty { display:none; }
+@media(max-width:24rem) {
+  #site-appearance-panel label { grid-template-columns:minmax(0,1fr) minmax(0,1.1fr); }
+}

@@ -987,11 +987,30 @@ try:
         rows=table.locator("tbody tr")
         visible_rows=table.locator("tbody tr:not([hidden])")
         check(visible_rows.count()==8,"advanced table initially shows the full dataset")
+        check(table.locator("thead [data-icon]").count()==0,"unsorted headers have no icons")
+        appearance=cp.locator("#site-appearance > summary")
+        appearance.click()
+        cp.locator("#appearance-theme").select_option("dark")
+        check(cp.locator("html").get_attribute("data-theme")=="dark","advanced table applies the shared theme")
+        cp.goto(url+"docs/tables/",wait_until="load")
+        check(cp.locator("html").get_attribute("data-theme")=="dark","appearance is shared between the demo and documentation")
+        cp.get_by_role("link",name="Try the advanced table demo").click()
+        controls.wait_for(state="visible")
+        appearance.click()
+        check(cp.locator("#appearance-theme").input_value()=="dark","the demo customiser reads the saved theme")
+        cp.get_by_role("button",name="Restore defaults").click()
+        check(cp.locator("html").get_attribute("data-theme")=="auto","the demo restores appearance defaults")
+        cp.keyboard.press("Escape")
+        check(appearance.evaluate("e=>!e.parentElement.open && e===document.activeElement"),"Escape closes and refocuses appearance")
 
         company=table.get_by_role("button",name="Company",exact=True)
         company.press("Enter")
         check(company.evaluate("button=>button.parentElement.getAttribute('aria-sort')")=="ascending","keyboard sorts and announces the column")
         check(visible_rows.first.get_by_role("cell",name="Cedar Works").count()==1,"sort uses company names")
+        check(table.locator("thead [data-icon]").count()==1 and
+              company.locator("[data-icon]").get_attribute("data-icon")=="arrow-up","only the sorted column shows a UIBMS arrow")
+        check(company.locator("[data-icon]").evaluate(
+            "element=>getComputedStyle(element,'::before').maskImage.includes('arrow-up.svg')"),"the active marker paints the catalogue SVG")
         controls.get_by_text("Visible columns",exact=True).click()
         controls.get_by_role("checkbox",name="Company",exact=True).uncheck()
         check(table.get_by_role("columnheader",name="Company",exact=True).count()==0 and
@@ -1017,7 +1036,8 @@ try:
               "currency sorts by its underlying value")
         values.press("Space")
         check(visible_rows.first.get_by_role("rowheader",name="Maya Chen").count()==1 and
-              table.locator("th[aria-sort=descending]").count()==1,"second activation reverses sort")
+              table.locator("th[aria-sort=descending]").count()==1 and
+              values.locator("[data-icon]").get_attribute("data-icon")=="arrow-down","second activation reverses sort and arrow")
         renewals=table.get_by_role("button",name="Renewal date",exact=True)
         renewals.press("Enter")
         check(visible_rows.first.get_by_role("rowheader",name="Leo Martin").count()==1 and
@@ -1033,6 +1053,12 @@ try:
             set_profile(cp,density=density,typography=typography)
             cp.locator("html").evaluate("(html, dir) => {html.dir = dir; html.style.setProperty('--space', '1.75rem')}", direction)
             check_width(cp,"advanced table "+direction)
+            appearance.click()
+            check(cp.locator("#site-appearance-panel").evaluate("""element=>{
+                const {left,right}=element.getBoundingClientRect();
+                return left>=0 && right<=document.documentElement.clientWidth;
+            }"""),"appearance panel fits at narrow widths "+direction)
+            cp.keyboard.press("Escape")
             region=cp.get_by_role("region",name="Scrollable contacts table")
             check(region.evaluate("element=>element.scrollWidth > element.clientWidth"),"wide table scroll remains local "+direction)
             check(table.get_by_role("button",name="Contact").evaluate(
@@ -1043,7 +1069,8 @@ try:
         static_table=static_table_context.new_page()
         static_table.goto(url+"demos/advanced-table/",wait_until="load")
         check(static_table.get_by_role("table",name="CRM contacts").get_by_role("row").count()==9 and
-              static_table.locator("#table-controls").is_hidden(),"advanced table has a complete no-script fallback")
+              static_table.locator("#table-controls").is_hidden() and
+              static_table.locator("#site-appearance").is_hidden(),"advanced table has a complete no-script fallback")
         static_table_context.close()
 
         # A standalone application must not depend on documentation markup or

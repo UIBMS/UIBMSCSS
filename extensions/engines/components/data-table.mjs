@@ -73,7 +73,9 @@ export function mountDataTable(table, {fields, controls, search, reset, status})
       const current = position === index;
       if (current) header.setAttribute('aria-sort', direction === 1 ? 'ascending' : 'descending');
       else header.removeAttribute('aria-sort');
-      indicators[position].textContent = current ? (direction === 1 ? ' ↑' : ' ↓') : ' ↕';
+      const indicator = indicators[position];
+      if (current) indicator.dataset.icon = direction === 1 ? 'arrow-up' : 'arrow-down';
+      else delete indicator.dataset.icon;
     });
     const ordered = index < 0 ? records : [...records].sort((left, right) => {
       const a = left.values[index];

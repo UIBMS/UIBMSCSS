@@ -1,26 +1,12 @@
+import {load, save, setupAppearance} from './appearance.js';
+
 // Website behavior only. The CSS framework has no JavaScript runtime.
 const $=(selector,root=document)=>root.querySelector(selector);
 const $$=(selector,root=document)=>[...root.querySelectorAll(selector)];
 const data=JSON.parse($('#site-data').textContent);
 const root=document.documentElement;
-const appearanceKey='uibmscss:appearance:v1';
 const navKey='uibmscss:navigation:v1';
 const scrollKey='uibmscss:navigation-scroll:v1';
-function load(key,fallback){try{return JSON.parse(localStorage.getItem(key)||'null')??fallback;}catch{return fallback;}}
-function save(key,value){try{localStorage.setItem(key,JSON.stringify(value));return true;}catch{return false;}}
-function setupAppearance(){
-  const details=$('#site-appearance'), form=$('#site-appearance-form'), status=$('#site-appearance-status');
-  const current=()=>Object.fromEntries(data.profiles.map(p=>[p.key,root.getAttribute('data-'+p.key)]));
-  const sync=()=>{for(const p of data.profiles){const select=form.elements.namedItem(p.key);select.value=p.values.includes(root.getAttribute('data-'+p.key))?root.getAttribute('data-'+p.key):p.default;}};
-  sync();
-  new MutationObserver(sync).observe(root,{attributes:true,attributeFilter:data.profiles.map(p=>'data-'+p.key)});
-  form.addEventListener('change',e=>{const p=data.profiles.find(p=>p.key===e.target.name);if(!p||!p.values.includes(e.target.value))return;root.setAttribute('data-'+p.key,e.target.value);status.textContent=save(appearanceKey,current())?'Appearance saved.':'Appearance applied for this page.';});
-  form.addEventListener('submit',e=>e.preventDefault());
-  $('#site-appearance-reset').addEventListener('click',()=>{for(const p of data.profiles)root.setAttribute('data-'+p.key,p.default);sync();status.textContent=save(appearanceKey,current())?'Defaults restored.':'Defaults restored for this page.';});
-  document.addEventListener('pointerdown',e=>{if(details.open&&!details.contains(e.target))details.open=false;});
-  document.addEventListener('keydown',e=>{if(e.key==='Escape'&&details.open){details.open=false;details.querySelector('summary').focus();}});
-  window.addEventListener('storage',e=>{if(e.key===appearanceKey||e.key===null){const next=load(appearanceKey,{})||{};for(const p of data.profiles)root.setAttribute('data-'+p.key,p.values.includes(next[p.key])?next[p.key]:p.default);sync();}});
-}
 function setupNavigation(){
   // Native details supplies disclosure; JavaScript only persists its state.
   // Both authored navigation trees use the same catalogue and group keys.
@@ -128,7 +114,7 @@ function setupLiveContext(){
  new MutationObserver(update).observe(root,{attributes:true,attributeFilter:data.profiles.map(p=>'data-'+p.key)});
  matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',update);update();
 }
-setupAppearance();setupNavigation();setupSearch();setupCopy();setupDemos();setupLiveContext();
+setupAppearance(data.profiles);setupNavigation();setupSearch();setupCopy();setupDemos();setupLiveContext();
 const header=$('#site-header');
 function resizeHeader(){const size=header.getBoundingClientRect().height+'px';if(root.style.getPropertyValue('--site-header-size')!==size)root.style.setProperty('--site-header-size',size);}
 resizeHeader();if('ResizeObserver' in window)new ResizeObserver(resizeHeader).observe(header);else window.addEventListener('resize',resizeHeader);

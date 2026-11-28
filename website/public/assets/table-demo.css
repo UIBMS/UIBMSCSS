@@ -35,10 +35,41 @@
 }
 
 #table-demo :where(th > button) {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space) * 0.25);
+  padding-inline: calc(var(--space) * 0.5);
+  background: transparent;
+  border-color: transparent;
   text-align: start;
   white-space: nowrap;
 }
 
+#table-demo :where(th > button:is(:hover, :focus-visible)) {
+  background: var(--color-surface);
+}
+
+#table-demo :where(th > button > span[aria-hidden="true"]) {
+  /* Match the label's cap height and reserve the same space before sorting. */
+  --icon-size: 1cap;
+  flex: none;
+  inline-size: var(--icon-size);
+  color: var(--color-text-muted);
+}
+
 #table-controls[hidden] {
   display: none;
+}
+
+/* The standalone trigger sits at the logical edge of a wrapping header. */
+#table-demo-header > #site-appearance {
+  margin-inline-start: auto;
+  z-index: 1;
+}
+
+#table-demo-header #site-appearance-panel {
+  inline-size: min(24rem, calc(100vi - 2 * var(--space)));
+  min-inline-size: 0;
+  max-inline-size: none;
+  max-block-size: min(70dvb, calc(100dvb - var(--target-size) - 3 * var(--space)));
 }
