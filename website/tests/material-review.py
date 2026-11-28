@@ -993,13 +993,32 @@ try:
         topics.click()
         nav.locator("summary").filter(has_text="Explore").click()
         check(nav.locator("details[open]").count()==1,"blog dropdowns are mutually exclusive")
-        nav.get_by_role("link",name="November archive",exact=True).click()
-        check(cp.url.endswith("#archive") and nav.locator("details[open]").count()==0,"blog archive link reaches real content and closes the dropdown")
+        nav.get_by_role("link",name="All posts",exact=True).click()
+        archive=cp.locator("#journal-main")
+        archive.get_by_role("heading",name="Article archive").wait_for(state="visible")
+        check(cp.url.endswith("/blog/archive/") and nav.locator("details[open]").count()==0,
+              "blog archive opens as a separate page and closes the dropdown")
+        check(archive.get_by_role("heading",level=2).all_text_contents()==["November 2026","October 2026"],
+              "archive groups articles by newest month")
+        dates=archive.locator("article time").evaluate_all("(times)=>times.map(time=>time.dateTime)")
+        check(len(dates)==5 and dates==sorted(dates,reverse=True),"archive lists all articles in reverse chronological order")
+        filter_nav=archive.get_by_role("navigation",name="Filter posts by topic")
+        filter_nav.get_by_role("link",name="Development",exact=True).click()
+        check(cp.url.endswith("/blog/archive/development/") and archive.get_by_role("article").count()==2 and
+              filter_nav.get_by_role("link",name="Development",exact=True).get_attribute("aria-current")=="page",
+              "topic archive lists only its articles and indicates the active link")
+        archive.get_by_role("link",name="A smaller vocabulary for the web",exact=True).click()
+        check(archive.get_by_role("heading",level=1).inner_text()=="A smaller vocabulary for the web" and
+              archive.locator("article time").get_attribute("datetime")=="2026-11-25" and
+              archive.locator("article > p").count()==2,"archive opens the full article with the same title and date")
+        archive.get_by_role("link",name="All posts",exact=True).click()
+        check_width(cp,"blog archive desktop")
 
         launcher=masthead.get_by_role("button",name="Menu",exact=True)
         drawer=cp.get_by_role("dialog",name="Journal menu")
         check(launcher.is_hidden(),"the desktop header does not show the mobile launcher")
         cp.set_viewport_size({"width":320,"height":844})
+        masthead.locator("#journal-menu:not([hidden])").wait_for(state="attached")
         cp.locator("html").evaluate("element=>element.dir='rtl'")
         set_profile(cp,density="spacious",typography="editorial")
         check_width(cp,"blog masthead in RTL at 320px")
@@ -1009,7 +1028,8 @@ try:
         drawer.locator("summary").filter(has_text="Topics").click()
         drawer.get_by_role("link",name="Accessibility",exact=True).click()
         drawer.wait_for(state="hidden")
-        check(cp.url.endswith("#accessibility"),"mobile blog drawer closes after navigating")
+        check(cp.url.endswith("/blog/archive/accessibility/"),"mobile blog drawer opens the topic archive")
+        launcher.wait_for(state="visible")
         launcher.click()
         cp.keyboard.press("Escape")
         drawer.wait_for(state="hidden")
@@ -1023,9 +1043,12 @@ try:
         blog_static=blog_static_context.new_page()
         blog_static.goto(url+"demos/blog/",wait_until="load")
         blog_static.locator("#journal-header summary").filter(has_text="Topics").click()
-        blog_static.get_by_role("link",name="Design",exact=True).wait_for(state="visible")
-        check(blog_static.locator("#journal-menu").is_hidden(),"blog links stay reachable with scripting disabled")
-        check_width(blog_static,"blog navigation with scripting disabled")
+        blog_static.locator("#journal-header").get_by_role("link",name="Design",exact=True).click()
+        check(blog_static.locator("#journal-menu").is_hidden(),"blog archive is reachable with scripting disabled")
+        blog_static.locator("#journal-main").get_by_role("link",name="Designing for a slower read",exact=True).click()
+        check(blog_static.locator("#journal-main").get_by_role("heading",level=1).inner_text()=="Designing for a slower read",
+              "the archive opens a full article without scripting")
+        check_width(blog_static,"blog article with scripting disabled")
         blog_static_context.close()
 
         # The advanced table enhances real headers and rows in place.
