@@ -19,9 +19,11 @@
   --_uibms-toast-tone:var(--color-info);
   box-sizing:border-box;display:grid;grid-template-columns:minmax(0,1fr) auto;
   align-items:start;gap:calc(var(--space)*.5);min-inline-size:0;
-  padding:var(--space);border:var(--border-width) solid var(--color-border);
+  padding:var(--_uibms-toast-padding);border:var(--border-width) solid var(--color-border);
   border-inline-start:calc(var(--border-width)*3) solid var(--_uibms-toast-tone);
-  border-radius:calc(var(--radius)*1.5);
+  --_uibms-toast-radius:calc(var(--radius)*1.5);
+  --_uibms-toast-padding:var(--space);
+  border-radius:var(--_uibms-toast-radius);
   color:var(--color-text);background-color:var(--color-surface);box-shadow:var(--shadow);
   pointer-events:auto;overflow-wrap:anywhere;
   &[data-tone="success"] { --_uibms-toast-tone:var(--color-success); }
@@ -32,6 +34,10 @@
   & :where(strong,p,small) { margin:0; }
   & :where(small) { display:block;color:var(--_uibms-toast-tone);font-weight:650; }
   & :where(button) { min-inline-size:var(--target-size);padding:calc(var(--space)*.35); }
+  /* Only the adjacent direct dismiss action shares the top/end inset. */
+  & > :where(button:last-child) {
+    border-start-end-radius:max(0px,calc(var(--_uibms-toast-radius) - var(--_uibms-toast-padding) - var(--border-width)));
+  }
 }
 @layer defaults {
   :where(.toast) {
@@ -44,6 +50,6 @@
 }
 @media (prefers-reduced-motion:no-preference) {
   .toast { animation:uibms-toast-in var(--signature-time,var(--motion-duration,180ms)) var(--motion-easing,ease) both; }
-  @keyframes uibms-toast-in { from { opacity:0;translate:0 .5rem; } to { opacity:1;translate:0 0; } }
+  @keyframes uibms-toast-in { from { opacity:0;translate:0 calc(var(--motion-distance, .25rem)*2); } to { opacity:1;translate:0 0; } }
 }
 @media (forced-colors:active) { .toast { border-color:CanvasText; } }

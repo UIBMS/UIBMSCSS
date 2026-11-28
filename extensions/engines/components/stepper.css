@@ -15,7 +15,11 @@
     }
     & > :where(li) > :where(:is(button,a[href],span))::before {
       content:counter(uibms-step);display:grid;place-items:center;flex:none;
-      min-inline-size:1.65em;block-size:1.65em;border-radius:50%;
+      /* Keep the counter square for any font, while retaining the existing
+         em fallback and room for multi-digit step numbers. */
+      min-inline-size:1.65em;block-size:1.65em;
+      min-inline-size:max(1lh,2ch);block-size:max(1lh,2ch);
+      aspect-ratio:1;border-radius:50%;
       background:var(--color-surface-subtle);color:var(--color-text);font-variant-numeric:tabular-nums;
     }
     & > :where(li) > :where([aria-current="step"]) {

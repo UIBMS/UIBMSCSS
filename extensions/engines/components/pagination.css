@@ -12,6 +12,10 @@
       color:var(--color-text);background-color:transparent;border:var(--border-width) solid transparent;
       border-radius:var(--radius);font:inherit;font-variant-numeric:tabular-nums;
       text-decoration:none;overflow-wrap:anywhere;text-align:center;box-shadow:none;
+      & > :where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+        inline-size:1em;block-size:1em;
+        inline-size:1lh;block-size:1lh;max-inline-size:100%;
+      }
     }
     & :where([aria-current="page"]) {
       background-color:var(--color-surface-subtle);border-color:var(--color-border-strong);font-weight:650;

@@ -12,6 +12,7 @@
       padding:calc(var(--space) * .5) var(--space);min-inline-size:0;max-inline-size:100%;
       min-block-size:var(--target-size);font-weight:550;white-space:normal;overflow-wrap:anywhere;
       box-shadow:none;
+      & > :where(svg[aria-hidden="true"][viewBox]:not([width],[height])) { max-inline-size:100%; }
     }
     & > :where(button[role="tab"][aria-selected="true"]) {
       background-color:var(--color-surface-subtle);border-color:var(--color-border);font-weight:650;

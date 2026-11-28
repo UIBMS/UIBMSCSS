@@ -5,7 +5,9 @@
   min-inline-size:min(12rem,var(--_uibms-floating-max-width,calc(100dvw - 28px)));
   max-inline-size:min(24rem,var(--_uibms-floating-max-width,calc(100dvw - 28px)));
   max-block-size:var(--_uibms-floating-max-height,calc(100dvh - 28px));overflow:auto;overscroll-behavior:contain;
-  padding:calc(var(--space) * .4);border-radius:calc(var(--radius) * 1.75);
+  --_uibms-menu-padding:calc(var(--space) * .4);
+  --_uibms-menu-radius:calc(var(--radius) * 1.75);
+  padding:var(--_uibms-menu-padding);border-radius:var(--_uibms-menu-radius);
 
   @supports (position-area:block-end span-inline-end) and (position-try-fallbacks:flip-block) {
     & {
@@ -43,7 +45,9 @@
       display:block;inline-size:100%;min-inline-size:0;min-block-size:var(--target-size);
       box-sizing:border-box;max-inline-size:100%;text-align:start;overflow-wrap:anywhere;white-space:normal;
       background-color:transparent;color:var(--color-text);border:var(--border-width) solid transparent;
-      border-radius:var(--radius);font:inherit;font-weight:550;text-decoration:none;
+      border-radius:var(--radius);
+      border-radius:max(0px,calc(var(--_uibms-menu-radius) - var(--_uibms-menu-padding) - var(--border-width)));
+      font:inherit;font-weight:550;text-decoration:none;
       padding:calc(var(--space) * .45) calc(var(--space) * .65);box-shadow:none;
     }
     & :where([role="menuitem"]:focus-visible) { background-color:var(--color-surface-subtle);outline:2px solid var(--color-focus);outline-offset:-2px; }

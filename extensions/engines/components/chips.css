@@ -9,7 +9,10 @@
   :where(.tag,.chip,.tags > li,.chips > li:has(> button[name="remove-chip"]),.chips > label:has(> input[type="checkbox"])) {
     --_uibms-chip-ink:var(--color-text);
     display:inline-flex;align-items:center;gap:calc(var(--space)*.35);box-sizing:border-box;
-    min-inline-size:0;max-inline-size:100%;padding:calc(var(--space)*.25) calc(var(--space)*.55);
+    --_uibms-chip-block-padding:calc(var(--space)*.25);
+    --_uibms-chip-inline-padding:calc(var(--space)*.55);
+    --_uibms-chip-control-inset:calc(var(--space)*.2);
+    min-inline-size:0;max-inline-size:100%;padding:var(--_uibms-chip-block-padding) var(--_uibms-chip-inline-padding);
     border:var(--border-width) solid var(--color-border);border-radius:var(--radius);
     background-color:var(--color-surface-subtle);color:var(--_uibms-chip-ink);font-size:.875em;font-weight:550;overflow-wrap:anywhere;
 
@@ -21,8 +24,12 @@
   :where(.chip:has(> button),.chips > li:has(> button[name="remove-chip"]),label.chip,.chips > label:has(> input[type="checkbox"])) { min-block-size:var(--target-size); }
   :where(.chip,.chips > li:has(> button[name="remove-chip"])) {
     & > :where(button) {
-      min-inline-size:var(--target-size);min-block-size:var(--target-size);padding:calc(var(--space)*.25);
-      margin:calc(var(--space)*-.25) calc(var(--space)*-.35) calc(var(--space)*-.25) 0;
+      min-inline-size:var(--target-size);min-block-size:var(--target-size);padding:var(--_uibms-chip-block-padding);
+      /* Preserve the full remove target while compensating for the owner's
+         padding. Logical edges follow direction, including RTL. */
+      margin-block:calc(-1 * var(--_uibms-chip-block-padding));
+      margin-inline:0 calc(var(--_uibms-chip-control-inset) - var(--_uibms-chip-inline-padding));
+      border-radius:max(0px,calc(var(--radius) - var(--_uibms-chip-control-inset) - var(--border-width)));
       border-color:transparent;background-color:transparent;color:inherit;font:inherit;box-shadow:none;
     }
   }
