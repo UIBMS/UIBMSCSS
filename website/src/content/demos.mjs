@@ -23,7 +23,7 @@ const paths={
   check:'m5 12 4 4L19 6',flag:'M5 21V4m0 1h13l-3 4 3 4H5',
   help:'M12 17v.1 M9 8a3 3 0 1 1 5 2c-2 1-2 2-2 3 M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'
 };
-const icon=name=>'<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+paths[name]+'"/></svg>';
+const icon=name=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="'+paths[name]+'"/></svg>';
 const navLink=([id,label,symbol],current=false)=>'<a href="#'+id+'"'+(current?' aria-current="page"':'')+'>'+icon(symbol)+'<span>'+esc(label)+'</span></a>';
 const action=(label,target)=>'<a href="#'+target+'">'+esc(label)+'</a>';
 const close=label=>'<form method="dialog"><button type="submit" aria-label="'+esc(label)+'">×</button></form>';

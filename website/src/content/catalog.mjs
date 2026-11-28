@@ -67,6 +67,29 @@ group('Foundation',[
   }
 }`,'css')
   ]),
+  section('Mathematically derived contextual geometry','<p>GEO-002 is an approved engineering principle. Derive related sizes from existing typography, density, shape, border and target-size tokens. Use native logical CSS, intrinsic layouts and bounded math instead of independent magic numbers. A shared inset corner has radius max(0, outer radius - padding - border); single-line optical spacing follows the actual font metrics. Keep native controls and accessible hit areas intact, respect explicit overrides, and use ordinary CSS fallbacks. This is not a new class system or geometry runtime.</p>',[
+    example('Shared inset corner and line-based editing space',`<div class="grid" data-shape="organic">
+  <details open data-density="compact">
+    <summary>Compact inset corner</summary>
+    <p>The summary radius follows its enclosing details.</p>
+    <label>Notes <textarea>Four lines of editing space.</textarea></label>
+  </details>
+  <details open data-density="spacious">
+    <summary>Spacious inset corner</summary>
+    <p>More padding reduces the shared inner radius.</p>
+    <label>Notes <textarea>The field follows its font and density.</textarea></label>
+  </details>
+</div>`),
+    snippet('Concentric corner relationship',`:where(details) {
+  --_uibms-disclosure-padding: calc(var(--space) * 0.75);
+  --_uibms-disclosure-inner-radius: max(0px,
+    calc(var(--radius) - var(--_uibms-disclosure-padding) - var(--border-width)));
+  padding: var(--_uibms-disclosure-padding);
+}
+:where(details > summary) {
+  border-radius: var(--_uibms-disclosure-inner-radius, var(--radius));
+}`,'css')
+  ]),
   section('Source structure','<p>The maintained source is in src/. The distribution packager assembles native imports, preserving the CSS cascade. Generated bundles are not edited manually.</p>',[snippet('Source entry excerpt','@layer reset, defaults, configuration, features, preferences;\n@layer defaults.contexts;\n@import url("reset/reset.css");\n@import url("tokens/colors.css");','css')]),
   section('Scoped adoption','<p>The optional scope marker is data-uibms (presence only). Scoping limits selector matching, not every possible interaction with the host cascade.</p>')
  ]),

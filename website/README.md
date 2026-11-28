@@ -70,3 +70,7 @@ During the initial offline review, the environment could not resolve npm or GitH
 ## GitHub Pages
 
 In repository Settings > Pages select GitHub Actions. Run the **Deploy UIBMS CSS Website** workflow from the default branch. The workflow validates the content, installs dependencies, builds with Astro, checks static output, then uploads and deploys the Pages artifact. The website uses `/UIBMSCSS/` as its base. Initial dependency installation uses npm install when no lockfile exists; commit a verified lockfile for subsequent reproducible installs.
+
+## GEO-002: derived geometry in the website and applications
+
+Site and admin decorative SVG helpers author a viewBox and an accessible decorative role, not fixed pixel dimensions. Native buttons use the core optical geometry; contextual link, summary, sidebar and metric rules size other icons. Compact header controls clear the optical edge margin when their visible label is hidden. Existing site hooks define only site-owned spacing and concentric code-panel corners. The catalogue architecture section documents the approved rule and supplies a live example, automatically included in the Component Showcase. The demo remains an example application, not a second framework.
