@@ -16,5 +16,6 @@
 }
 :where(.dashboard-topbar,.app-shell > header) {
   & :where(button,a[href],input,select) { max-inline-size:100%;min-inline-size:0; }
+  & :where(button) { min-inline-size:var(--target-size); }
   & :where(.sidebar-toggle) { align-items:center;justify-content:center; }
 }
