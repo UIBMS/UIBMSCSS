@@ -948,9 +948,9 @@ try:
         def check_admin_icons(label):
             icons=admin.locator(":scope > header button, #admin-overview button[aria-describedby]").locator('svg[stroke="currentColor"]:visible')
             sizes=icons.evaluate_all(
-                "icons => icons.map(icon => { const {width,height}=icon.getBoundingClientRect(); return [width,height]; })"
+                "icons => icons.map(icon => { const {width,height}=icon.getBoundingClientRect(), host=icon.parentElement.getBoundingClientRect(), line=parseFloat(getComputedStyle(icon).lineHeight); return [width,height,host.width,host.height,line]; })"
             )
-            check(len(sizes)==4 and all(0<w<=24 and 0<h<=24 for w,h in sizes),"standalone control icons fit "+label,sizes)
+            check(len(sizes)==4 and all(0<w<=hw+1 and 0<h<=hh+1 and abs(w-line)<1 and abs(h-line)<1 for w,h,hw,hh,line in sizes),"standalone control icons follow font metrics and fit "+label,sizes)
 
         check_admin_icons("desktop")
         check(cp.locator("iframe,#site-header,#site-doc-nav").count()==0,"standalone admin has no embedded documentation")

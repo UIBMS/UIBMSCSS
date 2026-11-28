@@ -7,7 +7,8 @@
         background-color: color-mix(in oklab, var(--color-surface), var(--color-surface-subtle) 30%);
         border: var(--border-width) solid var(--color-border-strong);
         border-radius: var(--radius);
-        padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
+        --_uibms-field-block-padding: calc(var(--space) * 0.5);
+        padding: var(--_uibms-field-block-padding) calc(var(--space) * 0.75);
         min-block-size: var(--target-size);
         max-inline-size: 100%;
 
@@ -24,6 +25,8 @@
 
     :where(textarea) {
         min-block-size: max(var(--target-size), 6em);
+        /* Four lines of editing space plus both padding and border edges. */
+        min-block-size: max(var(--target-size), calc(4lh + 2 * var(--_uibms-field-block-padding) + 2 * var(--border-width)));
         resize: vertical;
     }
 
@@ -91,6 +94,8 @@
     :where(label > input:is([type="checkbox"], [type="radio"])) {
         inline-size: 1.25em;
         block-size: 1.25em;
+        inline-size: min(var(--target-size), 1lh);
+        block-size: min(var(--target-size), 1lh);
         flex: none;
         margin: 0;
     }
@@ -119,12 +124,16 @@
             }
 
             :where(select) {
+                --_uibms-picker-padding: calc(var(--space) * 0.25);
+                --_uibms-picker-radius: calc(var(--radius) * 1.5);
+                --_uibms-picker-inner-radius: max(0px, calc(var(--_uibms-picker-radius) - var(--_uibms-picker-padding) - var(--border-width)));
+
                 &::picker(select) {
                     color: var(--color-text);
                     background-color: var(--color-surface);
                     border: var(--border-width) solid var(--color-border);
-                    border-radius: calc(var(--radius) * 1.5);
-                    padding: calc(var(--space) * 0.25);
+                    border-radius: var(--_uibms-picker-radius);
+                    padding: var(--_uibms-picker-padding);
                     max-block-size: min(22rem, 50dvb);
                     position-area: block-end span-inline-end;
                     position-try-order: normal;
@@ -172,6 +181,16 @@
                 &:where(:checked, :not(:disabled):hover) {
                     background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 12%);
                 }
+            }
+
+            /* Only direct edge options share the picker corners. */
+            :where(select:not([multiple], [size]:not([size="1"])) > option:first-child) {
+                border-start-start-radius: var(--_uibms-picker-inner-radius);
+                border-start-end-radius: var(--_uibms-picker-inner-radius);
+            }
+            :where(select:not([multiple], [size]:not([size="1"])) > option:last-child) {
+                border-end-start-radius: var(--_uibms-picker-inner-radius);
+                border-end-end-radius: var(--_uibms-picker-inner-radius);
             }
         }
     }

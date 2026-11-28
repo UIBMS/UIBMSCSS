@@ -2,7 +2,9 @@
 dialog.command-palette {
   inline-size:min(var(--command-width,38rem),calc(100dvw - var(--space)*2));
   min-inline-size:0;max-inline-size:calc(100dvw - var(--space)*2);max-block-size:calc(100dvh - var(--space)*2);
-  margin:auto;padding:var(--space);overflow:auto;overscroll-behavior:contain;
+  --_uibms-command-padding:var(--space);
+  --_uibms-command-radius:calc(var(--radius)*3);
+  margin:auto;padding:var(--_uibms-command-padding);border-radius:var(--_uibms-command-radius);overflow:auto;overscroll-behavior:contain;
 }
 :where(.command-palette) {
   & > :where(form,.stack) { min-inline-size:0; }
@@ -16,12 +18,14 @@ dialog.command-palette {
   & > :where(li[hidden]) { display:none !important; }
 }
 @layer defaults {
-  :where(.command-results,.command-palette > ul[id],.command-palette > .stack > ul[id]) {
+  :is(.command-results,.command-palette > :where(ul[id]),.command-palette > :where(.stack > ul[id])) {
     & > :where(li) > :where(button,a[href]) {
       display:block;box-sizing:border-box;inline-size:100%;min-inline-size:0;max-inline-size:100%;
       min-block-size:var(--target-size);text-align:start;overflow-wrap:anywhere;white-space:normal;text-decoration:none;
       background-color:transparent;color:var(--color-text);border:var(--border-width) solid transparent;
-      border-radius:var(--radius);padding:calc(var(--space)*.55) var(--space);font:inherit;font-weight:550;box-shadow:none;
+      border-radius:var(--radius);
+      border-radius:min(var(--radius), max(0px, calc(var(--_uibms-command-radius, calc(var(--radius)*3)) - var(--_uibms-command-padding, var(--space)) - var(--border-width))));
+      padding:calc(var(--space)*.55) var(--space);font:inherit;font-weight:550;box-shadow:none;
 
       @media (hover:hover) {
         &:where(:not(:disabled,[aria-disabled="true"]):hover) {

@@ -13,6 +13,7 @@
     :where(code, kbd) {
         padding: 0.125em 0.25em;
         border-radius: calc(var(--radius) * 0.5);
+        border-radius: min(calc(var(--radius) * 0.5), 0.5lh);
     }
 
     :where(kbd, pre) {

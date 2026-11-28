@@ -24,9 +24,9 @@
   }
 }
 #admin-shell > header > div:last-child { gap:calc(var(--space)*.25); }
-#admin-shell > header button:not(.sidebar-toggle,.sidebar-drawer-toggle) { display:inline-flex;align-items:center;gap:calc(var(--space)*.25); }
 @container uibms-shell (width < 42rem) {
   #admin-shell > header > div:last-child button > span { display:none; }
+  #admin-shell > header > div:last-child button > svg { margin-inline:0; }
 }
 .demo-brand {
   display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:calc(var(--space)*.4);color:var(--color-text);text-decoration:none;line-height:1.2;
@@ -84,10 +84,10 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
 #admin-overview label.stack { gap:calc(var(--space) * .3); }
 #admin-overview label.stack > span { display:flex;justify-content:space-between;gap:var(--space); }
 #admin-shell :is(meter,#admin-report-bar) { inline-size:100%; }
-#admin-shell meter { block-size:.65rem; }
-#admin-shell meter::-webkit-meter-bar { background:var(--color-surface-subtle);border:0;border-radius:var(--radius); }
-#admin-shell meter::-webkit-meter-optimum-value { background:var(--color-accent);border-radius:var(--radius); }
-#admin-shell meter::-moz-meter-bar { background:var(--color-accent);border-radius:var(--radius); }
+#admin-shell meter { --_uibms-demo-meter-thickness:.65em;block-size:var(--_uibms-demo-meter-thickness); }
+#admin-shell meter::-webkit-meter-bar { background:var(--color-surface-subtle);border:0;border-radius:min(var(--radius),calc(var(--_uibms-demo-meter-thickness)/2)); }
+#admin-shell meter::-webkit-meter-optimum-value { background:var(--color-accent);border-radius:min(var(--radius),calc(var(--_uibms-demo-meter-thickness)/2)); }
+#admin-shell meter::-moz-meter-bar { background:var(--color-accent);border-radius:min(var(--radius),calc(var(--_uibms-demo-meter-thickness)/2)); }
 
 #admin-shell .split-workspace { align-items:start; }
 #admin-record-count { color:var(--color-text-muted);font-size:.875em; }
@@ -104,6 +104,7 @@ a.visually-hidden[href="#admin-main"]:focus { position:fixed;inset:var(--space) 
 }
 #admin-shell .tag {
   border-radius:calc(var(--target-size) / 2);
+  border-radius:calc(.5lh + var(--_uibms-chip-block-padding,calc(var(--space)*.25)) + var(--border-width));
   background-color:color-mix(in oklab,var(--color-surface),currentColor 9%);
 }
 #admin-detail-panel dl,

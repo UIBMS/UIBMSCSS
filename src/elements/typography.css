@@ -4,6 +4,7 @@
         line-height: var(--heading-line-height);
         font-weight: var(--heading-weight, 650);
         margin-block: calc(var(--space) * 1.5) calc(var(--space) * 0.5);
+        margin-block: max(calc(var(--space) * 1.5), 0.5lh) max(calc(var(--space) * 0.5), 0.25lh);
         text-wrap: balance;
     }
 

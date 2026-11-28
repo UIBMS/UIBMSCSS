@@ -32,7 +32,13 @@ jobs:
       - name: Reproduce committed CSS
         run: |
           npm --prefix tools run build
-          git diff --exit-code -- dist/
+          # Report readable source-equivalent differences instead of dumping
+          # entire one-line minified bundles. Still fail on ANY dist mismatch.
+          if ! git diff --quiet -- dist/; then
+            git diff --no-ext-diff -- dist/ ':!dist/*.min.css' ':!dist/extensions/**/*.min.css'
+            git diff --stat -- dist/
+            exit 1
+          fi
           test -z "$(git status --porcelain --untracked-files=all -- dist/)"
       - name: Install website dependencies
         working-directory: website
@@ -86,6 +92,9 @@ jobs:
       - name: Responsive table regression
         if: ${{ !cancelled() }}
         run: python tests/tables.py --browser ${{ matrix.browser }}
+      - name: Mathematical geometry regression
+        if: ${{ !cancelled() }}
+        run: python tests/geometry.py --browser ${{ matrix.browser }}
       - name: Preserve release report
         if: ${{ !cancelled() }}
         uses: actions/upload-artifact@v4

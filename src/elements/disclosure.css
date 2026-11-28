@@ -3,7 +3,9 @@
     :where(details) {
         border: var(--border-width) solid var(--color-border);
         border-radius: var(--radius);
-        padding: calc(var(--space) * 0.75);
+        --_uibms-disclosure-padding: calc(var(--space) * 0.75);
+        --_uibms-disclosure-inner-radius: max(0px, calc(var(--radius) - var(--_uibms-disclosure-padding) - var(--border-width)));
+        padding: var(--_uibms-disclosure-padding);
         margin-block: var(--space);
     }
 
@@ -24,6 +26,11 @@
             border-block-end: var(--border-width) solid var(--color-border);
             color: var(--color-accent);
         }
+    }
+
+    /* The direct summary is inset by the details padding and border. */
+    :where(details > summary) {
+        border-radius: var(--_uibms-disclosure-inner-radius, var(--radius));
     }
 
     @supports (interpolate-size: allow-keywords) and selector(::details-content) {

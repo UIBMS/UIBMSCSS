@@ -8,6 +8,7 @@ A modern native CSS framework for humans and AI coding agents, designed to make 
 - Minimalistic, optimized engineering without artificial limits.
 - Semantic HTML-first components with minimal classes and contextual native CSS nesting; no custom HTML component tags.
 - Meaningful tokenization, not tokenization of every declaration.
+- Mathematically derived contextual geometry: compute dependent dimensions from existing typography, density, shape, border and target-size tokens using native CSS (GEO-002). Preserve semantic markup, accessible minimums and explicit overrides.
 - Applicable WCAG 2.2 Level AAA accessibility requirements targeted by default, while preserving developer freedom.
 - Intuitive, discoverable and predictable development for humans and AI coding agents.
 - Meaningful HTML data attributes for coordinated design configuration.

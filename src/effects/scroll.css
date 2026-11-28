@@ -17,6 +17,7 @@
             --_scroll-motion: none;
             --_scroll-progress: none;
             --_scroll-range: entry 0% cover 35%;
+            --_scroll-thickness: max(2px, calc(var(--border-width) * 2));
             animation-name: var(--_scroll-motion), var(--_scroll-progress);
             animation-duration: 1ms;
             animation-timing-function: linear;
@@ -43,7 +44,7 @@
                 background-image: linear-gradient(var(--color-accent), var(--color-accent));
                 background-repeat: no-repeat;
                 background-position: left bottom;
-                background-size: 0% 2px;
+                background-size: 0% var(--_scroll-thickness, 2px);
 
                 &:where(:dir(rtl)) { background-position: right bottom; }
             }
@@ -60,8 +61,8 @@
         }
 
         @keyframes uibms-scroll-progress {
-            from { background-size: 0% 2px; }
-            to { background-size: 100% 2px; }
+            from { background-size: 0% var(--_scroll-thickness, 2px); }
+            to { background-size: 100% var(--_scroll-thickness, 2px); }
         }
     }
 

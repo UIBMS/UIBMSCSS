@@ -14,6 +14,9 @@
     }
 
     & :where(progress,meter) { inline-size:100%; }
+    & > :where(dt) > :where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+      inline-size:1em;block-size:1em;inline-size:1lh;block-size:1lh;flex:none;
+    }
   }
 
   /* Native strong and small elements are the default; explicit legacy hooks remain supported. */

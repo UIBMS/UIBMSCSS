@@ -1,4 +1,12 @@
-/* The native progress remains the accessible source of truth. */
+/* The native progress remains the accessible source of truth.
+   Normalize the existing stroke override (SVG numbers or CSS lengths) only
+   in this optional module. The registered defaults make the unused type zero. */
+@property --_uibms-ring-stroke-number {
+  syntax:"<number>";inherits:false;initial-value:0;
+}
+@property --_uibms-ring-stroke-length {
+  syntax:"<length-percentage>";inherits:false;initial-value:0px;
+}
 @layer features {
   :where(.progress-ring) { position:relative;min-inline-size:0; }
   :where(.progress-ring-face) {
@@ -8,7 +16,16 @@
   :where(.progress-ring-face > *) { grid-area:1/1; }
   :where(.progress-ring-face > svg) { display:block;inline-size:100%;block-size:auto; }
   :where(.progress-ring-track,.progress-ring-fill) {
-    fill:none;stroke-width:var(--dashboard-ring-stroke,8); 
+    fill:none;stroke-width:var(--dashboard-ring-stroke,8);
+    /* Preserve the original 42-unit radius without modern typed arithmetic.
+       In the 100-unit square viewBox, 4 units of clearance surround the stroke. */
+    @supports (r:calc(46px - 8px / 2)) and (width:calc(1px * (1px / 1px))) {
+      --_uibms-ring-stroke-number:var(--dashboard-ring-stroke,8);
+      --_uibms-ring-stroke-length:var(--dashboard-ring-stroke,8);
+      --_uibms-ring-stroke:clamp(0px,calc(var(--_uibms-ring-stroke-length) + var(--_uibms-ring-stroke-number)*1px),90px);
+      stroke-width:var(--_uibms-ring-stroke);
+      r:calc(46px - var(--_uibms-ring-stroke)/2);
+    }
   }
   :where(.progress-ring-track) { stroke:var(--color-border); }
   :where(.progress-ring-fill) { stroke:var(--dashboard-ring-ink,var(--color-accent));stroke-linecap:round; }

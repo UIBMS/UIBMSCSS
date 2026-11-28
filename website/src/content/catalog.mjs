@@ -67,6 +67,29 @@ group('Foundation',[
   }
 }`,'css')
   ]),
+  section('Mathematically derived contextual geometry','<p>GEO-002 is an approved engineering principle. Derive related sizes from existing typography, density, shape, border and target-size tokens. Use native logical CSS, intrinsic layouts and bounded math instead of independent magic numbers. A shared inset corner has radius max(0, outer radius - padding - border); single-line optical spacing follows the actual font metrics. Keep native controls and accessible hit areas intact, respect explicit overrides, and use ordinary CSS fallbacks. This is not a new class system or geometry runtime.</p>',[
+    example('Shared inset corner and line-based editing space',`<div class="grid" data-shape="organic">
+  <details open data-density="compact">
+    <summary>Compact inset corner</summary>
+    <p>The summary radius follows its enclosing details.</p>
+    <label>Notes <textarea>Four lines of editing space.</textarea></label>
+  </details>
+  <details open data-density="spacious">
+    <summary>Spacious inset corner</summary>
+    <p>More padding reduces the shared inner radius.</p>
+    <label>Notes <textarea>The field follows its font and density.</textarea></label>
+  </details>
+</div>`),
+    snippet('Concentric corner relationship',`:where(details) {
+  --_uibms-disclosure-padding: calc(var(--space) * 0.75);
+  --_uibms-disclosure-inner-radius: max(0px,
+    calc(var(--radius) - var(--_uibms-disclosure-padding) - var(--border-width)));
+  padding: var(--_uibms-disclosure-padding);
+}
+:where(details > summary) {
+  border-radius: var(--_uibms-disclosure-inner-radius, var(--radius));
+}`,'css')
+  ]),
   section('Source structure','<p>The maintained source is in src/. The distribution packager assembles native imports, preserving the CSS cascade. Generated bundles are not edited manually.</p>',[snippet('Source entry excerpt','@layer reset, defaults, configuration, features, preferences;\n@layer defaults.contexts;\n@import url("reset/reset.css");\n@import url("tokens/colors.css");','css')]),
   section('Scoped adoption','<p>The optional scope marker is data-uibms (presence only). Scoping limits selector matching, not every possible interaction with the host cascade.</p>')
  ]),
@@ -143,6 +166,10 @@ group('Native elements',[
  ]),
  doc('buttons','Buttons','Native button controls with theme-aware styling and interaction feedback.',[
   section('Basic usage','<p>No mandatory classes. Use button for an action; use an anchor for navigation. Default buttons use a lightly tinted surface and progressive hover and press states.</p>',[example('Button states',`<div class="cluster">\n  <button type="button">Continue</button>\n  <button type="button" disabled>Disabled</button>\n  <input type="button" value="Input button">\n</div>`)]),
+  section('Optical button geometry','<p>Inspired by the optical-spacing demonstration: an unsized decorative SVG uses the button’s line height, and the gap accounts for the font cap height. Use one direct visible span for the label, before or after the SVG, without a child class. For an icon-only action, supply an accessible aria-label. The nominal inner radius and half-height are derived from the existing space, radius, border and target-size tokens. The area correction compensates for rounded ends; logical margins work in both writing directions. Ordinary text buttons and explicitly sized SVGs keep their existing behavior. Browsers without typed CSS arithmetic retain normal padding and icon alignment. The local pill example derives its radius from existing geometry; no new global shape profile is required. Multiline or externally resized controls retain normal wrapping, but the mathematical correction is an approximation of single-line geometry.</p>',[
+    example('Optical spacing in the current shape',"<div class=\"cluster\">\n  <button type=\"button\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n    <span>Approve</span>\n  </button>\n  <button type=\"button\">\n    <span>Approve</span>\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n  </button>\n  <button type=\"button\" aria-label=\"Approve\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n  </button>\n  <button type=\"button\"><span>Approve</span></button>\n</div>"),
+    example('Pill buttons without extra classes',"<div class=\"cluster\" style=\"--radius: calc(var(--target-size) + 1lh + var(--space))\">\n  <button type=\"button\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n    <span>Approve</span>\n  </button>\n  <button type=\"button\">\n    <span>Approve</span>\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n  </button>\n  <button type=\"button\" aria-label=\"Approve\">\n    <svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.8\" stroke-linecap=\"round\" stroke-linejoin=\"round\" aria-hidden=\"true\"><circle cx=\"12\" cy=\"12\" r=\"10\"/><path d=\"m7 12 3 3 7-7\"/></svg>\n  </button>\n  <button type=\"button\"><span>Approve</span></button>\n</div>")
+  ]),
   section('Form action types','<p>Choose button, submit or reset deliberately. The native control determines behavior.</p>',[example('Reset a form',`<form class="stack">\n  <label for="button-reset">Name</label>\n  <input id="button-reset" value="Original value">\n  <div class="cluster">\n    <button type="reset">Reset</button>\n    <button type="button">Action</button>\n  </div>\n</form>`)]),
   section('Interaction and accessibility','<p>Hover, press and keyboard focus retain meaningful state feedback. Buttons have a minimum target size and disabled state. aria-disabled styling alone does not suppress application events. Use actual disabled when possible.</p>',[example('Optional explicit effects',`<button type="button" data-hover="lift glow" data-active="press" data-focus="glow">\n  Try hover, press and focus\n</button>`)]),
   section('Native input variants','<p>Input buttons and file selector buttons share the appropriate native button appearance. There are no invented primary/secondary button classes.</p>')

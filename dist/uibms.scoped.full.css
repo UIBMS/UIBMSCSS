@@ -139,7 +139,7 @@
             --radius: 0.5rem;
         }
         :where(:scope,:scope *):where([data-shape="sharp"]) {
-            --radius: 0;
+            --radius: 0px;
         }
         :where(:scope,:scope *):where([data-shape="soft"]) {
             --radius: 0.25rem;
@@ -285,6 +285,7 @@
             line-height: var(--heading-line-height);
             font-weight: var(--heading-weight, 650);
             margin-block: calc(var(--space) * 1.5) calc(var(--space) * 0.5);
+            margin-block: max(calc(var(--space) * 1.5), 0.5lh) max(calc(var(--space) * 0.5), 0.25lh);
             text-wrap: balance;
         }
         :where(:scope,:scope *):where(h1) {
@@ -365,6 +366,53 @@
             font-weight: 600;
             cursor: pointer;
         }
+        :where(:scope,:scope *):where(button:has(>svg[aria-hidden="true"][viewBox]:not([width],[height]))) {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: calc(var(--space) * 0.5);
+            gap: max(calc(var(--space) * 0.5), calc(var(--space) - (1lh - 1cap) / 2));
+            &>:where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+                inline-size: 1em;
+                block-size: 1em;
+                inline-size: 1lh;
+                block-size: 1lh;
+                flex: none;
+            }
+            &>:where(span:not([aria-hidden="true"],.visually-hidden)) {
+                min-inline-size: 0;
+                overflow-wrap: anywhere;
+            }
+            &:where([aria-label]:not(:has(>span:not([aria-hidden="true"],.visually-hidden)))) {
+                padding-inline: calc(var(--space) * 0.5);
+            }
+        }
+        @supports (margin-inline: calc(1cap + 1px * (1px / 1px) * (1 - pi / 4))) {
+            :where(:scope,:scope *):where(button:has(>span:not([aria-hidden="true"],.visually-hidden)):not(:has(>svg[aria-hidden="true"]:is([width],[height])))) {
+                --_button-half: max(calc(0.5lh + var(--space) * 0.5), calc(var(--target-size) * 0.5 - var(--border-width)));
+                --_button-r: clamp(0px, calc(var(--radius) - var(--border-width)), var(--_button-half));
+                --_button-curve: calc(var(--_button-r) / var(--_button-half));
+                --_button-text-edge: calc(var(--_button-r) * (1 - pi / 4) * var(--_button-curve));
+                --_button-icon-edge: calc((var(--_button-half) - 0.5lh - var(--space)) * var(--_button-curve));
+                &>:where(span:not([aria-hidden="true"],.visually-hidden)) {
+                    margin-inline: var(--_button-text-edge);
+                    &:where(svg+*) {
+                        margin-inline-start: 0;
+                    }
+                    &:where(:has(+svg)) {
+                        margin-inline-end: 0;
+                    }
+                }
+                &>:where(svg[aria-hidden="true"][viewBox]:not([width],[height])) {
+                    &:where(:has(+span:not([aria-hidden="true"],.visually-hidden))) {
+                        margin-inline-start: var(--_button-icon-edge);
+                    }
+                    &:where(span:not([aria-hidden="true"],.visually-hidden)+*) {
+                        margin-inline-end: var(--_button-icon-edge);
+                    }
+                }
+            }
+        }
         @media (prefers-reduced-motion: no-preference) {
             :where(:scope,:scope *):where(button,input:is([type="button"],[type="submit"],[type="reset"])),:where(:scope,:scope *) :where(input[type="file"])::file-selector-button {
                 transition: background-color var(--signature-time, var(--motion-duration)) var(--motion-easing);
@@ -398,7 +446,8 @@
             background-color: color-mix(in oklab, var(--color-surface), var(--color-surface-subtle) 30%);
             border: var(--border-width) solid var(--color-border-strong);
             border-radius: var(--radius);
-            padding: calc(var(--space) * 0.5) calc(var(--space) * 0.75);
+            --_uibms-field-block-padding: calc(var(--space) * 0.5);
+            padding: var(--_uibms-field-block-padding) calc(var(--space) * 0.75);
             min-block-size: var(--target-size);
             max-inline-size: 100%;
             &:where(:focus) {
@@ -412,6 +461,7 @@
         }
         :where(:scope,:scope *):where(textarea) {
             min-block-size: max(var(--target-size), 6em);
+            min-block-size: max(var(--target-size), calc(4lh + 2 * var(--_uibms-field-block-padding) + 2 * var(--border-width)));
             resize: vertical;
         }
         :where(:scope,:scope *):where(input,textarea)::placeholder {
@@ -466,6 +516,8 @@
         :where(:scope,:scope *):where(label>input:is([type="checkbox"],[type="radio"])) {
             inline-size: 1.25em;
             block-size: 1.25em;
+            inline-size: min(var(--target-size), 1lh);
+            block-size: min(var(--target-size), 1lh);
             flex: none;
             margin: 0;
         }
@@ -488,12 +540,15 @@
                     appearance: base-select;
                 }
                 :where(:scope,:scope *):where(select) {
+                    --_uibms-picker-padding: calc(var(--space) * 0.25);
+                    --_uibms-picker-radius: calc(var(--radius) * 1.5);
+                    --_uibms-picker-inner-radius: max(0px, calc(var(--_uibms-picker-radius) - var(--_uibms-picker-padding) - var(--border-width)));
                     &::picker(select) {
                         color: var(--color-text);
                         background-color: var(--color-surface);
                         border: var(--border-width) solid var(--color-border);
-                        border-radius: calc(var(--radius) * 1.5);
-                        padding: calc(var(--space) * 0.25);
+                        border-radius: var(--_uibms-picker-radius);
+                        padding: var(--_uibms-picker-padding);
                         max-block-size: min(22rem, 50dvb);
                         position-area: block-end span-inline-end;
                         position-try-order: normal;
@@ -532,6 +587,14 @@
                     &:where(:checked,:not(:disabled):hover) {
                         background-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 12%);
                     }
+                }
+                :where(:scope,:scope *):where(select:not([multiple],[size]:not([size="1"]))>option:first-child) {
+                    border-start-start-radius: var(--_uibms-picker-inner-radius);
+                    border-start-end-radius: var(--_uibms-picker-inner-radius);
+                }
+                :where(:scope,:scope *):where(select:not([multiple],[size]:not([size="1"]))>option:last-child) {
+                    border-end-start-radius: var(--_uibms-picker-inner-radius);
+                    border-end-end-radius: var(--_uibms-picker-inner-radius);
                 }
             }
         }
@@ -597,7 +660,9 @@
         :where(:scope,:scope *):where(details) {
             border: var(--border-width) solid var(--color-border);
             border-radius: var(--radius);
-            padding: calc(var(--space) * 0.75);
+            --_uibms-disclosure-padding: calc(var(--space) * 0.75);
+            --_uibms-disclosure-inner-radius: max(0px, calc(var(--radius) - var(--_uibms-disclosure-padding) - var(--border-width)));
+            padding: var(--_uibms-disclosure-padding);
             margin-block: var(--space);
         }
         :where(:scope,:scope *):where(summary) {
@@ -615,6 +680,9 @@
                 border-block-end: var(--border-width) solid var(--color-border);
                 color: var(--color-accent);
             }
+        }
+        :where(:scope,:scope *):where(details>summary) {
+            border-radius: var(--_uibms-disclosure-inner-radius, var(--radius));
         }
         @supports (interpolate-size: allow-keywords) and selector(::details-content) {
             @media (prefers-reduced-motion: no-preference) {
@@ -673,6 +741,7 @@
         :where(:scope,:scope *):where(code,kbd) {
             padding: 0.125em 0.25em;
             border-radius: calc(var(--radius) * 0.5);
+            border-radius: min(calc(var(--radius) * 0.5), 0.5lh);
         }
         :where(:scope,:scope *):where(kbd,pre) {
             border: var(--border-width) solid var(--color-border);
@@ -790,8 +859,13 @@
         :where(:scope,:scope *):where(.card:not(.panel),.panel:not(.card)) {
             color: var(--color-text);
             border: var(--border-width) solid var(--color-border-subtle);
-            border-radius: calc(var(--radius) * 2);
-            padding: var(--space);
+            --_uibms-surface-radius: calc(var(--radius) * 2);
+            --_uibms-surface-padding: var(--space);
+            border-radius: var(--_uibms-surface-radius);
+            padding: var(--_uibms-surface-padding);
+            &>:where(:is(img,video):only-child) {
+                border-radius: max(0px, calc(var(--_uibms-surface-radius) - var(--_uibms-surface-padding) - var(--border-width)));
+            }
             &:where(.card) {
                 background-color: var(--color-surface);
                 box-shadow: var(--shadow);
@@ -988,6 +1062,7 @@
                 --_scroll-motion: none;
                 --_scroll-progress: none;
                 --_scroll-range: entry 0% cover 35%;
+                --_scroll-thickness: max(2px, calc(var(--border-width) * 2));
                 animation-name: var(--_scroll-motion), var(--_scroll-progress);
                 animation-duration: 1ms;
                 animation-timing-function: linear;
@@ -1010,7 +1085,7 @@
                     background-image: linear-gradient(var(--color-accent), var(--color-accent));
                     background-repeat: no-repeat;
                     background-position: left bottom;
-                    background-size: 0% 2px;
+                    background-size: 0% var(--_scroll-thickness, 2px);
                     &:where(:dir(rtl)) {
                         background-position: right bottom;
                     }
@@ -1041,10 +1116,10 @@
     @supports (animation-timeline: view(block)) and (animation-timeline: scroll(root block)) and (animation-range: entry 0% cover 35%) {
         @keyframes uibms-scoped-scroll-progress {
             from {
-                background-size: 0% 2px;
+                background-size: 0% var(--_scroll-thickness, 2px);
             }
             to {
-                background-size: 100% 2px;
+                background-size: 100% var(--_scroll-thickness, 2px);
             }
         }
     }

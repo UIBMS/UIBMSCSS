@@ -2,15 +2,18 @@
 @layer defaults {
   :where(.segmented[role="radiogroup"]) {
     display:inline-flex;flex-wrap:wrap;gap:calc(var(--space) * .25);
-    padding:calc(var(--space) * .25);max-inline-size:100%;min-inline-size:0;
+    --_uibms-segment-inset:calc(var(--space) * .25);
+    padding:var(--_uibms-segment-inset);max-inline-size:100%;min-inline-size:0;
     border:var(--border-width) solid var(--color-border);
-    border-radius:calc(var(--radius) + var(--space) * .25);
+    --_uibms-segment-radius:calc(var(--radius) + min(var(--radius), calc(var(--_uibms-segment-inset) + var(--border-width))));
+    border-radius:var(--_uibms-segment-radius);
     background-color:var(--color-surface);color:var(--color-text);
     & > :where(label) {
       position:relative;display:flex;align-items:center;justify-content:center;flex:1 1 auto;
       min-inline-size:0;min-block-size:var(--target-size);max-inline-size:100%;
       margin:0;padding:calc(var(--space) * .4) var(--space);text-align:center;overflow-wrap:anywhere;
-      border:var(--border-width) solid transparent;border-radius:var(--radius);cursor:pointer;
+      border:var(--border-width) solid transparent;
+      border-radius:max(0px,calc(var(--_uibms-segment-radius) - var(--_uibms-segment-inset) - var(--border-width)));cursor:pointer;
       color:var(--color-text);background-color:transparent;font-weight:550;
     }
     /* The native input covers its label, preserving its full hit area, focus,

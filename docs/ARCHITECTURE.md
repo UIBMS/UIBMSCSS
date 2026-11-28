@@ -774,6 +774,21 @@ Apply the semantic HTML-first, minimal-class approach to the whole framework, it
 
 The aim is the minimum necessary markup and CSS, not an arbitrary number of classes or mandatory use of nesting when a simple selector is clearer.
 
+### GEO-002 — Mathematically derived contextual geometry
+
+Status: approved, 2026-11-28. Applies to every future UIBMS CSS core module, optional component/engine, documentation example and application demo. Extends TOK-001, TOK-008 through TOK-012 and CLS-004; it does not replace them.
+
+**Permanent engineering rule:** derive dependent visual dimensions from their actual geometric or typographic relationship whenever CSS can express it clearly. A developer should not have to calculate a second value after changing the first. Prefer native CSS mathematics, intrinsic layout and semantic structural selectors over independent magic numbers, repeated values, manual child classes or JavaScript measurements.
+
+- Start with existing authoritative tokens: `--space`, `--radius`, `--border-width`, `--target-size`, typography, motion and palette roles. Distinguish genuine independent design inputs from dependent dimensions. Do not create a global geometry system or tokenize every constant.
+- Compute related quantities at the component that owns the geometry. Use local private properties only where the result is reused, and preserve explicit consumer overrides. Relative units in custom properties resolve where consumed; do not assume they capture a parent's measured dimensions.
+- Prefer `lh`, `cap`, `em`, `ch`, logical axes, `aspect-ratio`, `calc()`, `min()`, `max()`, `clamp()`, intrinsic grids and container queries. Use typed arithmetic, mathematical constants or newer geometry features only where they simplify a genuine relationship, with a working fallback. Do not add a class or data attribute solely to activate an automatic sizing formula.
+- For a circular concentric inner corner, use max(0, outer radius - intervening padding - outer border), but only when those surfaces share the relevant inset edges and the CSS owns those dimensions. Independently positioned controls retain their own radius; arbitrary author overrides, elliptical and asymmetrically inset corners require separate treatment. Normalize length-valued zero to 0px when subtracting lengths.
+- Optical spacing may compensate for rounded edges and font metrics; the button formula is a single-line approximation, not a measurement of arbitrary glyph outlines or wrapped content. Respect authored icon dimensions and native form semantics. Align range thumbs using (track thickness - thumb thickness)/2; reserve the space required by embedded controls from their shared geometry; derive a collapsed rail from the actual control target plus its insets.
+- Preserve the minimum accessible hit area, readable content, keyboard and focus behavior, forced colors, reduced motion, RTL, independent density/shape/typography profiles, host isolation and developer freedom. A mathematical formula must never silently reduce an accessible minimum, clip content, or substitute a decorative element for a native control.
+- Keep intentional independent values (palette roles, accessible minimums, semantic breakpoints, animation design, data values) explicit. Do not introduce expensive or fragile mathematics just for uniformity. JavaScript remains optional for genuinely dynamic data, browser compatibility, measured geometry or interaction; do not use it to do CSS's job.
+- Every new or changed geometry relationship must be documented at its source or in the relevant component contract, illustrated through the existing catalogue when useful, and tested against contextual overrides, small containers, larger type, both writing directions and the applicable browser engines. Regenerate the maintained distributions through the existing packager and verify the actual website before merging.
+
 ### HTM-001 — Comprehensive, context-aware native HTML styling
 
 Status: approved — Option C, 2026-11-24.
