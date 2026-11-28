@@ -3,7 +3,6 @@ import {profiles,configDetails,titleCase} from '../lib/config.mjs';
 import {framework} from '../lib/contract.mjs';
 import {expressivePalettes,oklch,paletteRoles} from '../lib/expressive-palettes.mjs';
 import {demos} from './demos.mjs';
-import {wordpressPatterns, wordpressPreview, wordpressSpacingPreview, wordpressThemeSpacingUnits} from './wordpress.mjs';
 // A single authoritative navigation/content catalog. Trusted authored HTML only.
 const section=(title,body,examples=[],extra={})=>({title,body,examples,...extra});
 const example=(label,html,extra={})=>({label,html,code:html,lang:'html',...extra});
@@ -839,26 +838,6 @@ group('Dashboard',[
     ]
   }
 ],{stylesheets:["dashboard/quick-actions.css"]})
-]);
-
-
-group('WordPress and Gutenberg',[
- doc('wordpress','WordPress and Gutenberg','Build pages from native Gutenberg blocks and reusable UIBMS patterns.',[
-  section('Use the patterns','<ol><li>Load UIBMS CSS in your theme using the setup below.</li><li>Download a pattern into your child theme’s <code>patterns/</code> folder and insert it from the Patterns tab. For a one-off page, open Gutenberg’s Code editor in a blank draft, paste the copied block markup, and switch back to Visual editor.</li><li>Replace the sample content and links. Add your own image to Media and text and provide alt text when the image carries meaning.</li></ol><p>Each pattern uses native blocks and existing UIBMS layout or surface classes. Choose a heading level that fits its position in your page.</p>'),
-  ...wordpressPatterns.map(pattern=>section(pattern.title,
-    '<p>'+pattern.description+'</p><p><a download href="{{base}}wordpress/patterns/'+pattern.slug+'.php">Download '+pattern.title+' pattern</a></p>',
-    [
-      example(pattern.title+' preview',wordpressPreview(pattern.markup)),
-      snippet('Copy into Gutenberg Code editor',pattern.markup)
-    ])),
-  section('Spacing controls','<p>Margin adds space outside the selected Group. Padding adds space inside its outline. Block gap controls spacing between its child blocks. Choose a unit for margin, padding, or gap, then use the slider or type an exact value. Use All sides for a shared value or pick an individual edge to mix units. Changing a unit keeps the entered number, so 2 px becomes 2 rem when you select rem. Viewport units follow the browser window, and inline container units follow the preview canvas.</p><p>This is the UIBMS inspector concept for the documentation. In Gutenberg, use the block’s native Dimensions panel for the spacing controls it supports.</p>',[
-    example('Group spacing preview',wordpressSpacingPreview,{run:'wordpress-spacing'})
-  ]),
-  section('Theme setup','<p>Use this setup for a theme that adopts UIBMS globally. Put the same standard bundle in <code>assets/uibms.min.css</code> in your child theme. Add this hook to your theme’s <code>functions.php</code> to load it on the public page and in the block editor content on WordPress 6.3 or later. The spacing example uses <code>theme.json</code> version 3 for WordPress 6.6 or later. Merge the spacing keys into the existing theme configuration. The example enables the portable set of native WordPress spacing units. Available controls depend on the block, theme, and installed WordPress or Gutenberg version. The browser demo also offers newer CSS units when supported.</p>',[
-    snippet('Load UIBMS CSS in the theme and editor', "add_action( 'enqueue_block_assets', function () {\n    wp_enqueue_style( 'uibms-css', get_theme_file_uri( 'assets/uibms.min.css' ) );\n} );",'php'),
-    snippet('Enable native Dimensions options in theme.json',JSON.stringify({version:3,settings:{spacing:{margin:true,padding:true,blockGap:true,customSpacingSize:true,units:wordpressThemeSpacingUnits}}},null,2),'json')
-  ])
- ],{stylesheets:['wordpress/spacing-preview.css']})
 ]);
 
 const demoGallery=page('demos','Demos','Explore complete standalone applications built using UIBMSCSS.',[
