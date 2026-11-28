@@ -58,6 +58,14 @@ Load command.css and import mountCommandPalette from command.mjs when necessary.
 
 mountCommandPalette(dialog,{shortcut:true}) optionally enables Ctrl/Cmd+K outside editable fields and other modals. The docs demo keeps the existing site search shortcut, so use its open button. open(), close(), refresh() and destroy() manage lifecycle. commandselect is cancelable to keep the palette open without suppressing the actual application action. The application owns its command registry, routing and remote data.
 
+## Advanced tables
+
+Load the core CSS and import `mountDataTable(table, {fields, controls, search, reset, status})` from `data-table.mjs`. Author a caption, a single header row with plain column labels, and one body with one cell per column. Use row headers for record names. Supply field keys in column order. Keep the first column as the record identifier.
+
+Pass a native form as `controls`, a search input, a reset button with `type="button"`, and a separate result live region. Hide the form in authored HTML until the controller loads. Give each column checkbox `name="columns"` and a field key as its value. Omit the first field from that group. Filter controls use the corresponding field key as their name. Text filters match substrings, selects match exact values, and date inputs match dates on or after the selection. Provide dates with `<time datetime="YYYY-MM-DD">` and numeric values with `<data value="…">` for sorting. Global search uses the displayed values from all columns, including hidden columns; combined filters narrow the same record set. Column selection never removes the corresponding field filter.
+
+The controller captures the authored rows at mount, enhances sortable headers with native buttons and reports sort direction with `aria-sort`. Reset restores checkbox and filter defaults and the original row order. The application owns loading or replacing datasets. Keep a labelled, keyboard-focusable scroll region when the data needs the extra space. No component stylesheet or framework-specific class is required.
+
 ## Derived geometry (GEO-002)
 
 Segmented controls and dropdown menus derive their inset corners from the actual owner radius, border and padding. Chips reserve their existing minimum remove-target size and compensate for padding with logical margins, so direction does not require separate styles. Step counters follow the line height and accommodate multiple digits. Pagination accepts a direct decorative SVG with a viewBox and no authored dimensions; the icon follows the local font metrics. Toast dismissal and motion use the notification's own geometry and the motion-distance token. Tooltip width also respects a readable character measure. These relationships are local to the existing component, do not add consumer classes, and leave the native states and controllers authoritative. See [GEO-002](../../../docs/ARCHITECTURE.md#geo-002--mathematically-derived-contextual-geometry).

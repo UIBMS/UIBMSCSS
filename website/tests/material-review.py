@@ -977,6 +977,75 @@ try:
         actions=cp.locator("[data-site-demo-content] .quick-actions")
         check(actions.get_by_role("link").count()==3 and actions.evaluate("e=>e.classList.contains('cluster')"),"quick actions preserve native links and core cluster")
         check_width(cp,"quick actions mobile")
+        # The advanced table enhances real headers and rows in place.
+        cp.set_viewport_size({"width":1280,"height":900})
+        cp.goto(url+"docs/tables/",wait_until="load")
+        cp.get_by_role("link",name="Try the advanced table demo").click()
+        table=cp.get_by_role("table",name="CRM contacts")
+        controls=cp.locator("#table-controls")
+        controls.wait_for(state="visible")
+        rows=table.locator("tbody tr")
+        visible_rows=table.locator("tbody tr:not([hidden])")
+        check(visible_rows.count()==8,"advanced table initially shows the full dataset")
+
+        company=table.get_by_role("button",name="Company",exact=True)
+        company.press("Enter")
+        check(company.evaluate("button=>button.parentElement.getAttribute('aria-sort')")=="ascending","keyboard sorts and announces the column")
+        check(visible_rows.first.get_by_role("cell",name="Cedar Works").count()==1,"sort uses company names")
+        controls.get_by_text("Visible columns",exact=True).click()
+        controls.get_by_role("checkbox",name="Company",exact=True).uncheck()
+        check(table.get_by_role("columnheader",name="Company",exact=True).count()==0 and
+              table.locator("tbody td:nth-child(2)[hidden]").count()==8 and
+              table.locator("[aria-sort]").count()==0,"column selection hides header and cells and clears a hidden sort")
+        check(table.get_by_role("rowheader").count()==8,"record headings stay visible")
+        controls.get_by_label("Search contacts").fill("orchard elena garcia")
+        check(visible_rows.count()==1 and visible_rows.first.get_by_role("rowheader",name="Elena García").count()==1,
+              "search matches multiple words and accents, including hidden columns")
+        controls.get_by_role("combobox",name="Stage",exact=True).select_option(label="Won")
+        check(visible_rows.count()==0 and cp.locator("#table-count").inner_text()=="No matching rows","combined filters announce empty results")
+
+        controls.get_by_role("button",name="Reset table").click()
+        controls.get_by_label("Renewal date from").fill("2027-05-12")
+        check(visible_rows.count()==3,"custom renewal field filters by ISO date and excludes missing values")
+        controls.get_by_role("combobox",name="Owner",exact=True).select_option(label="Jordan Lee")
+        check(visible_rows.count()==1 and visible_rows.first.get_by_role("rowheader",name="Elena García").count()==1,
+              "typed filters compose")
+        controls.get_by_role("button",name="Reset table").click()
+        values=table.get_by_role("button",name="Deal value",exact=True)
+        values.press("Space")
+        check(visible_rows.first.get_by_role("rowheader",name="Nina Santos").count()==1,
+              "currency sorts by its underlying value")
+        values.press("Space")
+        check(visible_rows.first.get_by_role("rowheader",name="Maya Chen").count()==1 and
+              table.locator("th[aria-sort=descending]").count()==1,"second activation reverses sort")
+        renewals=table.get_by_role("button",name="Renewal date",exact=True)
+        renewals.press("Enter")
+        check(visible_rows.first.get_by_role("rowheader",name="Leo Martin").count()==1 and
+              visible_rows.last.locator("td:last-child time").count()==0,"dates sort chronologically with missing values last")
+        controls.get_by_role("button",name="Reset table").click()
+        check(rows.count()==8 and visible_rows.count()==8 and
+              table.get_by_role("columnheader").count()==7 and
+              visible_rows.first.get_by_role("rowheader",name="Nina Santos").count()==1 and
+              table.locator("[aria-sort]").count()==0,"reset restores defaults and authored order")
+
+        for width,density,typography,direction in [(320,"compact","technical","ltr"),(375,"spacious","editorial","rtl")]:
+            cp.set_viewport_size({"width":width,"height":844})
+            set_profile(cp,density=density,typography=typography)
+            cp.locator("html").evaluate("(html, dir) => {html.dir = dir; html.style.setProperty('--space', '1.75rem')}", direction)
+            check_width(cp,"advanced table "+direction)
+            region=cp.get_by_role("region",name="Scrollable contacts table")
+            check(region.evaluate("element=>element.scrollWidth > element.clientWidth"),"wide table scroll remains local "+direction)
+            check(table.get_by_role("button",name="Contact").evaluate(
+                "button=>button.getBoundingClientRect().height >= parseFloat(getComputedStyle(button).minBlockSize)"),
+                "native sort target respects its minimum "+direction)
+
+        static_table_context=browser.new_context(java_script_enabled=False)
+        static_table=static_table_context.new_page()
+        static_table.goto(url+"demos/advanced-table/",wait_until="load")
+        check(static_table.get_by_role("table",name="CRM contacts").get_by_role("row").count()==9 and
+              static_table.locator("#table-controls").is_hidden(),"advanced table has a complete no-script fallback")
+        static_table_context.close()
+
         # A standalone application must not depend on documentation markup or
         # simulate its interaction inside an iframe.
         cp.set_viewport_size({"width":1440,"height":960})

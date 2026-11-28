@@ -19,7 +19,7 @@ await stat(path.join(root,'engines/icons/menu.css'));
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.css'),'utf8'),expressiveStyles());
 assert.equal(await readFile(path.join(root,'assets/expressive-palettes.scoped.css'),'utf8'),expressiveStyles(true));
 for(const file of ['material.mjs','media-deformation.mjs','forms.mjs','liquid-silicone.css','forms.css','landscape.svg'])await stat(path.join(root,'engines',file));
-for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdown.css','dropdown.mjs','tooltip.css','tooltip.mjs','drawer.css','drawer.mjs','toast.css','toast.mjs','stepper.css','stepper.mjs','pagination.css','pagination.mjs','chips.css','chips.mjs','command.css','command.mjs','README.md'])await stat(path.join(root,'engines/components',file));
+for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdown.css','dropdown.mjs','tooltip.css','tooltip.mjs','drawer.css','drawer.mjs','toast.css','toast.mjs','stepper.css','stepper.mjs','pagination.css','pagination.mjs','chips.css','chips.mjs','command.css','command.mjs','data-table.mjs','README.md'])await stat(path.join(root,'engines/components',file));
 for(const file of ['app-shell.css','app-shell.mjs','sidebar.css','topbar.css','page-header.css','split-workspace.css','split-workspace.mjs','metrics.css','widget-grid.css','quick-actions.css','sparkline.css','sparkline.mjs','progress-ring.css','progress-ring.mjs','README.md'])await stat(path.join(root,'engines/dashboard',file));
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
