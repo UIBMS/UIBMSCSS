@@ -1,0 +1,120 @@
+/* Documentation canvas. The published pattern markup uses the core CSS. */
+#gutenberg-spacing {
+  --_preview-margin-color: color-mix(in oklab, var(--color-surface), var(--color-accent) 22%);
+  --_preview-padding-color: color-mix(in oklab, var(--color-surface), var(--color-success) 24%);
+  align-items: start;
+}
+#gutenberg-spacing > div > p {
+  margin: 0;
+  padding: calc(var(--space) * .5);
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius);
+}
+#gutenberg-spacing > div > div {
+  padding: var(--_preview-margin, 16px);
+  background: var(--_preview-margin-color);
+}
+#gutenberg-spacing article {
+  min-inline-size: 0;
+  padding: var(--_preview-padding, 24px);
+  border: var(--border-width) solid var(--color-border-strong);
+  background: var(--_preview-padding-color);
+}
+#gutenberg-spacing article > div {
+  display: grid;
+  gap: var(--_preview-gap, 12px);
+  background: var(--color-surface);
+}
+#gutenberg-spacing article h4,
+#gutenberg-spacing article p {
+  margin: 0;
+  padding: calc(var(--space) * .25);
+  overflow-wrap: anywhere;
+  background: var(--color-surface-subtle);
+}
+#gutenberg-spacing ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+#gutenberg-spacing li::before {
+  content: '';
+  display: inline-block;
+  inline-size: .85em;
+  block-size: .85em;
+  margin-inline-end: .5ch;
+  border: var(--border-width) solid var(--color-border-strong);
+  background: var(--color-surface);
+}
+#gutenberg-spacing li:first-child::before { background: var(--_preview-margin-color); }
+#gutenberg-spacing li:nth-child(2)::before { background: var(--_preview-padding-color); }
+#gutenberg-spacing fieldset {
+  min-inline-size: 0;
+  padding: calc(var(--space) * .5);
+}
+#gutenberg-spacing fieldset > div {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(8ch, auto);
+  gap: calc(var(--space) * .5);
+  align-items: end;
+}
+#gutenberg-spacing details { margin-block: calc(var(--space) * .5); }
+#gutenberg-spacing details fieldset {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: '. top .' 'left all right' '. bottom .';
+  gap: calc(var(--space) * .25);
+  direction: ltr;
+}
+#gutenberg-spacing details label:has([value="0"]) { grid-area: top; }
+#gutenberg-spacing details label:has([value="1"]) { grid-area: right; }
+#gutenberg-spacing details label:has([value="2"]) { grid-area: bottom; }
+#gutenberg-spacing details label:has([value="3"]) { grid-area: left; }
+#gutenberg-spacing details label:has([value="all"]) { grid-area: all; }
+#gutenberg-spacing details label { position: relative; }
+#gutenberg-spacing details input {
+  position: absolute;
+  inset: 0;
+  inline-size: 100%;
+  block-size: 100%;
+  opacity: 0;
+  cursor: pointer;
+}
+#gutenberg-spacing details label > span {
+  display: grid;
+  place-items: center;
+  min-block-size: var(--target-size);
+  border: var(--border-width) solid var(--color-border-strong);
+  border-radius: var(--radius);
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+#gutenberg-spacing details :checked + span {
+  background: var(--color-surface-subtle);
+  box-shadow: inset 0 0 0 var(--border-width) var(--color-border-strong);
+  font-weight: 650;
+}
+#gutenberg-spacing details :focus-visible + span {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+#gutenberg-spacing label {
+  display: grid;
+  gap: calc(var(--space) * .25);
+  min-inline-size: 0;
+}
+#gutenberg-spacing input[type="range"] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: var(--target-size);
+}
+#gutenberg-spacing input[type="number"] { inline-size: 9ch; }
+#gutenberg-spacing output { display: block; margin-block-start: calc(var(--space) * .25); }
+@media (forced-colors: active) {
+  #gutenberg-spacing article { border-color: CanvasText; }
+  #gutenberg-spacing > div > div { outline: 1px dashed CanvasText; }
+  #gutenberg-spacing article > div { outline: 1px dotted CanvasText; }
+  #gutenberg-spacing li:first-child::before { border-style: dashed; }
+  #gutenberg-spacing li:nth-child(2)::before { border-style: dotted; }
+  #gutenberg-spacing details :checked + span { border-color: Highlight; }
+}

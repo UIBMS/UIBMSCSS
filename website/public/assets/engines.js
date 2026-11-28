@@ -191,3 +191,9 @@ for(const demo of document.querySelectorAll('[data-site-demo-run="media-deformat
   update();
 }
 document.documentElement.setAttribute('data-site-engines-ready','');
+
+const spacingPreview=query('[data-site-demo-run="wordpress-spacing"] #gutenberg-spacing');
+if(spacingPreview){
+  const {mountSpacingPreview}=await import('../engines/wordpress/spacing-preview.mjs'+revision);
+  mountSpacingPreview(spacingPreview);
+}

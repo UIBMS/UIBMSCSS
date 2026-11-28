@@ -4,6 +4,7 @@ import {createHash} from 'node:crypto';
 import {fileURLToPath} from 'node:url';
 import path from 'node:path';
 import {allPages as pages} from '../src/content/catalog.mjs';
+import {wordpressPatterns} from '../src/content/wordpress.mjs';
 import {basePath} from '../src/lib/config.mjs';
 import {expressiveStyles} from '../src/lib/expressive-palettes.mjs';
 import {assertDocumentReferences,assertPreferredMarkup,requiredStyles} from '../tests/semantic.mjs';
@@ -20,6 +21,12 @@ assert.equal(await readFile(path.join(root,'assets/expressive-palettes.scoped.cs
 for(const file of ['material.mjs','media-deformation.mjs','forms.mjs','liquid-silicone.css','forms.css','landscape.svg'])await stat(path.join(root,'engines',file));
 for(const file of ['tabs.css','tabs.mjs','segmented.css','floating.mjs','dropdown.css','dropdown.mjs','tooltip.css','tooltip.mjs','drawer.css','drawer.mjs','toast.css','toast.mjs','stepper.css','stepper.mjs','pagination.css','pagination.mjs','chips.css','chips.mjs','command.css','command.mjs','README.md'])await stat(path.join(root,'engines/components',file));
 for(const file of ['app-shell.css','app-shell.mjs','sidebar.css','topbar.css','page-header.css','split-workspace.css','split-workspace.mjs','metrics.css','widget-grid.css','quick-actions.css','sparkline.css','sparkline.mjs','progress-ring.css','progress-ring.mjs','README.md'])await stat(path.join(root,'engines/dashboard',file));
+for(const file of ['spacing-preview.css','spacing-preview.mjs'])await stat(path.join(root,'engines/wordpress',file));
+for(const pattern of wordpressPatterns){
+ const file=await readFile(path.join(root,'wordpress/patterns',pattern.slug+'.php'),'utf8');
+ assert(file.includes(' * Slug: uibms/'+pattern.slug+'\n'),pattern.slug);
+ assert.equal(file.split('?>\n')[1],pattern.markup+'\n',pattern.slug+' downloadable block markup');
+}
 for(const p of pages){
  const html=await readFile(path.join(root,p.slug,'index.html'),'utf8');
  assertDocumentReferences(html,p.slug);
