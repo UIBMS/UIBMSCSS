@@ -42,7 +42,7 @@ def case_markup(i, case, optional):
       <ul class="chips"><li>Removable <button type="button" name="remove-chip" aria-label="Remove">×</button></li></ul>
       <ol class="stepper"><li><button type="button">Step</button></li></ol>
       <nav class="pagination" aria-label="Pages"><ul><li><a href="#top" aria-label="Previous">{ICON}</a></li></ul></nav>
-      <div class="app-shell" data-uibms-shell-ready style="width:720px;max-width:100%;--dashboard-height:150px"><header><button class="sidebar-toggle" aria-expanded="false">Menu</button></header><nav><ul><li><a href="#top">{ICON}<span>Overview</span></a></li></ul></nav><main>Content</main></div>
+      <div class="app-shell" data-uibms-shell-ready style="width:720px;max-width:100%;--dashboard-height:240px"><header><button class="sidebar-toggle" aria-expanded="false">Menu</button></header><nav><ul><li><a href="#top">{ICON}<span>Overview</span></a></li></ul></nav><main>Content</main></div>
       <div class="split-workspace" data-uibms-split-ready style="width:720px;max-width:100%"><section>One</section><div role="separator" aria-controls="pane-{i}" aria-label="Resize"></div><section id="pane-{i}">Two</section></div>
       <div data-uibms-form-control><input type="text" data-uibms-form-source aria-label="Field" style="width:100%"><button data-uibms-form-trigger type="button" aria-label="Pick"></button></div>
       <div data-uibms-form-control data-uibms-form-kind="color"><input data-uibms-form-source type="color" aria-label="Color"><span data-uibms-form-color-face><span data-uibms-form-color-chip></span><span data-uibms-form-color-text>#123456</span></span><button data-uibms-form-trigger type="button" aria-label="Pick color"></button></div>
@@ -113,12 +113,14 @@ OPTIONAL_CHECKS = r"""()=>{
       const pi=q('.pagination svg');
       equal(id,'pagination icon follows type',box(pi).width,px(s(pi),'lineHeight'));
       equal(id,'pagination icon square',box(pi).width,box(pi).height);
-      const side=q('.app-shell > nav'),ss=s(side),a=q('.app-shell nav a'),target=44;
-      const rail=Math.max(64,target+px(ss,'paddingInlineStart')+px(ss,'paddingInlineEnd')+px(ss,'borderInlineEndWidth'));
+      const side=q('.app-shell > nav'),ss=s(side),a=q('.app-shell nav a'),target=44,link=s(a);
+      const control=Math.max(target,Math.min(target,px(link,'lineHeight'))+px(link,'paddingInlineStart')+px(link,'paddingInlineEnd')+px(link,'borderInlineStartWidth')+px(link,'borderInlineEndWidth'));
+      const rail=Math.max(64,control+px(ss,'paddingInlineStart')+px(ss,'paddingInlineEnd')+px(ss,'borderInlineEndWidth'));
       equal(id,'density-aware rail width',box(side).width,rail);
       equal(id,'rail preserves control target',Math.max(44,box(a).width),box(a).width);
       const icon=a.querySelector('svg');
       equal(id,'sidebar icon follows type',box(icon).width,Math.min(44,px(s(icon),'lineHeight')));
+      equal(id,'sidebar icon square',box(icon).width,box(icon).height);
       const split=q('.split-workspace'),handle=q('[role=separator]');
       equal(id,'density-aware split gutter',box(handle).width,Math.max(20,space*1.25));
       equal(id,'split grip width',px(getComputedStyle(handle,'::after'),'inlineSize'),Math.max(2,border*3));

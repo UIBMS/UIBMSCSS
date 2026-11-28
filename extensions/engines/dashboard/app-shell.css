@@ -2,6 +2,11 @@
 .app-shell {
   container:uibms-shell / inline-size;
   --_uibms-sidebar-padding:calc(var(--space)*.65);
+  --_uibms-rail-link-padding:calc(var(--space)*.25);
+  /* The collapsed control must fit both its target and its font-relative icon
+     plus its own insets. The outer rail adds the sidebar's separate edges. */
+  --_uibms-rail-control-width:var(--target-size);
+  --_uibms-rail-control-width:max(var(--target-size),calc(min(var(--target-size),1lh) + 2 * var(--_uibms-rail-link-padding) + 2 * var(--border-width)));
   position:relative;
   inline-size:100%;min-inline-size:0;max-inline-size:100%;
   block-size:var(--dashboard-height,100dvh);min-block-size:0;
@@ -28,7 +33,7 @@
 .app-shell :is(.sidebar-toggle,.sidebar-drawer-toggle) { display:none; }
 .app-shell[data-uibms-shell-ready] .sidebar-toggle { display:inline-flex; }
 :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) {
-  grid-template-columns:minmax(0,var(--dashboard-rail-width,max(4rem,calc(var(--target-size) + 2 * var(--_uibms-sidebar-padding) + var(--border-width))))) minmax(0,1fr);
+  grid-template-columns:minmax(0,var(--dashboard-rail-width,max(4rem,calc(var(--_uibms-rail-control-width) + 2 * var(--_uibms-sidebar-padding) + var(--border-width))))) minmax(0,1fr);
 }
 @container uibms-shell (min-width:42rem) {
   :is(.app-shell[data-uibms-shell-ready],.app-shell[data-uibms-shell-ready] > .app-shell-grid):has(> :is(header,.dashboard-topbar) .sidebar-toggle[aria-expanded=false]) > :is(nav,.dashboard-sidebar) {
@@ -38,7 +43,7 @@
       overflow:hidden;clip-path:inset(50%);white-space:nowrap;
     }
     & :where(a,summary):has(.sidebar-icon,> svg[aria-hidden=true]) {
-      justify-content:center;padding-inline:calc(var(--space)*.25);
+      justify-content:center;padding-inline:var(--_uibms-rail-link-padding);
     }
     & ul ul { padding-inline-start:0; }
     & summary:has(.sidebar-icon,> svg[aria-hidden=true])::after { display:none; }
