@@ -1,3 +1,4 @@
+import {renderTableDemo} from '../content/table-demo.mjs';
 import {renderAuthDemo} from '../content/auth-demos.mjs';
 import {menuIcon} from './menu-icon.mjs';
 import manifest from '../../../dist/manifest.json' with { type: 'json' };
@@ -6,7 +7,7 @@ import { profiles, initialAttributes, esc, jsonScript, href, asset, basePath, ti
 import { codeBlock } from './code.mjs';
 import { framework } from './contract.mjs';
 import { renderAdminDemo } from '../content/demos.mjs';
-const demoRenderers={'admin-demo':renderAdminDemo,'auth-demo':renderAuthDemo};
+const demoRenderers={'admin-demo':renderAdminDemo,'auth-demo':renderAuthDemo,'table-demo':renderTableDemo};
 
 const frameworkAsset=(base,name)=>asset(base,'framework/'+name)+'?v='+manifest.files[name].sha256;
 const revision=encodeURIComponent(process.env.GITHUB_SHA||manifest.files['uibms.full.min.css'].sha256);

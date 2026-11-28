@@ -1,0 +1,44 @@
+#table-demo-header,
+#table-demo {
+  padding: var(--space);
+}
+
+#table-demo-header {
+  justify-content: space-between;
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+#table-demo-header > a:first-child {
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--space) * 0.5);
+}
+
+#table-demo :where(fieldset, label, input, select) {
+  min-inline-size: 0;
+}
+
+#table-controls > :where(div:first-child) {
+  align-items: end;
+}
+
+#table-controls > :where(div:first-child) > label {
+  display: grid;
+}
+
+#table-controls :where(label > input:not([type="checkbox"]), label > select) {
+  max-inline-size: 100%;
+}
+
+#table-demo :where([role="region"]) {
+  overflow: auto;
+}
+
+#table-demo :where(th > button) {
+  text-align: start;
+  white-space: nowrap;
+}
+
+#table-controls[hidden] {
+  display: none;
+}
