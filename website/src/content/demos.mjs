@@ -1,3 +1,4 @@
+import {blogDemo} from './blog-demo.mjs';
 import {tableDemo} from './table-demo.mjs';
 import {authDemos} from './auth-demos.mjs';
 import {staticSparkline} from '../lib/sparkline.mjs';
@@ -9,7 +10,8 @@ const dashboard=['app-shell','sidebar','topbar','page-header','split-workspace',
 export const demos=[
   {slug:'demos/admin',title:'Administration dashboard',description:'A complete project operations workspace with records, reports, creation workflow and configurable appearance.',kind:'application',standalone:true,sections:[],documentation:'docs/dashboard',entry:'admin-demo',stylesheets:[...components.map(n=>'components/'+n+'.css'),...dashboard.map(n=>'dashboard/'+n+'.css'),'liquid-silicone.css','forms.css'],features:['Responsive app shell and navigation','Project records and local search','KPI widgets and reporting','Forms, workflow and notifications','All appearance profiles']},
   ...authDemos,
-  tableDemo
+  tableDemo,
+  blogDemo
 ];
 
 const routes=[

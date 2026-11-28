@@ -11,7 +11,7 @@ mountDataTable(document.getElementById('crm-contacts'), {
   status: document.getElementById('table-count')
 });
 
-setupAppearance(JSON.parse(document.getElementById('table-appearance-profiles').textContent));
+setupAppearance(JSON.parse(document.getElementById('demo-appearance-profiles').textContent));
 
 // Use the same opt-in loader as the documentation and dashboard.
 const revision = new URL(import.meta.url).search;
