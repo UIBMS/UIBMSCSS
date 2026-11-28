@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {pages,docPages,groups,allPages,topLinks} from '../src/content/catalog.mjs';
+import {pages,docPages,groups,allPages,topLinks,componentShowcase} from '../src/content/catalog.mjs';
 import {demos} from '../src/content/demos.mjs';
 import {profiles,basePath,configDetails} from '../src/lib/config.mjs';
 import {framework} from '../src/lib/contract.mjs';
@@ -73,6 +73,26 @@ for(const p of pages){
   const html=renderHtml(p,'/UIBMSCSS/');
   const actual=[...html.matchAll(/href="[^"]*\/engines\/(dashboard\/[a-z-]+\.css)\?v=/g)].map(m=>m[1]).sort();
   assert.deepEqual(actual,(p.stylesheets||[]).filter(s=>s.startsWith('dashboard/')).sort(),p.slug+' dashboard asset scope');
+}
+// The combined page must contain every inline reference example exactly once.
+const referenceExamples=groups.flatMap(group=>group.pages.flatMap(source=>
+  source.sections.flatMap(section=>section.examples).filter(e=>e.html&&!e.frame)));
+const showcaseExamples=componentShowcase.sections.flatMap(section=>section.topics.flatMap(topic=>topic.examples));
+assert.deepEqual(showcaseExamples,referenceExamples,'showcase is derived from the reference catalogue');
+assert(topLinks.some(([name,slug])=>name==='Components'&&slug===componentShowcase.slug));
+for(const base of ['/','/UIBMSCSS/']){
+ const html=renderHtml(componentShowcase,base);
+ assert.equal((html.match(/<section data-site-example>/g)||[]).length,referenceExamples.length);
+ assert(!/<iframe\b/i.test(html),'showcase must not embed iframes');
+ assertDocumentReferences(html,'component showcase '+base);
+ for(const stylesheet of requiredStyles(html))assert(html.includes('engines/'+stylesheet+'?v='),'showcase missing '+stylesheet);
+ // Duplicate radio names across examples would couple otherwise independent groups.
+ const radioOwners=new Map();
+ for(const e of showcaseExamples)for(const match of e.html.matchAll(/<input\b[^>]*type="radio"[^>]*name="([^"]+)"/g)){
+  const owner=radioOwners.get(match[1]);
+  assert(!owner||owner===e,'radio group crosses independent examples: '+match[1]);
+  radioOwners.set(match[1],e);
+ }
 }
 // Standalone applications have independent layouts and a shared registry.
 assert.equal(new Set(allPages.map(p=>p.slug)).size,allPages.length);

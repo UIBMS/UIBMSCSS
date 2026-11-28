@@ -396,6 +396,8 @@ const engine = (function materialEngine() {
   function mountMaterial(root=document,options={}){
     if(instances.has(root))return instances.get(root);
     const config={...defaults,...options},surfaces=new Map(),selections=new Map(),dirty=new Set(),animating=new Set(),backdrops=new Map();
+    // Consumers may limit decorative work without changing native element state.
+    const filter=typeof options.filter==='function'?options.filter:null;
     let mediaPromise=null;
     config.loadMedia=()=>{
       if(mediaPromise||config.mediaDeformer)return;
@@ -460,7 +462,15 @@ const engine = (function materialEngine() {
       targetHover(null);clearFlatLights();clearTouchFocus();request();
     };
     function request(){if(!frame&&!disposed)frame=requestAnimationFrame(tick);}
-    function queueRefresh(){if(refreshPending||disposed)return;refreshPending=true;queueMicrotask(()=>{refreshPending=false;if(!disposed)refresh();});}
+    function queueRefresh(){
+      if(refreshPending||disposed)return;
+      refreshPending=true;
+      const run=()=>{refreshPending=false;if(!disposed)refresh();};
+      // A filtered, viewport-driven application may generate many DOM changes
+      // while scrolling. Coalesce them once per frame instead of repainting
+      // repeatedly inside a mutation-observer microtask checkpoint.
+      if(filter)requestAnimationFrame(run);else queueMicrotask(run);
+    }
     const ro=typeof ResizeObserver==='function'?new ResizeObserver(entries=>{for(const e of entries){let s=surfaces.get(e.target);if(s)dirty.add(s);}request();}):null;
     function wanted(el,groupTargets){
       // Internal table structure remains flat, even if material is explicitly specified on a cell.
@@ -478,11 +488,11 @@ const engine = (function materialEngine() {
     }
     function refresh(){
       const groupTargets=new Map();
-      if(!forced.matches&&CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")'))for(const el of root.querySelectorAll(groups))if(enabled(el)&&!legacyMaterial(el)&&inOpenOverlays(el)){const a=selected(el);if(a)groupTargets.set(el,a);}
+      if(!forced.matches&&CSS.supports('clip-path','path("M 0 0 H 1 V 1 Z")'))for(const el of root.querySelectorAll(groups))if((!filter||filter(el))&&enabled(el)&&!legacyMaterial(el)&&inOpenOverlays(el)){const a=selected(el);if(a)groupTargets.set(el,a);}
       for(const [el,s] of selections)if(!groupTargets.has(el)){s.destroy();selections.delete(el);}
       const candidates=[...(root.nodeType===1&&root.matches(selector)?[root]:[]),...root.querySelectorAll(selector)],keep=new Set();
       for(const el of candidates){
-        if(!wanted(el,groupTargets))continue;
+        if((filter&&!filter(el))||!wanted(el,groupTargets))continue;
         const d=design(el);
         if(!d.surface&&!el.matches(activeSelector)&&!el.matches(replaced)&&el.getAttribute('data-material')!=='liquid-silicone')continue;
         if(!d.surface&&el.matches('hr,progress,meter,iframe,canvas,svg'))continue;

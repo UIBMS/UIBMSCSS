@@ -152,6 +152,7 @@ for(const figure of dynamicSparklines)sparklineModule.mountSparkline(figure);
 for(const root of rings)ringModule.mountProgressRing(root);
 const siliconeExamples=[...document.querySelectorAll('[data-site-demo-run="liquid-silicone"]')];
 await loadAppearanceEngines({
+  deferPreviews:JSON.parse(document.getElementById('site-data').textContent).deferPreviews,
   loadMaterial:()=>import('../engines/material.mjs'+revision),
   loadForms:()=>import('../engines/forms.mjs'+revision),
   loadMedia:()=>import('../engines/media-deformation.mjs'+revision),
