@@ -39,6 +39,7 @@ def case_markup(i, case, optional):
     extra = f'''<div class="segmented" role="radiogroup" aria-label="Period">
       <label><input type="radio" name="period-{i}" checked> Daily</label><label><input type="radio" name="period-{i}"> Weekly</label></div>
       <div class="dropdown" role="menu" popover="manual" aria-label="Menu"><button role="menuitem">First</button><button role="menuitem">Middle</button><button role="menuitem">Last</button></div>
+      <dialog class="command-palette" aria-label="Command"><ul id="command-{i}"><li><button type="button">Action</button></li></ul></dialog>
       <ul class="chips"><li>Removable <button type="button" name="remove-chip" aria-label="Remove">×</button></li></ul>
       <ol class="stepper"><li><button type="button">Step</button></li></ol>
       <nav class="pagination" aria-label="Pages"><ul><li><a href="#top" aria-label="Previous">{ICON}</a></li></ul></nav>
@@ -101,10 +102,13 @@ OPTIONAL_CHECKS = r"""()=>{
       equal(id,'menu first corner',px(s(q('.dropdown > :first-child')),'borderStartStartRadius'),inner);
       equal(id,'menu middle radius independent',px(s(q('.dropdown > :nth-child(2)')),'borderStartStartRadius'),radius);
       equal(id,'menu last corner',px(s(q('.dropdown > :last-child')),'borderEndEndRadius'),inner);
+      const command=s(q('.command-palette')),result=s(q('.command-palette button'));
+      equal(id,'command result radius bound',px(result,'borderTopLeftRadius'),Math.min(radius,Math.max(0,px(command,'borderTopLeftRadius')-px(command,'paddingTop')-px(command,'borderTopWidth'))));
       const chip=s(q('.chips > li')),remove=q('.chips button'),rs=s(remove);
       equal(id,'logical remove edge',px(rs,'marginInlineEnd'),space*.2-px(chip,'paddingInlineEnd'));
       equal(id,'logical remove start',px(rs,'marginInlineStart'),0);
       equal(id,'remove block margin',px(rs,'marginBlockStart'),-px(chip,'paddingBlockStart'));
+      equal(id,'remove corner bound',px(rs,'borderTopLeftRadius'),Math.max(0,px(chip,'borderTopLeftRadius')-space*.2-px(chip,'borderTopWidth')));
       equal(id,'remove target width',Math.max(44,box(remove).width),box(remove).width);
       equal(id,'remove target height',Math.max(44,box(remove).height),box(remove).height);
       const step=q('.stepper button'),pseudo=getComputedStyle(step,'::before');
@@ -155,7 +159,9 @@ RING_CHECKS = r"""()=>{
 def run_result(page, script, label):
     result = page.evaluate(script)
     if result["failures"]:
-        raise AssertionError(f"{label}: {result['failures'][:20]}")
+        from collections import Counter
+        categories=Counter(f.get("name","SVG geometry") for f in result["failures"])
+        raise AssertionError(f"{label}: {dict(categories)}; first failures: {result['failures'][:12]}")
     return result["checks"]
 
 with sync_playwright() as p:

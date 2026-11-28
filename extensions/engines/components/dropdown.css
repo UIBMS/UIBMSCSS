@@ -41,7 +41,8 @@
 /* Never expose the initial top-left measurement box to pointer events. */
 .dropdown[data-uibms-menu-positioning] { visibility:hidden;pointer-events:none; }
 @layer defaults {
-  :where(.dropdown) {
+  /* The opt-in owner must beat equally specific scoped native defaults. */
+  .dropdown {
     & :where([role="menuitem"]) {
       display:block;inline-size:100%;min-inline-size:0;min-block-size:var(--target-size);
       box-sizing:border-box;max-inline-size:100%;text-align:start;overflow-wrap:anywhere;white-space:normal;

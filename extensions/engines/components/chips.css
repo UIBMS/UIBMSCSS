@@ -22,7 +22,7 @@
     &[data-tone="info"] { --_uibms-chip-ink:var(--color-info); }
   }
   :where(.chip:has(> button),.chips > li:has(> button[name="remove-chip"]),label.chip,.chips > label:has(> input[type="checkbox"])) { min-block-size:var(--target-size); }
-  :where(.chip,.chips > li:has(> button[name="remove-chip"])) {
+  :is(.chip,.chips > :where(li:has(> button[name="remove-chip"]))) {
     & > :where(button) {
       min-inline-size:var(--target-size);min-block-size:var(--target-size);padding:var(--_uibms-chip-block-padding);
       /* Preserve the full remove target while compensating for the owner's

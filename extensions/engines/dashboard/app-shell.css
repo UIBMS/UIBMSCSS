@@ -6,7 +6,9 @@
   /* The collapsed control must fit both its target and its font-relative icon
      plus its own insets. The outer rail adds the sidebar's separate edges. */
   --_uibms-rail-control-width:var(--target-size);
-  --_uibms-rail-control-width:max(var(--target-size),calc(min(var(--target-size),1lh) + 2 * var(--_uibms-rail-link-padding) + 2 * var(--border-width)));
+  @supports (width:1lh) {
+    --_uibms-rail-control-width:max(var(--target-size),calc(min(var(--target-size),1lh) + 2 * var(--_uibms-rail-link-padding) + 2 * var(--border-width)));
+  }
   position:relative;
   inline-size:100%;min-inline-size:0;max-inline-size:100%;
   block-size:var(--dashboard-height,100dvh);min-block-size:0;
