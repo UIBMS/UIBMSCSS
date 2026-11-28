@@ -446,6 +446,7 @@ group('Components',[
   section('Lifecycle','<p>mountTooltips(root, {delay:300, leaveDelay:160}) configures pointer delays in milliseconds. Use one tooltip per trigger. Call refresh() after markup changes and destroy() to release timers and listeners. Requires native Popover API support.</p>')
  ]),
  componentDoc('drawer','Drawers','Responsive docked native dialogs and bottom sheets.',[
+  section('Blog masthead','<p>Compose a logo link, a labelled native navigation list and <code>&lt;details&gt;</code> dropdowns for grouped links. On narrow screens, the blog demo opens the same link groups in a drawer. <a href="{{base}}demos/blog/">Try the blog navigation</a>.</p>'),
   section('Loading','<p>Load drawer.css. Native commandfor and command="show-modal" open the dialog in supporting browsers. The small optional mountDrawers controller supports older native dialog implementations lacking invoker commands or closedby support. Import it only when the necessary native capability is missing. Forms with method="dialog" close natively. No custom focus trap or overlay manager is required. Use closedby="any" to opt in to native backdrop dismissal; the optional adapter supplies compatibility where native support is missing.</p>',[snippet('Native stylesheet and optional fallback',`<link rel="stylesheet" href="engines/components/drawer.css">
 <script type="module">
 ${drawerFallback.split('\n').map(line=>'  '+line).join('\n')}

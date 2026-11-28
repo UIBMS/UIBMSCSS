@@ -977,6 +977,57 @@ try:
         actions=cp.locator("[data-site-demo-content] .quick-actions")
         check(actions.get_by_role("link").count()==3 and actions.evaluate("e=>e.classList.contains('cluster')"),"quick actions preserve native links and core cluster")
         check_width(cp,"quick actions mobile")
+        # Desktop and mobile menus use the same set of native links.
+        cp.set_viewport_size({"width":1280,"height":900})
+        cp.goto(url+"demos/blog/",wait_until="load")
+        masthead=cp.locator("#journal-header")
+        masthead.locator("#journal-menu:not([hidden])").wait_for(state="attached")
+        nav=masthead.get_by_role("navigation",name="Journal navigation")
+        topics=nav.locator("summary").filter(has_text="Topics")
+        topics.press("Enter")
+        development=nav.get_by_role("link",name="Development",exact=True)
+        development.wait_for(state="visible")
+        check(topics.evaluate("summary=>summary.parentElement.open"),"blog dropdown is keyboard operable")
+        development.press("Escape")
+        check(topics.evaluate("summary=>!summary.parentElement.open && summary===document.activeElement"),"desktop Escape closes the blog dropdown and restores focus")
+        topics.click()
+        nav.locator("summary").filter(has_text="Explore").click()
+        check(nav.locator("details[open]").count()==1,"blog dropdowns are mutually exclusive")
+        nav.get_by_role("link",name="November archive",exact=True).click()
+        check(cp.url.endswith("#archive") and nav.locator("details[open]").count()==0,"blog archive link reaches real content and closes the dropdown")
+
+        launcher=masthead.get_by_role("button",name="Menu",exact=True)
+        drawer=cp.get_by_role("dialog",name="Journal menu")
+        check(launcher.is_hidden(),"the desktop header does not show the mobile launcher")
+        cp.set_viewport_size({"width":320,"height":844})
+        cp.locator("html").evaluate("element=>element.dir='rtl'")
+        set_profile(cp,density="spacious",typography="editorial")
+        check_width(cp,"blog masthead in RTL at 320px")
+        check(not nav.is_visible(),"only the mobile menu is visible on narrow screens")
+        launcher.click()
+        drawer.wait_for(state="visible")
+        drawer.locator("summary").filter(has_text="Topics").click()
+        drawer.get_by_role("link",name="Accessibility",exact=True).click()
+        drawer.wait_for(state="hidden")
+        check(cp.url.endswith("#accessibility"),"mobile blog drawer closes after navigating")
+        launcher.click()
+        cp.keyboard.press("Escape")
+        drawer.wait_for(state="hidden")
+        check(launcher.evaluate("button=>button===document.activeElement"),"mobile Escape closes the drawer and restores focus")
+        launcher.click()
+        cp.set_viewport_size({"width":1280,"height":900})
+        drawer.wait_for(state="hidden")
+        check(nav.is_visible(),"resizing restores desktop blog navigation and closes the modal")
+
+        blog_static_context=browser.new_context(java_script_enabled=False,viewport={"width":320,"height":844},reduced_motion="reduce")
+        blog_static=blog_static_context.new_page()
+        blog_static.goto(url+"demos/blog/",wait_until="load")
+        blog_static.locator("#journal-header summary").filter(has_text="Topics").click()
+        blog_static.get_by_role("link",name="Design",exact=True).wait_for(state="visible")
+        check(blog_static.locator("#journal-menu").is_hidden(),"blog links stay reachable with scripting disabled")
+        check_width(blog_static,"blog navigation with scripting disabled")
+        blog_static_context.close()
+
         # The advanced table enhances real headers and rows in place.
         cp.set_viewport_size({"width":1280,"height":900})
         cp.goto(url+"docs/tables/",wait_until="load")
@@ -994,10 +1045,13 @@ try:
         cp.locator("#appearance-palette").select_option("ocean")
         check(cp.locator("html").get_attribute("data-theme")=="dark" and
               cp.locator("html").get_attribute("data-palette")=="ocean","advanced table applies the shared theme and palette")
-        with cp.expect_response(lambda response: "/engines/material.mjs" in response.url) as material_response:
-            cp.locator("#appearance-material").select_option("liquid-silicone")
-        check(material_response.value.ok,"optional material loads from the shared appearance switch")
+        cp.locator("#appearance-material").select_option("liquid-silicone")
+        enhanced_date=controls.locator('input[name="renewal"][data-uibms-form-source]')
+        enhanced_date.wait_for(state="attached")
+        check(cp.locator("html").get_attribute("data-material")=="liquid-silicone",
+              "optional material and date picker activate from the shared appearance switch")
         cp.locator("#appearance-material").select_option("default")
+        enhanced_date.wait_for(state="detached")
         cp.goto(url+"docs/tables/",wait_until="load")
         check(cp.locator("html").get_attribute("data-theme")=="dark" and
               cp.locator("html").get_attribute("data-palette")=="ocean","appearance is shared between the demo and documentation")
@@ -1184,8 +1238,19 @@ try:
           ctx.fillStyle=getComputedStyle(e).backgroundColor;ctx.fillRect(0,0,1,1);
           return [...ctx.getImageData(0,0,1,1).data].slice(0,3);
         }"""
+        # Read the completed tint, since WebKit may sample the first frame
+        # of a transition before any colour change is measurable.
+        finish_tint="""async element=>{
+          const transitions=element.getAnimations().filter(animation=>animation.transitionProperty==='background-color');
+          await Promise.allSettled(transitions.map(animation=>animation.finished));
+        }"""
+        cp.mouse.move(0,0)
+        frame(cp)
+        account.evaluate(finish_tint)
         rest=account.evaluate(button_color)
         account.hover()
+        frame(cp)
+        account.evaluate(finish_tint)
         hover=account.evaluate(button_color)
         check(min(rest)>200 and max(abs(a-b) for a,b in zip(rest,hover)) in range(1,25),
               "light buttons use close surface tints",[rest,hover])

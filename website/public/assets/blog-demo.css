@@ -1,0 +1,121 @@
+#journal-header {
+  justify-content: space-between;
+  position: relative;
+  z-index: 1;
+  padding: var(--space);
+  background: var(--color-surface);
+  border-block-end: var(--border-width) solid var(--color-border);
+  --site-header-size: calc(var(--target-size) + 2 * var(--space));
+}
+
+#journal-header > a,
+#journal-header button,
+#journal-header nav :is(a, summary),
+#journal-drawer nav :is(a, summary) {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: var(--target-size);
+  gap: calc(var(--space) * 0.5);
+}
+
+#journal-header > a {
+  color: var(--color-text);
+  font-weight: 650;
+}
+
+#journal-header > nav > ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: calc(var(--space) * 0.5);
+}
+
+#journal-header > nav ul,
+#journal-drawer nav ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#journal-header nav :is(a, summary),
+#journal-drawer nav :is(a, summary) {
+  padding-inline: calc(var(--space) * 0.75);
+}
+
+#journal-header nav details,
+#journal-drawer nav details {
+  padding: 0;
+  margin: 0;
+  border: 0;
+}
+
+#journal-header nav summary::-webkit-details-marker,
+#journal-drawer nav summary::-webkit-details-marker {
+  display: none;
+}
+
+#journal-header nav details > ul {
+  position: absolute;
+  inset-block-start: 100%;
+  inset-inline-start: 0;
+  inline-size: max-content;
+  min-inline-size: 16ch;
+  padding: calc(var(--space) * 0.5);
+  background: var(--color-surface);
+  border: var(--border-width) solid var(--color-border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+#journal-header nav li:has(> details) {
+  position: relative;
+}
+
+#journal-header nav details[open] > summary,
+#journal-header nav :is(a, summary):hover,
+#journal-drawer nav :is(a, summary):hover {
+  background: var(--color-surface-subtle);
+  border-radius: var(--radius);
+}
+
+#journal-header #site-appearance-panel {
+  inline-size: min(24rem, calc(100vi - 2 * var(--space)));
+  min-inline-size: 0;
+  max-inline-size: none;
+}
+
+#journal-header > #journal-menu { display: none; }
+#journal-drawer > header { justify-content: space-between; }
+#journal-drawer nav details > ul { padding-inline-start: var(--space); }
+
+#journal-main,
+#journal-footer {
+  max-inline-size: calc(68ch + 2 * var(--space));
+  margin-inline: auto;
+  padding: var(--space);
+  overflow-wrap: anywhere;
+}
+
+#journal-main > :is(header, article, section) {
+  padding-block: var(--space);
+  border-block-end: var(--border-width) solid var(--color-border);
+}
+
+#journal-main > header h1 { font-size: clamp(1.8em, 7vi, 3.5em); }
+
+@media (max-width: 48rem) {
+  #journal-header { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; }
+  #journal-header > nav { grid-column: 1 / -1; }
+  #journal-header:has(> #journal-menu:not([hidden])) > nav { display: none; }
+  #journal-header > #journal-menu:not([hidden]) { display: inline-flex; }
+  #journal-header #site-appearance { position: static; }
+  #journal-header #site-appearance-panel { inset-inline-end: var(--space); }
+  #journal-header nav details > ul { position: static; inline-size: auto; min-inline-size: 0; }
+}
+
+@media (max-width: 30rem) {
+  #journal-header #site-appearance summary {
+    inline-size: var(--target-size);
+    padding: 0;
+  }
+  #journal-header #site-appearance summary > span { display: none; }
+}
